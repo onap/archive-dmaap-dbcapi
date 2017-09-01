@@ -226,9 +226,15 @@ A convention of this API is to return JSON responses per OpenStack style.
     <jettyVersion>9.3.7.v20160115</jettyVersion>
     <eelf.version>0.0.1</eelf.version>
     <artifact.version>1.0.0-SNAPSHOT</artifact.version>
-    <nexusproxy>https://nexus.onap.org</nexusproxy>
-    <snapshots.path>content/repositories/snapshots/</snapshots.path>
-    <releases.path>content/repositories/releases/</releases.path>
+		<!--  SONAR  -->
+		 <jacoco.version>0.7.7.201606060606</jacoco.version>
+	    <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
+	    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+	    <!-- Default Sonar configuration -->
+	    <sonar.jacoco.reportPath>target/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
+	    <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
+	    <!-- Note: This list should match jacoco-maven-plugin's exclusion list below -->
+	    <sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**</sonar.exclusions>
   </properties>
   <description>Data Movement as a Platform (DMaaP) Bus Controller provides a REST API for other DCAE infrastructure components to provision DMaaP resources.  A DMaaP resource is a Data Router Feed or a Message Router Topic, and their associated publishers and subscribers.</description>
 </project>

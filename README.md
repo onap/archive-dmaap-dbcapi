@@ -23,6 +23,8 @@ After cloning from this git repo:
 mvn clean install javadoc:javadoc
 ```
 
+A description of the API is generated, and found in targets/generated-source/swagger.json.
+
 ### Configurable Parameters
 
 Behavior of the API is controlled by settings in a properties file (typically etc/dmaapbc.properties).
