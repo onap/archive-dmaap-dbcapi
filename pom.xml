@@ -4,7 +4,7 @@
   <groupId>org.onap.dmaap.dbcapi</groupId>
   <artifactId>dbcapi</artifactId>
   <version>${artifact.version}</version>
-  <name>dbcapi</name>
+  <name>dmaap-dbcapi</name>
   <parent>
     <groupId>org.onap.oparent</groupId>
     <artifactId>oparent</artifactId>
