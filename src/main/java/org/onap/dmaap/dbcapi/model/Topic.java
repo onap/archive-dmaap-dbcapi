@@ -26,6 +26,9 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
+
 import org.onap.dmaap.dbcapi.service.DmaapService;
 
 
@@ -40,23 +43,57 @@ public class Topic extends DmaapObject  {
 	private String	formatUuid;
 	private ReplicationType	replicationCase;  
 	private String	globalMrURL;		// optional: URL of global MR to replicate to/from
+	private FqtnType  fqtnStyle;
+	private String	version;
 
 	private	ArrayList<MR_Client> clients;
 
 
 	
 	private static Dmaap dmaap = new DmaapService().getDmaap();
-	
+
+	// during unit testing, discovered that presence of dots in some values
+	// creates an unplanned topic namespace as we compose the FQTN.
+	// this may create sensitivity (i.e. 403) for subsequent creation of AAF perms, so best to not allow it 
+	private static String removeDots( String source, String def ) {
+		if ( source == null || source.isEmpty()) {
+			return def;
+		}
+		return source.replaceAll("\\.", "_");
+	}
 	//
 	// utility function to generate the FQTN of a topic
-	public static String genFqtn(  String name ) {
+	public  String genFqtn(  ) {
+		DmaapConfig dc = (DmaapConfig)DmaapConfig.getConfig();
+		String projectId = dc.getProperty("MR.projectID", "99999");
 		CharSequence signal = ".";
 		String ret;
-		if ( name.contains( signal )) {
+		if ( this.getTopicName().contains( signal )) {
 			// presence of a dot indicates the name is already fully qualified
-			ret = name;
+			ret = this.getTopicName();
 		} else {
-			ret = dmaap.getTopicNsRoot() + "." + dmaap.getDmaapName() + "." + name;
+			// these vars may not contain dots
+			String p = removeDots( projectId, "90909");
+			String v = removeDots( this.getVersion(), "v1");
+			switch( this.getFqtnStyle() ) {
+			case FQTN_PROJECTID_VERSION_FORMAT:
+
+				ret = dmaap.getTopicNsRoot() + "."  + dmaap.getDmaapName() + "." + p + "-" + this.getTopicName()  + "-" + v;
+				break;
+				
+			case FQTN_PROJECTID_FORMAT:
+
+				ret = dmaap.getTopicNsRoot() + "."  + dmaap.getDmaapName() + "." + p + "-" + this.getTopicName();
+				break;
+			
+			case FQTN_LEGACY_FORMAT:
+			default:  // for backwards compatibility
+				ret = dmaap.getTopicNsRoot() + "." + dmaap.getDmaapName() + "." + this.getTopicName();
+				break;
+			
+
+			}
+			
 		}
 		return ret;
 	}
@@ -83,6 +120,7 @@ public class Topic extends DmaapObject  {
 		this.setLastMod();
 		this.setStatus( DmaapObject_Status.NEW );
 		this.replicationCase = ReplicationType.Validator("none");
+		this.fqtnStyle = FqtnType.Validator("none");
 		logger.debug( "Topic constructor " + this.getLastMod() );
 	}
 	public String getFqtn() {
@@ -162,7 +200,14 @@ public class Topic extends DmaapObject  {
 	public void setReplicationCase(ReplicationType t) {
 		this.replicationCase = t;
 	}
+	public FqtnType getFqtnStyle() {
+		return fqtnStyle;
+	}
 
+	
+	public void setFqtnStyle(FqtnType t) {
+		this.fqtnStyle = t;
+	}
 
 	public String getGlobalMrURL() {
 		return globalMrURL;
@@ -172,6 +217,18 @@ public class Topic extends DmaapObject  {
 
 	public void setGlobalMrURL(String globalMrURL) {
 		this.globalMrURL = globalMrURL;
+	}
+
+
+
+	public String getVersion() {
+		return version;
+	}
+
+
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 

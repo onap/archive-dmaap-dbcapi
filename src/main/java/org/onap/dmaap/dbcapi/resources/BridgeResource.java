@@ -29,6 +29,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -61,56 +62,123 @@ public class BridgeResource extends BaseLoggingClass {
 
 	@GET
 	@ApiOperation( value = "return BrTopic details", 
-	notes = "Returns array of  `BrTopic` objects.", 
+	notes = "Returns array of  `BrTopic` objects. If source and target query params are specified, only report on that bridge.  If detail param is true, list topics names, else just a count is returned", 
 	response = BrTopic.class)
 @ApiResponses( value = {
     @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
     @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 })
 	public Response	getBridgedTopics(@QueryParam("source") String source,
-						   			@QueryParam("target") String target){
+						   			@QueryParam("target") String target,
+						   			@QueryParam("detail") Boolean detailFlag ){
 		ApiService check = new ApiService();
 
-		BrTopic brTopic = new BrTopic();
-		
-		logger.info( "getBridgeTopics():" + " source=" + source + ", target=" + target);
-//		System.out.println("getBridgedTopics() " + "source=" + source + ", target=" + target );
-		if (source != null && target != null) {		// get topics between 2 bridged locations
-			brTopic.setBrSource(source);
-			brTopic.setBrTarget(target);
-			MirrorMaker mm = mmService.getMirrorMaker(source, target);
-			if ( mm != null ) {
-				brTopic.setTopicCount( mm.getTopicCount() );
-			} 
-
-			logger.info( "topicCount [2 locations]: " + brTopic.getTopicCount() );
-		}
-		else if (source == null && target == null ) {
-			List<String> mmList = mmService.getAllMirrorMakers();
-			brTopic.setBrSource("all");
-			brTopic.setBrTarget("all");
-			int totCnt = 0;
-			for( String key: mmList ) {
-				int mCnt = 0;
-				MirrorMaker mm = mmService.getMirrorMaker(key);
-				if ( mm != null ) {
-					mCnt = mm.getTopicCount();
-				}
-				logger.info( "Count for "+ key + ": " + mCnt);
-				totCnt += mCnt;
-			}
+		if ( ! Boolean.TRUE.equals(detailFlag)) {
+			BrTopic brTopic = new BrTopic();
 			
-			logger.info( "topicCount [all locations]: " + totCnt );
-			brTopic.setTopicCount(totCnt);
+			logger.info( "getBridgeTopics():" + " source=" + source + ", target=" + target);
+	//		System.out.println("getBridgedTopics() " + "source=" + source + ", target=" + target );
+			if (source != null && target != null) {		// get topics between 2 bridged locations
+				brTopic.setBrSource(source);
+				brTopic.setBrTarget(target);
+				MirrorMaker mm = mmService.getMirrorMaker(source, target);
+				if ( mm != null ) {		
+						brTopic.setTopicCount( mm.getTopicCount() );
+				} 
+	
+				logger.info( "topicCount [2 locations]: " + brTopic.getTopicCount() );
+			}
+			else if (source == null && target == null ) {
+				List<String> mmList = mmService.getAllMirrorMakers();
+				brTopic.setBrSource("all");
+				brTopic.setBrTarget("all");
+				int totCnt = 0;
+				for( String key: mmList ) {
+					int mCnt = 0;
+					MirrorMaker mm = mmService.getMirrorMaker(key);
+					if ( mm != null ) {
+						mCnt = mm.getTopicCount();
+					}
+					logger.info( "Count for "+ key + ": " + mCnt);
+					totCnt += mCnt;
+				}
+				
+				logger.info( "topicCount [all locations]: " + totCnt );
+				brTopic.setTopicCount(totCnt);
+	
+			}
+			else {
+	
+				logger.error( "source or target is missing");
+				check.setCode(Status.BAD_REQUEST.getStatusCode());
+				check.setMessage("Either both source and target or neither must be provided");
+				return check.error();
+			}
+			return check.success(brTopic);
+		} else {
+			
+			
+			logger.info( "getBridgeTopics() detail:" + " source=" + source + ", target=" + target);
+	
+			if (source != null && target != null) {		// get topics between 2 bridged locations
+				
+				MirrorMaker mm = mmService.getMirrorMaker(source, target);
+				if ( mm == null ) {		
+					return check.notFound();
+				} 
+	
+				return check.success(mm);
+			}
 
+			else {
+	
+				logger.error( "source and target are required when detail=true");
+				check.setCode(Status.BAD_REQUEST.getStatusCode());
+				check.setMessage("source and target are required when detail=true");
+				return check.error();
+			}
 		}
+	}
+	
+	@PUT
+	@ApiOperation( value = "update MirrorMaker details", 
+		notes = "replace the topic list for a specific Bridge.  Use JSON Body for value to replace whitelist, but if refreshFlag param is true, simply refresh using existing whitelist", 
+		response = MirrorMaker.class)
+	@ApiResponses( value = {
+	    @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
+	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
+	})
+	public Response	putBridgedTopics(@QueryParam("source") String source,
+						   			@QueryParam("target") String target,
+						   			@QueryParam("refresh") Boolean refreshFlag,
+						   			MirrorMaker newBridge ){
+		ApiService check = new ApiService();	
+			
+		logger.info( "putBridgeTopics() detail:" + " source=" + source + ", target=" + target);
+
+		if (source != null && target != null) {		// get topics between 2 bridged locations
+			
+			MirrorMaker mm = mmService.getMirrorMaker(source, target);
+			if ( mm == null ) {		
+				return check.notFound();
+			} 
+			if ( refreshFlag != null  &&  refreshFlag == false ) {
+				logger.info( "setting whitelist from message body");
+				mm.setTopics( newBridge.getTopics() );
+			} else {
+				logger.info( "refreshing whitelist from memory");
+			}
+			mmService.updateMirrorMaker(mm);
+			return check.success(mm);
+		}
+
 		else {
 
-			logger.error( "source or target is missing");
+			logger.error( "source and target are required when detail=true");
 			check.setCode(Status.BAD_REQUEST.getStatusCode());
-			check.setMessage("Either 2 locations or no location must be provided");
+			check.setMessage("source and target are required when detail=true");
 			return check.error();
 		}
-		return check.success(brTopic);
+
 	}
 }

@@ -63,11 +63,43 @@ public class FeedService  extends BaseLoggingClass {
 		f.setSubs(subs);	
 	}
 		
-	public List<Feed> getAllFeeds() {
+	public List<Feed> getAllFeeds( String name, String ver, String match ) {
+		logger.info( "getAllFeeds: name=" + name + " ver=" + ver + " match=" + match);
 		ArrayList<Feed> fatFeeds = new ArrayList<Feed>();
 		for( Feed f:  feeds.values() ) {
-			getSubObjects(f);
-			fatFeeds.add(f);
+			boolean keep = true;
+			if ( name != null ) {
+				if ( match != null && match.equals("startsWith") ) {
+					if ( ! f.getFeedName().startsWith( name ) ) {
+						logger.info( "getAllFeeds: feedName=" + f.getFeedName() + " doesn't start with=" + name);
+						keep = false;
+					}
+				} else if ( match != null && match.equals("contains") ) {
+					if ( ! f.getFeedName().contains( name ) ) {
+						logger.info( "getAllFeeds: feedName=" + f.getFeedName() + " doesn't contain=" + name);
+						keep = false;
+					}
+				} else {
+					if ( ! f.getFeedName().equals( name ) ) {
+						logger.info( "getAllFeeds: feedName=" + f.getFeedName() + " doesn't equal=" + name);
+						keep = false;
+					}
+				}
+
+			}
+			if ( keep && ver != null ) {
+				if ( ! f.getFeedVersion().equals(ver)) {
+					logger.info( "getAllFeeds: feedVersion=" + f.getFeedName() + " doesn't match " + ver);
+					keep = false;
+				} else {
+					logger.info( "getAllFeeds: feedVersion=" + f.getFeedName() + " matches " + ver);
+				}
+			}
+					
+			if (keep){
+				getSubObjects(f);
+				fatFeeds.add(f);
+			}
 		}
 		return fatFeeds;
 	}

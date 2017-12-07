@@ -37,6 +37,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -92,12 +93,16 @@ public class FeedResource extends BaseLoggingClass {
 	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response getFeeds() {
+	public Response getFeeds(
+			@QueryParam("feedName") String feedName,
+			@QueryParam("version") String version,
+			@QueryParam("match") String match
+			) {
 
 		ApiService resp = new ApiService();
 
 		FeedService feedService = new FeedService();
-		List<Feed> nfeeds =  feedService.getAllFeeds();
+		List<Feed> nfeeds =  feedService.getAllFeeds( feedName, version, match );
 		GenericEntity<List<Feed>> list = new GenericEntity<List<Feed>>(nfeeds) {
         };
         return resp.success(list);

@@ -44,9 +44,11 @@ import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.ReplicationType;
+import org.onap.dmaap.dbcapi.model.FqtnType;
 import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.TopicService;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 @Path("/topics")
 @Api( value= "topics", description = "Endpoint for retreiving MR Topics" )
@@ -54,8 +56,14 @@ import org.onap.dmaap.dbcapi.service.TopicService;
 @Produces(MediaType.APPLICATION_JSON)
 @Authorization
 public class TopicResource extends BaseLoggingClass {
-
+	private static FqtnType defaultTopicStyle;
 	TopicService mr_topicService = new TopicService();
+	
+	public TopicResource() {
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		defaultTopicStyle = FqtnType.Validator( p.getProperty("MR.topicStyle", "FQTN_LEGACY_FORMAT"));
+		logger.info( "Setting defaultTopicStyle=" + defaultTopicStyle );
+	}
 		
 	@GET
 	@ApiOperation( value = "return Topic details", 
@@ -104,7 +112,11 @@ public class TopicResource extends BaseLoggingClass {
 		if ( t == null || t == ReplicationType.REPLICATION_NOT_SPECIFIED ) {
 			topic.setReplicationCase( mr_topicService.reviewTopic(topic));
 		} 
-		
+		FqtnType ft = topic.getFqtnStyle();
+		if ( ft == null || ft == FqtnType.FQTN_NOT_SPECIFIED ) {
+			logger.info( "setting defaultTopicStyle=" + defaultTopicStyle + " for topic " + topic.getTopicName() );
+			topic.setFqtnStyle( defaultTopicStyle );
+		}
 		topic.setLastMod();
 		
 		Topic mrc =  mr_topicService.addTopic(topic, check.getErr());

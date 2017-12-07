@@ -31,7 +31,7 @@ public class AafDecrypt extends BaseLoggingClass  {
 	
 	public AafDecrypt() {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		dClass = p.getProperty( "AafDecryption.Class", "org.openecomp.dmaapbc.aaf.ClearDecrypt");
+		dClass = p.getProperty( "AafDecryption.Class", "org.onap.dmaap.dbcapi.aaf.ClearDecrypt");
 		try {
 			dec = (DecryptionInterface) (Class.forName(dClass).newInstance());	
 			dec.init( p.getProperty("CredentialCodecKeyfile", "LocalKey"));

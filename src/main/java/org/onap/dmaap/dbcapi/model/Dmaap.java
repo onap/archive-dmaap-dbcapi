@@ -37,7 +37,6 @@ public class Dmaap extends DmaapObject {
 	private	String	accessKeyOwner;
 
 
-
 	// no-op constructor used by framework
 	public Dmaap() {
 		
@@ -60,6 +59,7 @@ public class Dmaap extends DmaapObject {
 		this.nodeKey = nk;
 		this.accessKeyOwner = ako;
 		this.setStatus( DmaapObject_Status.NEW );
+
 	}
 
 	public String getVersion() {
@@ -128,5 +128,4 @@ public class Dmaap extends DmaapObject {
 		this.loggingUrl = loggingUrl;
 	}
 
-	
 }

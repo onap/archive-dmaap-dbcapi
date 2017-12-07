@@ -94,7 +94,9 @@ public class TopicService extends BaseLoggingClass {
 
 	public Topic addTopic( Topic topic, ApiError err ) {
 		logger.info( "Entry: addTopic");
-		String nFqtn =  Topic.genFqtn( topic.getTopicName() );
+		logger.info( "Topic name=" + topic.getTopicName() + " fqtnStyle=" + topic.getFqtnStyle() );
+		String nFqtn =  topic.genFqtn();
+		logger.info( "FQTN=" + nFqtn );
 		if ( getTopic( nFqtn, err ) != null ) {
 			String t = "topic already exists: " + nFqtn;
 			logger.info( t );
@@ -104,7 +106,7 @@ public class TopicService extends BaseLoggingClass {
 			return null;
 		}
 		err.reset();  // err filled with NOT_FOUND is expected case, but don't want to litter...
-		logger.info( "fqtn: " + nFqtn );
+
 		topic.setFqtn( nFqtn );
 
 		AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
