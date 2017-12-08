@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.onap.dmaap.dbcapi</groupId>
   <artifactId>dbcapi</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>${artifact.version}</version>
   <name>dmaap-dbcapi</name>
   <parent>
     <groupId>org.onap.oparent</groupId>
@@ -225,7 +225,7 @@ A convention of this API is to return JSON responses per OpenStack style.
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jettyVersion>9.3.7.v20160115</jettyVersion>
     <eelf.version>0.0.1</eelf.version>
-    <artifact.version>1.0.0-SNAPSHOT</artifact.version>
+    <artifact.version>1.0.1-SNAPSHOT</artifact.version>
 		<!--  SONAR  -->
 		 <jacoco.version>0.7.7.201606060606</jacoco.version>
 	    <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
