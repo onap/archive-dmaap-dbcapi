@@ -9,6 +9,7 @@
     <groupId>org.onap.oparent</groupId>
     <artifactId>oparent</artifactId>
     <version>0.1.1</version>
+    <relativePath/>
   </parent>
   <build>
     <finalName>dbcapi</finalName>
