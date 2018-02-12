@@ -74,7 +74,7 @@ A convention of this API is to return JSON responses per OpenStack style.
     </configuration>
     <executions>
         <execution>
-            <phase>precompile</phase>
+            <phase>compile</phase>
             <goals>
                 <goal>generate</goal>
             </goals>
