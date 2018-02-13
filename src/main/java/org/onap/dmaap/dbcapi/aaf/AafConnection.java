@@ -67,6 +67,10 @@ public class AafConnection extends BaseLoggingClass {
 			uc.setInstanceFollowRedirects(false);
 			logger.info( "successful connect to " + pURL );
 			return(true);
+		} catch ( UnknownHostException uhe ) {
+	        errorLogger.error(DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION,  pURL, uhe.getMessage() );
+            uhe.printStackTrace();
+            return(false);
 		} catch (Exception e) {
 	        errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_ERROR,  pURL, e.getMessage() );
             e.printStackTrace();
@@ -136,6 +140,10 @@ public class AafConnection extends BaseLoggingClass {
                  }
             } catch ( SSLHandshakeException she ) {
                	errorLogger.error( DmaapbcLogMessageEnum.SSL_HANDSHAKE_ERROR, pURL);
+			} catch ( UnknownHostException uhe ) {
+				errorLogger.error(DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION,  pURL, uhe.getMessage() );
+            	rc = 500;
+            	return rc;
             } 
 			try {
 				rc = uc.getResponseCode();
