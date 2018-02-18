@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.net.ConnectException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
@@ -144,7 +145,11 @@ public class AafConnection extends BaseLoggingClass {
 				errorLogger.error(DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION,  pURL, uhe.getMessage() );
             	rc = 500;
             	return rc;
-            } 
+            } catch ( ConnectException ce ) {
+				errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION,  pURL, ce.getMessage() );
+            	rc = 500;
+            	return rc;
+			} 
 			try {
 				rc = uc.getResponseCode();
 			} catch ( SSLHandshakeException she ) {

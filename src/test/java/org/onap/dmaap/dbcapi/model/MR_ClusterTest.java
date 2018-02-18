@@ -21,22 +21,23 @@ package org.onap.dmaap.dbcapi.model;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
-
-
-public class MirrorMakerTest {
-
-	private static final String  fmt = "%24s: %s%n";
+public class MR_ClusterTest {
+	String d, fqdn, a;
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-
 	@Before
 	public void setUp() throws Exception {
+		d = "central-onap";
+		fqdn = "mr.onap.org";
+		a = "ignore";
 	}
 
 	@After
@@ -45,58 +46,50 @@ public class MirrorMakerTest {
 
 
 	@Test
-	public void test1() {
+	public void testMR_ClusterClassDefaultConstructor() {
 
-
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		MR_Cluster t = new MR_Cluster();
+	
+		assertTrue( t.getDcaeLocationName() == null  );
+		assertTrue( t.getFqdn() == null  );
 	
 	}
-	@Test
-	public void test2() {
 
-		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+	@Test
+	public void testMR_ClusterClassConstructor() {
+
+		String[] h = { "host1", "host2", "host3" };
+		MR_Cluster t = new MR_Cluster( d, fqdn, a, h );
+
+		t.getHosts();
+	
+		assertTrue( t.getDcaeLocationName() == d  );
+		assertTrue( t.getFqdn() == fqdn  );
 	}
 
 	@Test
-	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+	public void testw3() {
 
-		MirrorMaker.genKey( c1, c2 );
+		MR_Cluster t = new MR_Cluster();
+		String[] h = { "host1", "host2", "host3" };
+		t.setHosts( h );
+	
+		assertTrue( t.getDcaeLocationName() == null  );
+		assertTrue( t.getFqdn() == null  );
 
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
+		String fqtn = t.genTopicURL( "cluster2.onap.org", "org.onap.topic2" );	
 	}
 
 
+
 	@Test
-	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+	public void testsetter() {
 
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
+		String v = "validate";
 
-		int i = t.getTopicCount();
 
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
-
+		rh.reflect( "org.onap.dmaap.dbcapi.model.MR_Cluster", "set", v );	
+	
 	}
 
 }

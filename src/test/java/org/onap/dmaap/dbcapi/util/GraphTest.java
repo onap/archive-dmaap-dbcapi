@@ -17,29 +17,30 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.service;
-import  org.onap.dmaap.dbcapi.model.*;
-
+package org.onap.dmaap.dbcapi.util;
+import org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.service.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.List;
+import java.util.*;
+import java.sql.*;
 
-public class TopicServiceTest {
+public class GraphTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-	TopicService ts;
-	MR_ClusterService mcs;
+	Graph g;
+
 
 	@Before
 	public void setUp() throws Exception {
-		ts = new TopicService();
-		mcs = new MR_ClusterService();
+		HashMap<String, String> hm = new HashMap<String,String>();
+		g = new Graph( hm );
 	}
 
 	@After
@@ -51,55 +52,49 @@ public class TopicServiceTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.util.Graph", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "set", v );
+		//rh.reflect( "org.onap.dmaap.dbcapi.util.Graph", "set", v );
 
 	}
 
 	@Test
 	public void test3() {
-		Topic topic = new Topic();
-		ApiError err = new ApiError();
-		topic.setTopicName( "test3" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.getFqtn();
-		Topic nTopic = ts.addTopic( topic, err );
-		if ( nTopic != null ) {
-			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
-		}
-
-	}
-
-	@Test
-	public void test4() {
-		List<Topic> l = ts.getAllTopics();
-
-	}
-
-	@Test
-	public void test5() {
-		ApiError err = new ApiError();
-/*
-
-TODO: find a null pointer in here...
-		String[] hl = { "host1", "host2", "host3" };
 		String loc = "central-onap";
-		MR_Cluster cluster = new MR_Cluster( loc, "localhost", "", hl );
-		mcs.addMr_Cluster( cluster, err );
-		Topic topic = new Topic();
-		topic.setTopicName( "test5" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.setReplicationCase( ReplicationType.Validator("none") );
-		String f = topic.getFqtn();
-		Topic nTopic = ts.updateTopic( topic, err );
-*/
-		assertTrue( err.getCode() == 0 );
+		String[] actions = { "pub", "sub" };
+		DcaeLocationService dls = new DcaeLocationService();
+		DcaeLocation dl = new DcaeLocation( "CLLI123", "central-layer", loc, "aZone", "10.10.10.10" );
+		dls.addDcaeLocation( dl );
+		MR_Client mrc = new MR_Client();
+		mrc.setAction( actions );
+		List<MR_Client> cl = new ArrayList<MR_Client>();
+		cl.add( mrc );
+		cl.add( new MR_Client( loc, "aTopic", "ignore", actions ) );
+		
+		g = new Graph( cl, true );
+
+		HashMap<String, String> hm = new HashMap<String, String>();
+
+
+		String s = g.put( "aKey", "aVal" );
+		s = g.get( "aKey" );
+
+		s = g.getCentralLoc();		
+		g.setHasCentral( true );
+		g.isHasCentral();
+
+		hm = g.getGraph();
+
+		Collection<String> k = g.getKeys();
+
 	}
+
+
 
 }
+

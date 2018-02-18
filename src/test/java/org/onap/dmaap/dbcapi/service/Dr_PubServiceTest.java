@@ -26,20 +26,21 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.List;
+import java.util.ArrayList;
 
-public class TopicServiceTest {
+public class Dr_PubServiceTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-	TopicService ts;
-	MR_ClusterService mcs;
+	DR_PubService ns;
+	FeedService fs;
 
 	@Before
 	public void setUp() throws Exception {
-		ts = new TopicService();
-		mcs = new MR_ClusterService();
+		ns = new DR_PubService();
+		fs = new FeedService();
 	}
 
 	@After
@@ -51,55 +52,57 @@ public class TopicServiceTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.service.DR_PubService", "get", null );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.service.DR_PubService", "set", v );
 
 	}
 
 	@Test
 	public void test3() {
-		Topic topic = new Topic();
+		String locname = "central-demo";
+
+		DcaeLocationService dls = new DcaeLocationService();
+		DcaeLocation loc = new DcaeLocation( "CLLI1234", "central-onap", locname, "aZone", "10.10.10.0/24" );
+		dls.addDcaeLocation( loc );
+
 		ApiError err = new ApiError();
-		topic.setTopicName( "test3" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.getFqtn();
-		Topic nTopic = ts.addTopic( topic, err );
-		if ( nTopic != null ) {
-			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
+		Feed f = new Feed( "aTest", "1.0", "a unit test", "dgl", "unrestricted" );
+		f = fs.addFeed( f, 	err );
+/*
+TODO: make this not be null...
+		assertTrue( f != null );
+		DR_Pub node = new DR_Pub( locname, "aUser", "aPwd", f.getFeedId(), "pubId01" );
+		DR_Pub n2 = ns.addDr_Pub( node );	
+		DR_Pub node2 = new DR_Pub( locname, "aUser", "aPwd", f.getFeedId() );
+		n2 = ns.addDr_Pub( node2 );	
+
+		if ( n2 != null ) {
+			n2 = ns.getDr_Pub( n2.getPubId(),  err );
 		}
+
+		List<DR_Pub> l = ns.getAllDr_Pubs();
+		if ( n2 != null ) {
+			n2 = ns.updateDr_Pub( n2 );
+		}
+
+		n2 = ns.removeDr_Pub( n2.getPubId(),  err );
+*/
+				
 
 	}
 
 	@Test
 	public void test4() {
-		List<Topic> l = ts.getAllTopics();
+		ArrayList<DR_Pub> l = ns.getDr_PubsByFeedId( "1" );
+
 
 	}
 
-	@Test
-	public void test5() {
-		ApiError err = new ApiError();
-/*
-
-TODO: find a null pointer in here...
-		String[] hl = { "host1", "host2", "host3" };
-		String loc = "central-onap";
-		MR_Cluster cluster = new MR_Cluster( loc, "localhost", "", hl );
-		mcs.addMr_Cluster( cluster, err );
-		Topic topic = new Topic();
-		topic.setTopicName( "test5" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.setReplicationCase( ReplicationType.Validator("none") );
-		String f = topic.getFqtn();
-		Topic nTopic = ts.updateTopic( topic, err );
-*/
-		assertTrue( err.getCode() == 0 );
-	}
 
 }

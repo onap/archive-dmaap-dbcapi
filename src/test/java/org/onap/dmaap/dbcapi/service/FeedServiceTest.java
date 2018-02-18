@@ -19,6 +19,9 @@
  */
 package org.onap.dmaap.dbcapi.service;
 import  org.onap.dmaap.dbcapi.model.*;
+import  org.onap.dmaap.dbcapi.aaf.*;
+import org.onap.dmaap.dbcapi.resources.*;
+import org.onap.dmaap.dbcapi.aaf.authentication.AuthenticationErrorException;
 
 import static org.junit.Assert.*;
 
@@ -26,20 +29,19 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.List;
+import javax.ws.rs.core.Response;
 
-public class TopicServiceTest {
+public class FeedServiceTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-	TopicService ts;
-	MR_ClusterService mcs;
+	FeedService ds;
 
 	@Before
 	public void setUp() throws Exception {
-		ts = new TopicService();
-		mcs = new MR_ClusterService();
+		ds = new FeedService();
 	}
 
 	@After
@@ -51,55 +53,43 @@ public class TopicServiceTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.service.FeedService", "get", null );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.service.FeedService", "set", v );
 
 	}
 
 	@Test
 	public void test3() {
-		Topic topic = new Topic();
 		ApiError err = new ApiError();
-		topic.setTopicName( "test3" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.getFqtn();
-		Topic nTopic = ts.addTopic( topic, err );
-		if ( nTopic != null ) {
-			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
-		}
 
+		Feed f = new Feed( "aTest", "1.0", "a unit test", "dgl", "unrestricted" );
+		f = ds.addFeed( f, 	err );
+		System.out.println( "f=" + f );
+
+		ds.updateFeed( f, err );
+
+		ds.removeFeed( f, err );
 	}
 
 	@Test
 	public void test4() {
-		List<Topic> l = ts.getAllTopics();
+		ApiError err = new ApiError();
+		Feed f = ds.getFeed( "aName", err );
 
+		f = ds.getFeedByName( "aName", "1.0", err );
 	}
 
 	@Test
 	public void test5() {
-		ApiError err = new ApiError();
-/*
+		List<Feed> f = ds.getAllFeeds( "aName", "1.0", "startsWith" );
 
-TODO: find a null pointer in here...
-		String[] hl = { "host1", "host2", "host3" };
-		String loc = "central-onap";
-		MR_Cluster cluster = new MR_Cluster( loc, "localhost", "", hl );
-		mcs.addMr_Cluster( cluster, err );
-		Topic topic = new Topic();
-		topic.setTopicName( "test5" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.setReplicationCase( ReplicationType.Validator("none") );
-		String f = topic.getFqtn();
-		Topic nTopic = ts.updateTopic( topic, err );
-*/
-		assertTrue( err.getCode() == 0 );
 	}
+
 
 }

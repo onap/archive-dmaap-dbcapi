@@ -26,8 +26,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.List;
+import java.util.ArrayList;
 
-public class TopicServiceTest {
+public class MR_ClientServiceTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
@@ -35,11 +36,13 @@ public class TopicServiceTest {
 
 	TopicService ts;
 	MR_ClusterService mcs;
+	MR_ClientService cls;
 
 	@Before
 	public void setUp() throws Exception {
 		ts = new TopicService();
 		mcs = new MR_ClusterService();
+		cls = new MR_ClientService();
 	}
 
 	@After
@@ -51,14 +54,14 @@ public class TopicServiceTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.service.MR_ClientService", "get", null );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.service.MR_ClientService", "set", v );
 
 	}
 
@@ -73,33 +76,43 @@ public class TopicServiceTest {
 		if ( nTopic != null ) {
 			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
 		}
+		String[] actions = { "pub", "view" };
+		MR_Client c = new MR_Client( "central-onap", "org.onap.dmaap.demo.interestingTopic", "org.onap.clientApp.publisher", actions );
+
+		c = cls.addMr_Client( c, topic, err );
 
 	}
 
 	@Test
 	public void test4() {
-		List<Topic> l = ts.getAllTopics();
+		List<MR_Client> l = cls.getAllMr_Clients();
 
+		ArrayList<MR_Client> al = cls.getAllMrClients( "foo" );
+
+		ArrayList<MR_Client> al2 = cls.getClientsByLocation( "central" );
 	}
 
 	@Test
 	public void test5() {
-		ApiError err = new ApiError();
-/*
-
-TODO: find a null pointer in here...
-		String[] hl = { "host1", "host2", "host3" };
-		String loc = "central-onap";
-		MR_Cluster cluster = new MR_Cluster( loc, "localhost", "", hl );
-		mcs.addMr_Cluster( cluster, err );
 		Topic topic = new Topic();
-		topic.setTopicName( "test5" );
+		ApiError err = new ApiError();
+		topic.setTopicName( "test3" );
 		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.setReplicationCase( ReplicationType.Validator("none") );
-		String f = topic.getFqtn();
-		Topic nTopic = ts.updateTopic( topic, err );
-*/
-		assertTrue( err.getCode() == 0 );
+		topic.getFqtn();
+		Topic nTopic = ts.addTopic( topic, err );
+		if ( nTopic != null ) {
+			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
+		}
+		String[] actions = { "pub", "view" };
+		MR_Client c = new MR_Client( "central-onap", "org.onap.dmaap.demo.interestingTopic2", "org.onap.clientApp.publisher", actions );
+
+		c = cls.addMr_Client( c, topic, err );
+		if ( c != null ) {
+				actions[0] = "sub";
+				c.setAction( actions );
+				c = cls.updateMr_Client( c, err );
+				assertTrue( err.getCode() == 200 );
+		}
 	}
 
 }

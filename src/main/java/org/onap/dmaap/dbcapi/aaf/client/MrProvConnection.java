@@ -58,14 +58,19 @@ public class MrProvConnection extends BaseLoggingClass{
 		String mechIdProperty = "aaf.TopicMgrUser";
 		String pwdProperty = "aaf.TopicMgrPassword";
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		logger.info( "templog:getCred: 10");
 
 		String user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
+		logger.info( "templog:getCred: 20");
 
 		String pwd = "";
 		String encPwd = p.getProperty( pwdProperty, "notSet" );
+		logger.info( "templog:getCred: 30");
 
 		AafDecrypt decryptor = new AafDecrypt();
+		logger.info( "templog:getCred: 40");
 		pwd = decryptor.decrypt(encPwd);
+		logger.info( "templog:getCred: 50");
 	
 		return user + ":" + pwd;
 		

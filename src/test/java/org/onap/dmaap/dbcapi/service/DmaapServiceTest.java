@@ -19,6 +19,7 @@
  */
 package org.onap.dmaap.dbcapi.service;
 import  org.onap.dmaap.dbcapi.model.*;
+import  org.onap.dmaap.dbcapi.aaf.*;
 
 import static org.junit.Assert.*;
 
@@ -27,19 +28,17 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.List;
 
-public class TopicServiceTest {
+public class DmaapServiceTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-	TopicService ts;
-	MR_ClusterService mcs;
+	DmaapService ds;
 
 	@Before
 	public void setUp() throws Exception {
-		ts = new TopicService();
-		mcs = new MR_ClusterService();
+		ds = new DmaapService();
 	}
 
 	@After
@@ -51,55 +50,44 @@ public class TopicServiceTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "get", null );	
+		//rh.reflect( "org.onap.dmaap.dbcapi.service.DmaapService", "get", null );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.service.DmaapService", "set", v );
 
 	}
 
 	@Test
 	public void test3() {
-		Topic topic = new Topic();
-		ApiError err = new ApiError();
-		topic.setTopicName( "test3" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.getFqtn();
-		Topic nTopic = ts.addTopic( topic, err );
-		if ( nTopic != null ) {
-			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
-		}
-
+		Dmaap nd = new Dmaap( "1", "org.onap.dmaap", "onap-demo", "drps.demo.onap.org", "", "MMAGENT_TOPIC", "", "" );
+		ds.addDmaap( nd );
 	}
 
 	@Test
 	public void test4() {
-		List<Topic> l = ts.getAllTopics();
+		Dmaap d = ds.getDmaap();
 
 	}
 
 	@Test
 	public void test5() {
-		ApiError err = new ApiError();
-/*
+		Dmaap nd = new Dmaap( "2", "org.onap.dmaap", "onap-demo", "drps.demo.onap.org", "", "MMAGENT_TOPIC", "", "" );
+		ds.updateDmaap( nd );
 
-TODO: find a null pointer in here...
-		String[] hl = { "host1", "host2", "host3" };
-		String loc = "central-onap";
-		MR_Cluster cluster = new MR_Cluster( loc, "localhost", "", hl );
-		mcs.addMr_Cluster( cluster, err );
-		Topic topic = new Topic();
-		topic.setTopicName( "test5" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.setReplicationCase( ReplicationType.Validator("none") );
-		String f = topic.getFqtn();
-		Topic nTopic = ts.updateTopic( topic, err );
-*/
-		assertTrue( err.getCode() == 0 );
+	}
+
+	@Test
+	public void test6() {
+		String t = ds.getTopicPerm();
+		String t2 = ds.getTopicPerm( "val2" );
+		String t3 = ds.getBridgeAdminFqtn();
+
+		boolean b = ds.testCreateMmaTopic();
+
 	}
 
 }
