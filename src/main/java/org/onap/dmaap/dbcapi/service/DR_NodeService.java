@@ -41,10 +41,15 @@ public class DR_NodeService extends BaseLoggingClass {
 		
 		private String getX( String X, ApiError apiError ) {
 			
+		logger.info( "templog:getX at" + " 12.10.10" );
 			DrProvConnection prov = new DrProvConnection();
+		logger.info( "templog:getX at" + " 12.10.12" );
 			prov.makeNodesConnection( X );	
+		logger.info( "templog:getX at" + " 12.10.14" );
 			String resp  = prov.doGetNodes(  apiError );
+		logger.info( "templog:getX at" + " 12.10.16" );
 			logger.info( "rc=" + apiError.getCode() );
+		logger.info( "templog:getX at" + " 12.10.18" );
 			return resp;
 		}
 		
@@ -72,15 +77,21 @@ public class DR_NodeService extends BaseLoggingClass {
 		
 		 boolean containsNode( String aNode , ApiError apiError ){
 	
+		logger.info( "templog:containsNode at" + " 12.10" );
 			//DrProvConnection prov = new DrProvConnection();
 			//prov.makeNodesConnection();	
 			currentNodes = getX( "NODES", apiError );
+		logger.info( "templog:containsNode at" + " 12.12" );
 			if ( ! apiError.is2xx() || currentNodes == null ) {
+		logger.info( "templog:containsNode at" + " 12.14" );
 				return false;
 			}
+		logger.info( "templog:containsNode at" + " 12.16" );
 			logger.info( "NODES now=" + currentNodes );
 			String[] nodeList = currentNodes.split("\\|");
+		logger.info( "templog:containsNode at" + " 12.17" );
 			for( String n: nodeList ) {
+		logger.info( "templog:containsNode at" + " 12.18" );
 				logger.info( "compare existing node " + n + " vs " + aNode );
 				if ( n.equals(aNode) ) {
 					return true;
@@ -161,28 +172,36 @@ public class DR_NodeService extends BaseLoggingClass {
 			apiError.setMessage( "Node " + fqdn + " already exists");
 			return null;
 		}
+		logger.info( "templog:addDr_Node at" + " 10" );
 		
 		DrProv drProv = new DrProv();
+		logger.info( "templog:addDr_Node at" + " 12" );
 
 		if ( ! drProv.containsNode( node.getFqdn(), apiError ) && apiError.is2xx() ) {
+			logger.info( "templog:addDr_Node at" + " 15" );
 			drProv.addNode( node.getFqdn(), apiError );
 		}
+		logger.info( "templog:addDr_Node at" + " 20" );
 		if ( ! apiError.is2xx()) {
 			return null;
 		}
+		logger.info( "templog:addDr_Node at" + " 30" );
 		DcaeLocationService locService = new DcaeLocationService();
 		if ( locService.isEdgeLocation( node.getDcaeLocationName()) && ! drProv.containsStaticNode( node.getFqdn(), apiError ) ) {
 			if ( apiError.is2xx() ) {
 				drProv.addStaticNode( node.getFqdn(), apiError );
 			}
 		}
+		logger.info( "templog:addDr_Node at" + " 40" );
 		if ( ! apiError.is2xx()) {
 			return null;
 		}
 		
+		logger.info( "templog:addDr_Node at" + " 50" );
 		node.setLastMod();
 		node.setStatus(DmaapObject_Status.VALID);
 		dr_nodes.put( node.getFqdn(), node );
+		logger.info( "templog:addDr_Node at" + " 60" );
 		apiError.setCode(200);
 		return node;
 	}

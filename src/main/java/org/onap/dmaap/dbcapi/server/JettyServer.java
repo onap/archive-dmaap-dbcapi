@@ -54,10 +54,16 @@ import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
  *  - static html pages (for documentation).
  */
 public class JettyServer extends BaseLoggingClass {
+	private Server server;
+
+
+	public Server getServer() {
+		return server;
+	}
 
     public JettyServer( Properties params ) throws Exception {
 
-        Server server = new Server();
+        server = new Server();
     	int httpPort = Integer.valueOf(params.getProperty("IntHttpPort", "80" ));
        	int sslPort = Integer.valueOf(params.getProperty("IntHttpsPort", "443" ));
        	boolean allowHttp = Boolean.valueOf(params.getProperty("HttpAllowed", "false"));
@@ -136,9 +142,13 @@ public class JettyServer extends BaseLoggingClass {
         try {
 
             serverLogger.info("Starting jetty server");
-        	server.start();
-        	server.dumpStdErr();
-            server.join();
+        	String unit_test = params.getProperty("UnitTest", "No");
+            serverLogger.info("UnitTest=" + unit_test);
+			if ( unit_test.equals( "No" ) ) {
+        		server.start();
+        		server.dumpStdErr();
+            	server.join();
+			}
         } catch ( Exception e ) {
         	errorLogger.error( "Exception " + e );
         	errorLogger.error( "possibly unable to use keystore " + keystore + " with passwords " + keystorePwd +  " and " + keyPwd );

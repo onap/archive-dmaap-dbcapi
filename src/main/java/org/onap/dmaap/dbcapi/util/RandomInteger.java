@@ -40,7 +40,7 @@ public final class RandomInteger {
 		return randomGenerator.nextInt(range);
 	}
   
-  /** Generate 10 random integers in the range 0..99. */
+/** Generate 10 random integers in the range 0..99. 
   public static final void main(String... aArgs){
     log("Generating 10 random integers in range 0..99.");
     RandomInteger ri = new RandomInteger(100);
@@ -57,5 +57,6 @@ public final class RandomInteger {
   private static void log(String aMessage){
     System.out.println(aMessage);
   }
+*/
 }
  
