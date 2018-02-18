@@ -109,26 +109,42 @@ public class MR_ClusterService extends BaseLoggingClass {
 	}
 		
 	public MR_Cluster updateMr_Cluster( MR_Cluster cluster, ApiError apiError ) {
+logger.info( "updateMr_Cluster:templogger: 10" );
 		MR_Cluster mrc = mr_clusters.get( cluster.getDcaeLocationName() );
+logger.info( "updateMr_Cluster:templogger: 20" );
 		if ( mrc == null ) {
 			apiError.setCode(Status.NOT_FOUND.getStatusCode());
 			apiError.setFields( "dcaeLocationName");
 			apiError.setMessage( "Cluster with dcaeLocationName " + cluster.getDcaeLocationName() + " not found");
 			return null;
 		}
+logger.info( "updateMr_Cluster:templogger: 30" );
 		cluster.setLastMod();
+logger.info( "updateMr_Cluster:templogger: 40" );
 		mr_clusters.put( cluster.getDcaeLocationName(), cluster );
+logger.info( "updateMr_Cluster:templogger: 50" );
 		DcaeLocationService svc = new DcaeLocationService();
+logger.info( "updateMr_Cluster:templogger: 60" );
 		DcaeLocation loc = svc.getDcaeLocation( cluster.getDcaeLocationName() );
-		if ( loc.isCentral() ) {
+		if ( loc == null ) {
+			logger.error( "DcaeLocation not found for cluster in " + cluster.getDcaeLocationName() );
+			cluster.setLastMod();
+			cluster.setStatus(DmaapObject_Status.INVALID);
+			mr_clusters.put( cluster.getDcaeLocationName(), cluster );
+logger.info( "updateMr_Cluster:templogger: 70" );
+		} else if ( loc.isCentral() ) {
+logger.info( "updateMr_Cluster:templogger: 80" );
 			ApiError resp = TopicService.setBridgeClientPerms( cluster );
+logger.info( "updateMr_Cluster:templogger: 90" );
 			if ( ! resp.is2xx() ) {
+logger.info( "updateMr_Cluster:templogger: 95" );
 				logger.error( "Unable to provision Bridge to " + cluster.getDcaeLocationName() );
 				cluster.setLastMod();
 				cluster.setStatus(DmaapObject_Status.INVALID);
 				mr_clusters.put( cluster.getDcaeLocationName(), cluster );
 			}
 		}
+logger.info( "updateMr_Cluster:templogger: 100" );
 		apiError.setCode(200);
 		return cluster;
 	}
