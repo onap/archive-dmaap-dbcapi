@@ -17,26 +17,35 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
-
+package org.onap.dmaap.dbcapi.aaf.client;
+import org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.service.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import java.util.List;
 import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-
-public class MirrorMakerTest {
+public class MrTopicConnectionTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
+	MrTopicConnection ns;
+	MR_ClusterService mcs;
+	TopicService ts;
 
 	@Before
 	public void setUp() throws Exception {
+		ns = new MrTopicConnection( "aUser", "aPwd" );
+		ts = new TopicService();
+		mcs = new MR_ClusterService();
 	}
 
 	@After
@@ -48,55 +57,42 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
+
 	@Test
 	public void test2() {
-
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
+
 	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		String locname = "central-demo";
 
-		MirrorMaker.genKey( c1, c2 );
+		DcaeLocationService dls = new DcaeLocationService();
+		DcaeLocation loc = new DcaeLocation( "CLLI1234", "central-onap", locname, "aZone", "10.10.10.0/24" );
+		dls.addDcaeLocation( loc );
 
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
-	}
+		ApiError err = new ApiError();
+		String[] hl = { "host1", "host2", "host3" };
+		MR_Cluster cluster = new MR_Cluster( locname, "localhost", "", hl );
+		mcs.addMr_Cluster( cluster, err );
+		ns.makeTopicConnection( cluster, "org.onap.dmaap.anInterestingTopic", "" );
+		String msg = "{ 'key': '1234', 'val': 'hello world' }";
+		ApiError e2 = ns.doPostMessage( msg );
 
-
-	@Test
-	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
-
-		int i = t.getTopicCount();
-
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
+		try {
+			InputStream is = new FileInputStream( "./etc/dmaapbc.properties" );				
+			String body = ns.bodyToString( is );
+		} catch ( FileNotFoundException fnfe ) {
+		}
 
 	}
+
+
 
 }
+

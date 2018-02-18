@@ -120,7 +120,12 @@ public class MR_ClusterService extends BaseLoggingClass {
 		mr_clusters.put( cluster.getDcaeLocationName(), cluster );
 		DcaeLocationService svc = new DcaeLocationService();
 		DcaeLocation loc = svc.getDcaeLocation( cluster.getDcaeLocationName() );
-		if ( loc.isCentral() ) {
+		if ( loc == null ) {
+			logger.error( "DcaeLocation not found for cluster in " + cluster.getDcaeLocationName() );
+			cluster.setLastMod();
+			cluster.setStatus(DmaapObject_Status.INVALID);
+			mr_clusters.put( cluster.getDcaeLocationName(), cluster );
+		} else if ( loc.isCentral() ) {
 			ApiError resp = TopicService.setBridgeClientPerms( cluster );
 			if ( ! resp.is2xx() ) {
 				logger.error( "Unable to provision Bridge to " + cluster.getDcaeLocationName() );
