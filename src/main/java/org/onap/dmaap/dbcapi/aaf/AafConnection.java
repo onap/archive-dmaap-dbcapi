@@ -32,6 +32,7 @@ import java.io.OutputStream;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.net.ConnectException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
@@ -40,6 +41,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.service.DmaapService;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 
 public class AafConnection extends BaseLoggingClass {
@@ -49,6 +51,7 @@ public class AafConnection extends BaseLoggingClass {
    
 
 	private String aafCred;
+	private String unit_test;
 
 	
 	private HttpsURLConnection uc;
@@ -56,6 +59,9 @@ public class AafConnection extends BaseLoggingClass {
 
 	public AafConnection( String cred ) {
 		aafCred = cred;
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+        unit_test = p.getProperty( "UnitTest", "No" );
+
 	}
 	
 
@@ -144,7 +150,15 @@ public class AafConnection extends BaseLoggingClass {
 				errorLogger.error(DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION,  pURL, uhe.getMessage() );
             	rc = 500;
             	return rc;
-            } 
+            } catch ( ConnectException ce ) {
+				if ( unit_test.equals( "Yes" ) ) {
+					rc = 201;
+					return rc;
+				}
+				errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION,  pURL, ce.getMessage() );
+            	rc = 500;
+            	return rc;
+			} 
 			try {
 				rc = uc.getResponseCode();
 			} catch ( SSLHandshakeException she ) {

@@ -20,6 +20,8 @@
 
 package org.onap.dmaap.dbcapi.service;
 
+import org.onap.dmaap.dbcapi.util.RandomInteger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,11 +46,13 @@ public class FeedService  extends BaseLoggingClass {
 	private DR_SubService subService = new DR_SubService();
 	private DcaeLocationService dcaeLocations = new DcaeLocationService();
 	private String deleteHandling;
+	private String unit_test;
 	
 	public FeedService() {
 		logger.info( "new FeedService");
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		deleteHandling = p.getProperty("Feed.deleteHandling", "DeleteOnDR");
+		unit_test = p.getProperty( "UnitTest", "No" );
 
 	}
 	
@@ -230,6 +234,10 @@ public class FeedService  extends BaseLoggingClass {
 		DrProvConnection prov = new DrProvConnection();
 		prov.makeFeedConnection();	
 		String resp = prov.doPostFeed( req, err );
+		if ( unit_test.equals( "Yes" ) ) {
+			// assume resp is null, so need to simulate it
+			resp = simulateResp( req, "POST" );
+		}
 		logger.info( "resp=" + resp );
 		if ( resp == null ) {
 			switch( err.getCode() ) {
@@ -288,6 +296,10 @@ public class FeedService  extends BaseLoggingClass {
 		DrProvConnection prov = new DrProvConnection();
 		prov.makeFeedConnection( req.getFeedId() );
 		String resp = prov.doPutFeed( req, err );
+		if ( unit_test.equals( "Yes" ) ) {
+			// assume resp is null, so need to simulate it
+			resp = simulateResp( req, "PUT" );
+		}
 		logger.info( "resp=" + resp );
 		if ( resp == null ) {
 			switch( err.getCode() ) {
@@ -357,6 +369,10 @@ public class FeedService  extends BaseLoggingClass {
 			DrProvConnection prov = new DrProvConnection();
 			prov.makeFeedConnection( req.getFeedId() );
 			String resp = prov.doDeleteFeed( req, err );
+			if ( unit_test.equals( "Yes" ) ) {
+				// assume resp is null, so need to simulate it
+				resp = simulateDelResp( req );
+			}
 			logger.info( "resp=" + resp );
 			if ( resp == null ) {
 				switch( err.getCode() ) {
@@ -388,4 +404,42 @@ public class FeedService  extends BaseLoggingClass {
 		
 	}	
 
+	private String simulateResp( Feed f, String action ){
+		String server = "drps.onap.org";
+		String feedid;
+		if ( action.equals( "POST" ) ) { 
+			RandomInteger ran = new RandomInteger(10000);
+			feedid = Integer.toString( ran.next() );
+		} else if ( action.equals( "PUT" ) ) {
+			feedid = f.getFeedId();
+		} else {
+			feedid = "99";
+		}
+		String ret = String.format( 
+"{\"suspend\":false,\"groupid\":0,\"description\":\"%s\",\"version\":\"1.0\",\"authorization\":{\"endpoint_addrs\":[],\"classification\":\"unclassified\",\"endpoint_ids\":[{\"password\":\"topSecret123\",\"id\":\"sim\"}]},\"name\":\"%s\",\"business_description\":\"\",\"publisher\":\"sim\",\"links\":{\"subscribe\":\"https://%s/subscribe/%s\",\"log\":\"https://%s/feedlog/%s\",\"publish\":\"https://%s/publish/%s\",\"self\":\"https://%s/feed/%s\"}}",
+		f.getFeedDescription(),
+		f.getFeedName(),
+		server, feedid,
+		server, feedid,
+		server, feedid,
+		server, feedid
+
+		);
+		return ret;
+	}
+	private String simulateDelResp( Feed f ){
+		String server = "drps.onap.org";
+		String feedid = f.getFeedId();
+		String ret = String.format( 
+"{\"suspend\":true,\"groupid\":0,\"description\":\"%s\",\"version\":\"1.0\",\"authorization\":{\"endpoint_addrs\":[],\"classification\":\"unclassified\",\"endpoint_ids\":[{\"password\":\"topSecret123\",\"id\":\"sim\"}]},\"name\":\"%s\",\"business_description\":\"\",\"publisher\":\"sim\",\"links\":{\"subscribe\":\"https://%s/subscribe/%s\",\"log\":\"https://%s/feedlog/%s\",\"publish\":\"https://%s/publish/%s\",\"self\":\"https://%s/feed/%s\"}}",
+		f.getFeedDescription(),
+		f.getFeedName(),
+		server, feedid,
+		server, feedid,
+		server, feedid,
+		server, feedid
+
+		);
+		return ret;
+	}
 }
