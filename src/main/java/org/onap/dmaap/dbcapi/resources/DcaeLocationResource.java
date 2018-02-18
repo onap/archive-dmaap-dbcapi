@@ -88,9 +88,12 @@ public class DcaeLocationResource extends BaseLoggingClass {
 	public Response addDcaeLocation( 
 			DcaeLocation location 
 			) {
+logger.info( "templogger:addDcaeLocation: 10" );
 		ApiService check = new ApiService();
 
+logger.info( "templogger:addDcaeLocation: 20" );
 		if ( locationService.getDcaeLocation(location.getDcaeLocationName()) != null ) {
+logger.info( "templogger:addDcaeLocation: 30" );
 				
 			check.setCode(Status.CONFLICT.getStatusCode());
 			check.setMessage("dcaeLocation already exists");
@@ -99,6 +102,7 @@ public class DcaeLocationResource extends BaseLoggingClass {
 			return check.error();
 
 		}
+logger.info( "templogger:addDcaeLocation: 40" );
 		DcaeLocation loc = locationService.addDcaeLocation(location);
 		return check.success(Status.CREATED.getStatusCode(), loc);
 	}

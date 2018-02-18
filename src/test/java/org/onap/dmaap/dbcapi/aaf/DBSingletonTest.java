@@ -1,3 +1,4 @@
+
 /*-
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
@@ -17,18 +18,17 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
-
+package org.onap.dmaap.dbcapi.aaf.database;
+import org.onap.dmaap.dbcapi.model.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.*;
+import java.sql.*;
 
-import java.util.ArrayList;
-
-
-public class MirrorMakerTest {
+public class DBSingletonTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
@@ -44,59 +44,25 @@ public class MirrorMakerTest {
 	}
 
 
-	@Test
-	public void test1() {
-
-
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
-	
-	}
-	@Test
-	public void test2() {
-
-		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
-	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
 
-		MirrorMaker.genKey( c1, c2 );
-
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
-	}
-
-
-	@Test
-	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
-
-		int i = t.getTopicCount();
-
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
+		try {
+			DBSingleton<Dmaap> dmaap = new DBSingleton<Dmaap>(Dmaap.class, "dmaap");
+			Dmaap d = new Dmaap();
+			dmaap.init( d );
+			d = dmaap.get();
+			d.setDmaapName( "foo" );
+			dmaap.update( d );
+			dmaap.remove();
+		} catch (Exception e ) {
+		}
 
 	}
+
+
+
 
 }
+

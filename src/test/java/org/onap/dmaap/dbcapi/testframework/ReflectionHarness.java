@@ -52,10 +52,10 @@ public class ReflectionHarness {
 	}
 
 	private void testGetter( Class<?> c, Method m, Class<?>[] pType, String val ) {
-		//out.format( fmt, "testGetter: Method Name", m.getName() );
+		out.format( fmt, "testGetter: Method Name", m.getName() );
 		Class retType = m.getReturnType();
-		//out.format( fmt, "testGetter: Return Type ", retType );
-		//out.format( fmt, "testGetter: val ", (val != null)?val:"null" );
+		out.format( fmt, "testGetter: Return Type ", retType );
+		out.format( fmt, "testGetter: val ", (val != null)?val:"null" );
 		assertTrue( pType.length == 0 );
 
 		try {
@@ -67,10 +67,10 @@ public class ReflectionHarness {
 					
 					if( retType.equals( Class.forName( "java.lang.String" ) ) ) {
 						if ( val == null ) {
-							//out.format( fmt, "testGetter: expected null, got  ", (o != null)?o:"null" );
+							out.format( fmt, "testGetter: expected null, got  ", (o != null)?o:"null" );
 							assert( o == null );
 						} else {
-							//out.format( fmt, "testGetter: expected val, got  ", (o != null)?o:"null" );
+							out.format( fmt, "testGetter: expected val, got  ", (o != null)?o:"null" );
 							assert( o.equals( val ) );
 						}
 					} else {
