@@ -17,26 +17,28 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
+package org.onap.dmaap.dbcapi.service;
+import  org.onap.dmaap.dbcapi.model.*;
+import  org.onap.dmaap.dbcapi.aaf.*;
 
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.List;
 
-import java.util.ArrayList;
-
-
-public class MirrorMakerTest {
+public class DmaapServiceTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
+	DmaapService ds;
 
 	@Before
 	public void setUp() throws Exception {
+		ds = new DmaapService();
 	}
 
 	@After
@@ -48,54 +50,43 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		//rh.reflect( "org.onap.dmaap.dbcapi.service.DmaapService", "get", null );	
 	
 	}
+
 	@Test
 	public void test2() {
-
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.service.DmaapService", "set", v );
+
 	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		MirrorMaker.genKey( c1, c2 );
-
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
+		Dmaap nd = new Dmaap( "1", "org.onap.dmaap", "onap-demo", "drps.demo.onap.org", "", "MMAGENT_TOPIC", "", "" );
+		ds.addDmaap( nd );
 	}
-
 
 	@Test
 	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		Dmaap d = ds.getDmaap();
 
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
+	}
 
-		int i = t.getTopicCount();
+	@Test
+	public void test5() {
+		Dmaap nd = new Dmaap( "2", "org.onap.dmaap", "onap-demo", "drps.demo.onap.org", "", "MMAGENT_TOPIC", "", "" );
+		ds.updateDmaap( nd );
 
-		String s = t.toJSON();
+	}
 
-		s = t.updateWhiteList();
+	@Test
+	public void test6() {
+		String t = ds.getTopicPerm();
+		String t2 = ds.getTopicPerm( "val2" );
+		String t3 = ds.getBridgeAdminFqtn();
 
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
+		boolean b = ds.testCreateMmaTopic();
 
 	}
 

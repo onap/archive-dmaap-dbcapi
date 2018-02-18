@@ -25,6 +25,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 
 public class FeedTest {
 
@@ -60,6 +62,10 @@ public class FeedTest {
 	public void test2() {
 		Feed t = new Feed( n, v, d, o, a );
 
+		ArrayList<DR_Sub> subs = new ArrayList<DR_Sub>();
+		DR_Sub sub = new DR_Sub( "central", "user", "pwd", "22", "server.onap.org/deliv", "log.onap.org/logs", true );
+		subs.add( sub );
+		t.setSubs( subs );
 
 		assertTrue( n.equals( t.getFeedName() ));
 		assertTrue( v.equals( t.getFeedVersion() ));
@@ -74,6 +80,35 @@ public class FeedTest {
 
 		String v = "Validate";
 		rh.reflect( "org.onap.dmaap.dbcapi.model.Feed", "set", v );
+	}
+
+	@Test
+	public void test4() {
+		String s = String.format( "{ \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": false, \"%s\": { \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": \"%s\" }, \"%s\": { \"%s\": \"%s\", \"%s\": [ { \"%s\": \"%s\", \"%s\": \"%s\" } ] } }",
+				"name", n,
+				"version", v,
+				"description", d,
+				"publisher", a,
+				"suspend", 
+				"links",
+					"publish", "https://feed.onap.org/publish/22",
+					"subscribe" , Feed.getSubProvURL( "22" ),
+					"log" , "https://feed.onap.org/log/22",
+				"authorization",
+					"classification", a,
+					"endpoint_ids" , "id", "king", "password", "henry" );
+
+
+		Feed t = new Feed( s );
+
+		assertTrue( n.equals( t.getFeedName() ));
+		assertTrue( v.equals( t.getFeedVersion() ));
+		assertTrue( d.equals( t.getFeedDescription() ));
+		assertTrue( a.equals( t.getAsprClassification() ) );
+		assertTrue( ! t.isSuspended() );
+
+		String o = t.toString();
+
 	}
 
 }

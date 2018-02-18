@@ -17,26 +17,30 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
+package org.onap.dmaap.dbcapi.service;
+import  org.onap.dmaap.dbcapi.model.*;
 
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import java.util.List;
 import java.util.ArrayList;
 
-
-public class MirrorMakerTest {
+public class Dr_PubServiceTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
+	DR_PubService ns;
+	FeedService fs;
 
 	@Before
 	public void setUp() throws Exception {
+		ns = new DR_PubService();
+		fs = new FeedService();
 	}
 
 	@After
@@ -48,55 +52,57 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.service.DR_PubService", "get", null );	
 	
 	}
+
 	@Test
 	public void test2() {
-
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.service.DR_PubService", "set", v );
+
 	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		String locname = "central-demo";
 
-		MirrorMaker.genKey( c1, c2 );
+		DcaeLocationService dls = new DcaeLocationService();
+		DcaeLocation loc = new DcaeLocation( "CLLI1234", "central-onap", locname, "aZone", "10.10.10.0/24" );
+		dls.addDcaeLocation( loc );
 
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
+		ApiError err = new ApiError();
+		Feed f = new Feed( "aTest", "1.0", "a unit test", "dgl", "unrestricted" );
+		f = fs.addFeed( f, 	err );
+/*
+TODO: make this not be null...
+		assertTrue( f != null );
+		DR_Pub node = new DR_Pub( locname, "aUser", "aPwd", f.getFeedId(), "pubId01" );
+		DR_Pub n2 = ns.addDr_Pub( node );	
+		DR_Pub node2 = new DR_Pub( locname, "aUser", "aPwd", f.getFeedId() );
+		n2 = ns.addDr_Pub( node2 );	
+
+		if ( n2 != null ) {
+			n2 = ns.getDr_Pub( n2.getPubId(),  err );
+		}
+
+		List<DR_Pub> l = ns.getAllDr_Pubs();
+		if ( n2 != null ) {
+			n2 = ns.updateDr_Pub( n2 );
+		}
+
+		n2 = ns.removeDr_Pub( n2.getPubId(),  err );
+*/
+				
+
 	}
-
 
 	@Test
 	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		ArrayList<DR_Pub> l = ns.getDr_PubsByFeedId( "1" );
 
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
-
-		int i = t.getTopicCount();
-
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
 
 	}
+
 
 }

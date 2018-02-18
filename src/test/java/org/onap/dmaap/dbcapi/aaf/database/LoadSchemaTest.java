@@ -17,22 +17,23 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
-
+package org.onap.dmaap.dbcapi.aaf.database;
+import org.onap.dmaap.dbcapi.model.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.*;
+import java.sql.*;
 
-import java.util.ArrayList;
-
-
-public class MirrorMakerTest {
+public class LoadSchemaTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
+
+	LoadSchema ls;
 
 
 	@Before
@@ -48,55 +49,23 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.database.LoadSchema", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
+
 	@Test
 	public void test2() {
-
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.database.LoadSchema", "set", v );
+
 	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		MirrorMaker.genKey( c1, c2 );
-
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
+		ls = new LoadSchema();
 	}
 
 
-	@Test
-	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
-
-		int i = t.getTopicCount();
-
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
-
-	}
 
 }
+
