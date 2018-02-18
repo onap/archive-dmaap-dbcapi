@@ -37,7 +37,7 @@ public class DRSubTest {
 		d = "central-onap";
 		un = "user1";
 		up = "secretW0rd";
-		f = "234";
+		f = "22";
 		s = "sub123";
 		du = "sub.server.onap.org:8443/deliver/here";
 		lu = "https://drps.onap.org:8443/sublog/123";
@@ -104,5 +104,35 @@ public class DRSubTest {
 		t.setLogURL( lu );
 		assertTrue( lu.equals( t.getLogURL() ) );
 	
+	}
+
+	@Test
+	public void test3() {
+		String json = String.format( "{ \"%s\": \"%s\", \"%s\": false, \"%s\": { \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": \"%s\"  },  \"%s\": { \"%s\": \"%s\",  \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": true }  }",
+				"subscriber", "owner",
+				"suspend", 
+				"links",
+					"feed", "https://feed.onap.org/publish/22",
+					"self", "https://feed.onap.org/subscriber/44",
+					"log" , lu,
+					"delivery" , 
+					"url", du,
+					"user", un,
+					"password", up,
+					"use100"
+				);
+
+
+		DR_Sub t = new DR_Sub( json );
+
+		assertTrue( un.equals( t.getUsername() ));
+		assertTrue( up.equals( t.getUserpwd() ));
+		assertTrue( f.equals( t.getFeedId() ));
+		assertTrue( du.equals( t.getDeliveryURL() ) );
+		assertTrue( lu.equals( t.getLogURL() ) );
+		assertTrue( ! t.isSuspended() );
+
+		String o = t.toString();
+
 	}
 }
