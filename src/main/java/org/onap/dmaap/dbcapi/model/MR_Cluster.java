@@ -24,6 +24,8 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.onap.dmaap.dbcapi.util.DmaapTimestamp;
+
 
 
 @XmlRootElement
@@ -32,7 +34,7 @@ public class MR_Cluster extends DmaapObject {
 	private String dcaeLocationName;
 	private String fqdn;
 	private String[] hosts;
-	//private	DmaapTimestamp lastMod;
+	private	DmaapTimestamp lastMod;
 	private	String	topicProtocol;
 	private String	topicPort;
 
@@ -47,7 +49,9 @@ public class MR_Cluster extends DmaapObject {
 	public MR_Cluster() {
 		this.topicProtocol = defaultTopicProtocol;
 		this.topicPort = defaultTopicPort;
-		this.lastMod = new Date();
+		this.hosts = new String[3];
+		this.lastMod = new DmaapTimestamp();
+		this.lastMod.mark();
 
 		debugLogger.debug( "MR_Cluster constructor " + this.lastMod );
 		
@@ -59,13 +63,22 @@ public class MR_Cluster extends DmaapObject {
 						String[] h ) {
 		this.dcaeLocationName = dLN;
 		this.fqdn = f;
+logger.info( "templog:MR_Cluster at 10" );
+		this.hosts = new String[3];
 		this.hosts[0] = h[0];
+logger.info( "templog:MR_Cluster at 20" );
 		this.hosts[1] = h[1];
+logger.info( "templog:MR_Cluster at 30" );
 		this.hosts[2] = h[2];
+logger.info( "templog:MR_Cluster at 40" );
 		this.topicProtocol = defaultTopicProtocol;
+logger.info( "templog:MR_Cluster at 50" );
 		this.topicPort = defaultTopicPort;
+		this.lastMod = new DmaapTimestamp();
+		this.lastMod.mark();
 
-		debugLogger.debug( "MR_Cluster constructor w initialization complete" + this.lastMod );
+		debugLogger.debug( "MR_Cluster constructor w initialization complete" + this.lastMod.getVal() );
+logger.info( "templog:MR_Cluster at 60" );
 	}
 
 	public String getDcaeLocationName() {

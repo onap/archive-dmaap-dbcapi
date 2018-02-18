@@ -96,7 +96,7 @@ public class Feed extends DmaapObject {
 		public Feed ( String json ) {
 			JSONParser parser = new JSONParser();
 			JSONObject jsonObj;
-			
+		logger.info( "templog:Feed at 10" );	
 			try {
 				jsonObj = (JSONObject) parser.parse( json );
 			} catch ( ParseException pe ) {
@@ -104,30 +104,50 @@ public class Feed extends DmaapObject {
 	            this.setStatus( DmaapObject_Status.INVALID );
 	            return;
 	        }
+		logger.info( "templog:Feed at 11" );	
 			this.setFeedName( (String) jsonObj.get("name"));
 
+		logger.info( "templog:Feed at 12" );	
 
 			this.setFeedVersion( (String) jsonObj.get("version"));
+		logger.info( "templog:Feed at 13" );	
 			this.setFeedDescription( (String) jsonObj.get("description"));
+		logger.info( "templog:Feed at 14" );	
 			this.setOwner( (String) jsonObj.get("publisher"));
+		logger.info( "templog:Feed at 15" );	
 
 			this.setSuspended( (boolean) jsonObj.get("suspend"));
+		logger.info( "templog:Feed at 16" );	
 			JSONObject links = (JSONObject) jsonObj.get("links");
+		logger.info( "templog:Feed at 17" );	
 			String url = (String) links.get("publish");
+		logger.info( "templog:Feed at 18" );	
 			this.setPublishURL( url );
+		logger.info( "templog:Feed at 19" );	
 			this.setFeedId( url.substring( url.lastIndexOf('/')+1, url.length() ));
+		logger.info( "templog:Feed at 20" );	
 			logger.info( "feedid="+ this.getFeedId() );
+		logger.info( "templog:Feed at 21" );	
 			this.setSubscribeURL( (String) links.get("subscribe") );					
+		logger.info( "templog:Feed at 22" );	
 			this.setLogURL( (String) links.get("log") );
+		logger.info( "templog:Feed at 23" );	
 			JSONObject auth = (JSONObject) jsonObj.get("authorization");
+		logger.info( "templog:Feed at 24" );	
 			this.setAsprClassification( (String) auth.get("classification"));
+		logger.info( "templog:Feed at 25" );	
 			JSONArray pubs = (JSONArray) auth.get( "endpoint_ids");
+		logger.info( "templog:Feed at 26" );	
 			int i;
+		logger.info( "templog:Feed at 27" );	
 			ArrayList<DR_Pub> dr_pub = new ArrayList<DR_Pub>();
+		logger.info( "templog:Feed at 28" );	
 			this.subs = new ArrayList<DR_Sub>();
 
 			for( i = 0; i < pubs.size(); i++ ) {
+		logger.info( "templog:Feed at 29 " + i  );	
 				JSONObject entry = (JSONObject) pubs.get(i);
+		logger.info( "templog:Feed at 30" );	
 				dr_pub.add(  new DR_Pub( "someLocation", 
 									(String) entry.get("id"),
 									(String) entry.get("password"),
@@ -135,9 +155,12 @@ public class Feed extends DmaapObject {
 									this.getFeedId() + "." +  DR_Pub.nextKey() ));
 			
 			}
+		logger.info( "templog:Feed at 31" );	
 			this.setPubs( dr_pub );
 	
+		logger.info( "templog:Feed at 32" );	
 			this.setStatus( DmaapObject_Status.VALID );
+		logger.info( "templog:Feed at 33" );	
 
 		}
 

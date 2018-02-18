@@ -123,7 +123,7 @@ public class DrProvConnection extends BaseLoggingClass {
 
 	}
 	
-	private String bodyToString( InputStream is ) {
+	public String bodyToString( InputStream is ) {
 		logger.info( "is=" + is );
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br = new BufferedReader( new InputStreamReader(is));
@@ -531,8 +531,10 @@ public class DrProvConnection extends BaseLoggingClass {
 		//logger.info( "get fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
+		logger.info( "templog:doGetNodes at 12.10.14.10"  );
 
 		try {
+		logger.info( "templog:doGetNodes at 12.10.14.11"  );
 	
 			uc.setRequestMethod("GET");
 		
@@ -545,12 +547,15 @@ public class DrProvConnection extends BaseLoggingClass {
 			OutputStream os = null;
 			int rc = -1;
 			
+		logger.info( "templog:doGetNodes at 12.10.14.12"  );
 			try {
                  uc.connect();
+		logger.info( "templog:doGetNodes at 12.10.14.13"  );
                  //os = uc.getOutputStream();
                  //os.write( postData );
 
             } catch (ProtocolException pe) {
+		logger.info( "templog:doGetNodes at 12.10.14.14"  );
                  // Rcvd error instead of 100-Continue
                  try {
                      // work around glitch in Java 1.7.0.21 and likely others
@@ -559,13 +564,16 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                  }
             } 
+		logger.info( "templog:doGetNodes at 12.10.14.15"  );
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
             logger.info( "responsemessage=" + responsemessage );
+		logger.info( "templog:doGetNodes at 12.10.14.16"  );
 
 
             if (responsemessage == null) {
+		logger.info( "templog:doGetNodes at 12.10.14.17"  );
                  // work around for glitch in Java 1.7.0.21 and likely others
                  // When Expect: 100 is set and a non-100 response is received, the response message is not set but the response code is
                  String h0 = uc.getHeaderField(0);
@@ -577,6 +585,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      }
                  }
             }
+		logger.info( "templog:doGetNodes at 12.10.14.18"  );
         	err.setCode(rc);  // may not really be an error, but we save rc
             if (rc == 200 ) {
      			responseBody = bodyToString( uc.getInputStream() );
@@ -585,16 +594,21 @@ public class DrProvConnection extends BaseLoggingClass {
             	err.setMessage(responsemessage);
             }
             
+		logger.info( "templog:doGetNodes at 12.10.14.19"  );
 		} catch (ConnectException ce) {
+		logger.info( "templog:doGetNodes at 12.10.14.20"  );
             errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
             err.setCode( 500 );
         	err.setMessage("Backend connection refused");
 		} catch (Exception e) {
+		logger.info( "templog:doGetNodes at 12.10.14.21"  );
             System.err.println("Unable to read response  " );
             e.printStackTrace();
         } finally {
-        	uc.disconnect();
+		logger.info( "templog:doGetNodes at 12.10.14.22"  );
+			if ( uc != null ) uc.disconnect();
         }
+		logger.info( "templog:doGetNodes at 12.10.14.23"  );
 		return responseBody;
 
 	}
