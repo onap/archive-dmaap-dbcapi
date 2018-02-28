@@ -204,6 +204,16 @@ public class DmaapService  extends BaseLoggingClass  {
 		}
 		return false;
 	}
+
+	public boolean testCreateMmaTopic() {
+
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		String unit_test = p.getProperty( "UnitTest", "No" );
+		if ( unit_test.equals( "Yes" ) ) {
+			return createMmaTopic();
+		}
+		return false;
+	}
 	
 	// create the special topic for MMA provisioning.
 	// return true indicating a problem in topic creation, 

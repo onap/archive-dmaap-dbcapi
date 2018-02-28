@@ -76,6 +76,7 @@
 									services on behalf of DMaaP clients, and to assist in any
 									management or discovery activity of its clients.
 
+<<<<<<< 0afd0dd2f1fa4435fa730a287e68fec4f271e617
 									A convention of this API is to return JSON responses per
 									OpenStack style.
 								</description>
@@ -286,4 +287,202 @@
 		<sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**</sonar.exclusions>
 	</properties>
 	<description>Data Movement as a Platform (DMaaP) Bus Controller provides a REST API for other DCAE infrastructure components to provision DMaaP resources.  A DMaaP resource is a Data Router Feed or a Message Router Topic, and their associated publishers and subscribers.</description>
+=======
+A convention of this API is to return JSON responses per OpenStack style.
+                    </description>
+                    <termsOfService>
+                        http://www.apache.org/licenses/LICENSE-2.0
+                    </termsOfService>
+                    <contact>
+                        <url>http://www.onap.org</url>
+                    </contact>
+                    <license>
+                        <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+                        <name>Licensed under the Apache License, Version 2.0</name>
+                    </license>
+                </info>
+                <swaggerDirectory>target/generated-sources/</swaggerDirectory>
+            </apiSource>
+        </apiSources>
+    </configuration>
+    <executions>
+        <execution>
+            <phase>compile</phase>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+        </execution>
+    </executions>
+  </plugin>
+ 
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <versionRange>[2.10,)</versionRange>
+                    <goals>
+                      <goal>copy-dependencies</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <dependencyManagement>
+    <dependencies>
+ 
+      <dependency>
+        <groupId>org.glassfish.jersey</groupId>
+        <artifactId>jersey-bom</artifactId>
+        <version>${jersey.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+        <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-core</artifactId>
+        <version>1.5.13</version>
+      </dependency>
+      <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-jersey2-jaxrs</artifactId>
+        <version>1.5.13</version>
+      </dependency>
+       <dependency>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-annotations</artifactId>
+        <version>1.5.13</version>
+      </dependency>   
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet-core</artifactId>
+      <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
+      <!-- artifactId>jersey-container-servlet</artifactId -->
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-moxy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-server</artifactId>
+      <version>${jettyVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlet</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-servlets</artifactId>
+      <version>${jettyVersion}</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.6</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>9.4.1208.jre7</version>
+    </dependency>
+    <dependency>
+	<groupId>com.att.eelf</groupId> 
+	<artifactId>eelf-core</artifactId> 
+	<version>${eelf.version}</version> 
+    </dependency>
+    <dependency>
+	<groupId>org.slf4j</groupId> 
+	<artifactId>slf4j-api</artifactId> 
+	<version>1.7.22</version> 
+    </dependency>
+	<dependency>
+		<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+		<!-- use this if compatibility issues with jetty artifactId:
+		<artifactId>jersey-test-framework-provider-jetty</artifactId>
+        <version>${jersey.version}</version>
+		-->
+		<artifactId>jersey-test-framework-provider-jdk-http</artifactId>
+        <version>2.22.1</version>
+	</dependency>
+	<dependency>
+    	<groupId>org.glassfish.jersey.inject</groupId>
+    	<artifactId>jersey-hk2</artifactId>
+	</dependency>
+  </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.4</version>
+        <configuration>
+          <failOnError>false</failOnError>
+          <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+          <docletArtifact>
+            <groupId>org.umlgraph</groupId>
+            <artifactId>umlgraph</artifactId>
+            <version>5.6</version>
+          </docletArtifact>
+          <additionalparam>-views</additionalparam>
+          <useStandardDocletOptions>true</useStandardDocletOptions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  <properties>
+    <jersey.version>2.26</jersey.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jettyVersion>9.3.7.v20160115</jettyVersion> 
+    <eelf.version>0.0.1</eelf.version>
+    <artifact.version>1.0.1-SNAPSHOT</artifact.version>
+		<!--  SONAR  -->
+		 <jacoco.version>0.7.7.201606060606</jacoco.version>
+	    <sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
+	    <sonar.core.codeCoveragePlugin>jacoco</sonar.core.codeCoveragePlugin>
+	    <!-- Default Sonar configuration -->
+	    <sonar.jacoco.reportPath>target/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
+	    <sonar.jacoco.itReportPath>target/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
+	    <!-- Note: This list should match jacoco-maven-plugin's exclusion list below -->
+	    <sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**</sonar.exclusions>
+  </properties>
+  <description>Data Movement as a Platform (DMaaP) Bus Controller provides a REST API for other DCAE infrastructure components to provision DMaaP resources.  A DMaaP resource is a Data Router Feed or a Message Router Topic, and their associated publishers and subscribers.</description>
+>>>>>>> additional code coverage tests
 </project>

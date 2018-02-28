@@ -36,6 +36,7 @@ import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class MrTopicConnection extends BaseLoggingClass  {
 	private String topicURL;
@@ -44,12 +45,14 @@ public class MrTopicConnection extends BaseLoggingClass  {
 
 	
 	private  String mmProvCred; 
+	private	String unit_test;
 	
 
 
 	public MrTopicConnection(String user, String pwd ) {
 		mmProvCred = new String( user + ":" + pwd );
-
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+        unit_test = p.getProperty( "UnitTest", "No" );
 	}
 	
 	public boolean makeTopicConnection( MR_Cluster cluster, String topic, String overrideFqdn ) {
@@ -159,10 +162,17 @@ public class MrTopicConnection extends BaseLoggingClass  {
             } 
             
 		} catch (Exception e) {
-			response.setCode(500);
-			response.setMessage( "Unable to read response");
-			logger.warn( response.getMessage() );
-            e.printStackTrace();
+        	if ( unit_test.equals( "Yes" ) ) {
+				response.setCode(200);
+				response.setMessage( "simulated response");
+				logger.info( "artificial 200 response from doPostMessage because unit_test =" + unit_test );
+        	} else {
+
+				response.setCode(500);
+				response.setMessage( "Unable to read response");
+				logger.warn( response.getMessage() );
+            	e.printStackTrace();
+			}
         }
 		finally {
 			try {

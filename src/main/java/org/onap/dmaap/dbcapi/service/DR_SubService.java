@@ -32,6 +32,8 @@ import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Sub;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
+import org.onap.dmaap.dbcapi.util.RandomInteger;
 
 public class DR_SubService extends BaseLoggingClass {
 
@@ -40,14 +42,19 @@ public class DR_SubService extends BaseLoggingClass {
 	private String provURL;
 	private static DrProvConnection prov;
 	
+	private String unit_test;
+	
 	
 	public DR_SubService(  ) {
 		logger.debug( "Entry: DR_SubService (with no args)" );
-
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		unit_test = p.getProperty( "UnitTest", "No" );
 	}	
 	public DR_SubService( String subURL ) {
 		logger.debug( "Entry: DR_SubService " + subURL );
 		provURL = subURL;
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		unit_test = p.getProperty( "UnitTest", "No" );
 	}
 	public Map<String, DR_Sub> getDR_Subs() {
 		logger.debug( "enter getDR_Subs()");
@@ -87,7 +94,10 @@ public class DR_SubService extends BaseLoggingClass {
 		prov = new DrProvConnection();
 		prov.makeSubPostConnection( provURL );
 		String resp = prov.doPostDr_Sub( sub, apiError );
-		logger.debug( "resp=" + resp );
+		if ( unit_test.equals( "Yes" ) ) {
+			resp = simulateResp( sub, "POST" );
+		}
+		logger.debug( "addDr_Sub resp=" + resp );
 
 		DR_Sub snew = null;
 
@@ -170,4 +180,20 @@ public class DR_SubService extends BaseLoggingClass {
 		return;
 	}	
 
+	private String simulateResp( DR_Sub sub, String action ){
+		String server = "subscriber.onap.org";
+		String subid;
+		if ( action.equals( "POST" ) ) { 
+			RandomInteger ran = new RandomInteger(10000);
+			subid = Integer.toString( ran.next() );
+		} else if ( action.equals( "PUT" ) ) {
+			subid = sub.getSubId();
+		} else {
+			subid = "99";
+		}
+		String ret = String.format("{\"delivery\": {\"url\": \"https://%s/delivery/%s\", \"user\": \"joe\", \"password\": \"secret\", \"use100\":  true}, \"metadataOnly\": false, \"groupid\": \"0\" , \"follow_redirect\": true }", 
+			server, subid );
+
+		return ret;
+	}
 }
