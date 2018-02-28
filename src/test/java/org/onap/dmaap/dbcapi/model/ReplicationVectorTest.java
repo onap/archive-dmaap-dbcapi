@@ -28,7 +28,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 
-public class MirrorMakerTest {
+public class ReplicationVectorTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
@@ -48,14 +48,14 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.model.ReplicationVector", "get", null );	
 	
 	}
 	@Test
 	public void test2() {
 
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.model.ReplicationVector", "set", v );
 	}
 
 	@Test
@@ -63,11 +63,10 @@ public class MirrorMakerTest {
 		String f = "org.onap.interestingTopic";
 		String c1 =  "cluster1.onap.org";
 		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		ReplicationVector t = new ReplicationVector( f, c1, c2 );
 
-		MirrorMaker.genKey( c1, c2 );
 
+		assertTrue( f.equals( t.getFqtn() ));
 		assertTrue( c1.equals( t.getSourceCluster() ));
 		assertTrue( c2.equals( t.getTargetCluster() ));
 	}
@@ -78,25 +77,15 @@ public class MirrorMakerTest {
 		String f = "org.onap.interestingTopic";
 		String c1 =  "cluster1.onap.org";
 		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		ReplicationVector t = new ReplicationVector( f, c1, c2 );
 
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
+		int i = t.hashCode();
 
-		int i = t.getTopicCount();
+		ReplicationVector t2 = new ReplicationVector(f, c1, c2 );
 
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
-
+		assertTrue( t.equals( t2 ));
+		assertTrue( t.equals( t ));
+		assertTrue( ! t.equals( f ));
 	}
 
 }
