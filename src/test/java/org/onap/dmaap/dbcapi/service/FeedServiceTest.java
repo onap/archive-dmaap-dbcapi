@@ -17,26 +17,31 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
+package org.onap.dmaap.dbcapi.service;
+import  org.onap.dmaap.dbcapi.model.*;
+import  org.onap.dmaap.dbcapi.aaf.*;
+import org.onap.dmaap.dbcapi.resources.*;
+import org.onap.dmaap.dbcapi.aaf.authentication.AuthenticationErrorException;
 
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.List;
+import javax.ws.rs.core.Response;
 
-import java.util.ArrayList;
-
-
-public class MirrorMakerTest {
+public class FeedServiceTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
+	FeedService ds;
 
 	@Before
 	public void setUp() throws Exception {
+		ds = new FeedService();
 	}
 
 	@After
@@ -48,55 +53,45 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.service.FeedService", "get", null );	
 	
 	}
+
 	@Test
 	public void test2() {
-
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.service.FeedService", "set", v );
+
 	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		ApiError err = new ApiError();
 
-		MirrorMaker.genKey( c1, c2 );
+		Feed f = new Feed( "aTest", "1.0", "a unit test", "dgl", "unrestricted" );
+		f = ds.addFeed( f, 	err );
+		System.out.println( "f=" + f );
 
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
+		ds.updateFeed( f, err );
+
+		ds.removeFeed( f, err );
 	}
-
 
 	@Test
 	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
+		ApiError err = new ApiError();
+		Feed f = ds.getFeed( "aName", err );
 
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
+		f = ds.getFeedByName( "aName", "1.0", err );
 
-		int i = t.getTopicCount();
+		f = ds.getFeedPure( "aName", err );
+	}
 
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
+	@Test
+	public void test5() {
+		List<Feed> f = ds.getAllFeeds( "aName", "1.0", "startsWith" );
 
 	}
+
 
 }

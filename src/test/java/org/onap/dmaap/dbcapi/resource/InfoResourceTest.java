@@ -17,24 +17,39 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
-
+package org.onap.dmaap.dbcapi.resources;
+import org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.service.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.*;
+import java.sql.*;
 
-import java.util.ArrayList;
+import org.glassfish.jersey.test.JerseyTest;
+import org.glassfish.jersey.server.ResourceConfig;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.Path;
+import javax.ws.rs.GET;
 
 
-public class MirrorMakerTest {
+public class InfoResourceTest extends JerseyTest {
+
+	@Override
+	protected Application configure() {
+		return new ResourceConfig( InfoResource.class );
+	}
 
 	private static final String  fmt = "%24s: %s%n";
 
-	ReflectionHarness rh = new ReflectionHarness();
 
 
+/*  may conflict with test framework! 
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -42,61 +57,15 @@ public class MirrorMakerTest {
 	@After
 	public void tearDown() throws Exception {
 	}
+*/
 
-
-	@Test
-	public void test1() {
-
-
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
-	
-	}
-	@Test
-	public void test2() {
-
-		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
-	}
-
-	@Test
-	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		MirrorMaker.genKey( c1, c2 );
-
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
-	}
 
 
 	@Test
-	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
-
-		int i = t.getTopicCount();
-
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
-
+	public void GetTest() {
+		Response resp = target( "info").request().get( Response.class );
+		assertTrue( resp.getStatus() == 204 );
 	}
 
 }
+

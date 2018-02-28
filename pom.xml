@@ -247,6 +247,19 @@
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.22</version>
 		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+			<!-- use this if compatibility issues with jetty artifactId:
+			<artifactId>jersey-test-framework-provider-jetty</artifactId>
+        	<version>${jersey.version}</version>
+			-->
+			<artifactId>jersey-test-framework-provider-jdk-http</artifactId>
+        	<version>2.22.1</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.glassfish.jersey.inject</groupId>
+    		<artifactId>jersey-hk2</artifactId>
+		</dependency>
 	</dependencies>
 	<reporting>
 		<plugins>
@@ -269,9 +282,9 @@
 		</plugins>
 	</reporting>
 	<properties>
-		<jersey.version>2.16</jersey.version>
+		<jersey.version>2.26</jersey.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jettyVersion> 9.3.9.v20160517</jettyVersion>
+		<jettyVersion>9.3.7.v20160115</jettyVersion> 
 		<eelf.version>0.0.1</eelf.version>
 		<artifact.version>1.0.2-SNAPSHOT</artifact.version>
 		<!-- SONAR -->

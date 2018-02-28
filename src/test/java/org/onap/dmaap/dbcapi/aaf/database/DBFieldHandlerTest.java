@@ -1,3 +1,4 @@
+
 /*-
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
@@ -17,22 +18,39 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
-
+package org.onap.dmaap.dbcapi.aaf.database;
+import org.onap.dmaap.dbcapi.model.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.util.*;
+import java.sql.*;
 
-import java.util.ArrayList;
-
-
-public class MirrorMakerTest {
+public class DBFieldHandlerTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
+
+   private static class TopicReplicationTypeHandler implements DBFieldHandler.SqlOp {
+        public Object get(ResultSet rs, int index) throws Exception {
+            int val = rs.getInt(index);
+
+            return (ReplicationType.valueOf(val));
+        }
+        public void set(PreparedStatement ps, int index, Object val) throws Exception {
+            if (val == null) {
+                ps.setInt(index, 0);
+                return;
+            }
+            @SuppressWarnings("unchecked")
+            ReplicationType rep = (ReplicationType) val;
+            ps.setInt(index, rep.getValue());
+        }
+    }
+
 
 
 	@Before
@@ -48,55 +66,38 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
+
 	@Test
 	public void test2() {
-
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
+
 	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
 
-		MirrorMaker.genKey( c1, c2 );
+		try {
+			DBFieldHandler fh = new DBFieldHandler( String.class, "aString", 1 );
+		} catch (Exception e ) {
+		}
 
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
 	}
-
 
 	@Test
 	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
 
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
-
-		int i = t.getTopicCount();
-
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
+		try {
+			DBFieldHandler fh = new DBFieldHandler( String.class, "aString", 1, null );
+		} catch (Exception e ) {
+		}
 
 	}
 
+
+
 }
+

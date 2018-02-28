@@ -17,30 +17,42 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
-
+package org.onap.dmaap.dbcapi.server;
+import org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Properties;
 
-
-public class MirrorMakerTest {
+public class JettyServerTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
 
+		JettyServer m = null;
+
 	@Before
 	public void setUp() throws Exception {
+		Properties p = DmaapConfig.getConfig();
+		try {
+			m = new JettyServer(p);
+		} catch (Exception e ) {
+		}
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		try {
+			m.getServer().stop();
+		} catch (Exception e ) {
+		}
 	}
 
 
@@ -48,55 +60,21 @@ public class MirrorMakerTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "get", null );	
+		rh.reflect( "org.onap.dmaap.dbcapi.server.JettyServer", "get", null );	
 	
 	}
+
 	@Test
 	public void test2() {
-
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.model.MirrorMaker", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.server.JettyServer", "set", v );
+
 	}
 
 	@Test
 	public void test3() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		MirrorMaker.genKey( c1, c2 );
-
-		assertTrue( c1.equals( t.getSourceCluster() ));
-		assertTrue( c2.equals( t.getTargetCluster() ));
 	}
 
 
-	@Test
-	public void test4() {
-		String f = "org.onap.interestingTopic";
-		String c1 =  "cluster1.onap.org";
-		String c2 =  "cluster2.onap.org";
-		MirrorMaker t = new MirrorMaker( c1, c2 );
-		String m = t.getMmName();
-
-		t.addVector( f, c1, c2 );
-		ArrayList<String> topics = new ArrayList<String>();
-		topics.add( f );
-		t.setTopics( topics );
-		t.addTopic( "org.onap.topic2" );
-
-		int i = t.getTopicCount();
-
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
-
-		s = t.createMirrorMaker();
-
-		t.delVector( f, c1, c2 );
-
-	}
 
 }
