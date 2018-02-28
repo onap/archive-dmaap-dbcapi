@@ -88,6 +88,9 @@ public class DcaeLocationService {
 	
 	public boolean isEdgeLocation(String aName) {
 		DcaeLocation loc = dcaeLocations.get(aName);
+		if ( loc == null ) {
+			return false;
+		}
 		if ( ! loc.isCentral() ) {
 				return true;
 		}

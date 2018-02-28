@@ -19,6 +19,8 @@
  */
 package org.onap.dmaap.dbcapi.model;
 
+import org.onap.dmaap.dbcapi.util.RandomInteger;
+
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Constructor;
@@ -116,6 +118,19 @@ public class DmaapObjectFactory {
 			return new DR_Sub( edge_loc, un, up, feed, du, lu, u100 );
 		}
 		return new DR_Sub( central_loc, un, up, feed, du, lu, u100 );
+	}
+
+	public DR_Node genDR_Node( String l ) {
+        String version = "1.0.1";
+		RandomInteger ri = new RandomInteger( 1000 );
+		int i = ri.next();
+		String fqdn = String.format( "drns%d.onap.org", i );
+		String host = String.format( "host%d.onap.org", i );
+
+		if ( l.contains( "edge" ) ) {
+			return new DR_Node( fqdn, edge_loc, host, version );
+		}
+		return new DR_Node( fqdn, central_loc, host, version );
 	}
 				
 

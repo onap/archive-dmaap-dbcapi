@@ -405,7 +405,7 @@ public class FeedService  extends BaseLoggingClass {
 	}	
 
 	private String simulateResp( Feed f, String action ){
-		String server = "drps.onap.org";
+		String server = "localhost";
 		String feedid;
 		if ( action.equals( "POST" ) ) { 
 			RandomInteger ran = new RandomInteger(10000);
@@ -428,7 +428,7 @@ public class FeedService  extends BaseLoggingClass {
 		return ret;
 	}
 	private String simulateDelResp( Feed f ){
-		String server = "drps.onap.org";
+		String server = "localhost";
 		String feedid = f.getFeedId();
 		String ret = String.format( 
 "{\"suspend\":true,\"groupid\":0,\"description\":\"%s\",\"version\":\"1.0\",\"authorization\":{\"endpoint_addrs\":[],\"classification\":\"unclassified\",\"endpoint_ids\":[{\"password\":\"topSecret123\",\"id\":\"sim\"}]},\"name\":\"%s\",\"business_description\":\"\",\"publisher\":\"sim\",\"links\":{\"subscribe\":\"https://%s/subscribe/%s\",\"log\":\"https://%s/feedlog/%s\",\"publish\":\"https://%s/publish/%s\",\"self\":\"https://%s/feed/%s\"}}",
