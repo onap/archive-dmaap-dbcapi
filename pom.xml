@@ -165,17 +165,20 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
-			<version>2.8.9</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.8.9</version>
+<!-- for DMAAP-205, a point release on the common version
+	 addresses a security issue.  Note the add notation here
+  -->
+			<version>${jackson.version}.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>2.8.9</version>
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
@@ -302,9 +305,10 @@
 		</site>
 	</distributionManagement>
 	<properties>
+	    <jackson.version>2.8.11</jackson.version>
 		<jersey.version>2.26</jersey.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jettyVersion>9.3.7.v20160115</jettyVersion> 
+		<jettyVersion>9.3.9.v20160517</jettyVersion> 
 		<eelf.version>0.0.1</eelf.version>
 		<artifact.version>1.0.2-SNAPSHOT</artifact.version>
 		<!-- SONAR -->
