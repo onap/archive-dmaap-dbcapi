@@ -18,15 +18,22 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.dmaap.dbcapi.service;
-import  org.onap.dmaap.dbcapi.model.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.List;
-import java.util.ArrayList;
+import org.onap.dmaap.dbcapi.model.ApiError;
+import org.onap.dmaap.dbcapi.model.DcaeLocation;
+import org.onap.dmaap.dbcapi.model.MR_Client;
+import org.onap.dmaap.dbcapi.model.MR_Cluster;
+import org.onap.dmaap.dbcapi.model.Topic;
+import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
 public class MR_ClientServiceTest {
 
@@ -114,11 +121,11 @@ public class MR_ClientServiceTest {
 		if ( nTopic != null ) {
 			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
 		}
-		MR_Client c = factory.genPublisher( "edge", topic.getFqtn() );
+		MR_Client c = factory.genPublisher( "central", topic.getFqtn() );
 
 		c = cls.addMr_Client( c, topic, err );
 		if ( c != null ) {
-				c = factory.genSubscriber( "edge", topic.getFqtn() );
+				c = factory.genSubscriber( "central", topic.getFqtn() );
 				c = cls.updateMr_Client( c, err );
 				assertTrue( err.getCode() == 200 );
 		}

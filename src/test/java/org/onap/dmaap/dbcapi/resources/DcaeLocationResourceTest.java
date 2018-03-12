@@ -18,8 +18,11 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.dmaap.dbcapi.resources;
+
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.service.*;
+import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
+
 import static org.junit.Assert.*;
 
 import org.junit.After;
@@ -76,13 +79,52 @@ public class DcaeLocationResourceTest extends JerseyTest {
 		Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
 		Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
 		System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 201 );
+		if ( resp.getStatus() != 409 ) {
+			assertTrue( resp.getStatus() == 201 );
+		}
+		
+		resp = target( "dcaeLocations").
+				path( loc.getDcaeLocationName()).request().get( Response.class );
+		System.out.println( "GET feed resp=" + resp.getStatus() );
+
+		assertTrue( resp.getStatus() == 200 );
 	}
 
 	@Test
 	public void PutTest() {
+		DcaeLocation loc = factory.genDcaeLocation( "edge" );
+		Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
+		Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
+		System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
+		if ( resp.getStatus() != 409 ) {
+			assertTrue( resp.getStatus() == 201 );
+		}
+
+		
+		loc.setClli("ATLCTYNJ9999");
+		reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
+		resp = target( "dcaeLocations").
+				path( loc.getDcaeLocationName()).request().put( reqEntity, Response.class );
+		System.out.println( "PUT dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
+		assertTrue( resp.getStatus() == 201 );
+		
 	}
 
+	@Test
+	public void DelTest() {
+		DcaeLocation loc = factory.genDcaeLocation( "edge" );
+		Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
+		Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
+		System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
+		if ( resp.getStatus() != 409 ) {
+			assertTrue( resp.getStatus() == 201 );
+		}
+		
+		resp = target( "dcaeLocations").
+				path( loc.getDcaeLocationName()).request().delete( Response.class );
+		System.out.println( "DELETE dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
+		assertTrue( resp.getStatus() == 204 );
+	}
 
 
 

@@ -2,3 +2,7 @@ debug-logs/
 logs/
 target/
 
+/bin/
+.checkstyle
+.project
+.settings

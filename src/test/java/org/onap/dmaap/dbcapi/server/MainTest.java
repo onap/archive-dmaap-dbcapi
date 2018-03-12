@@ -18,7 +18,10 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.dmaap.dbcapi.server;
+
 import org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
+
 import static org.junit.Assert.*;
 
 import org.junit.After;
