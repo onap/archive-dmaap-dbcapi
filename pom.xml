@@ -324,6 +324,7 @@
 
 		<!-- for Distribution Management -->
 		<sitePath>/content/sites/site/org/onap/dmaap/buscontroller/${artifact.version}</sitePath>
+		<nexusproxy>https://nexus.onap.org</nexusproxy>
 	</properties>
 	<description>Data Movement as a Platform (DMaaP) Bus Controller provides a REST API for other DCAE infrastructure components to provision DMaaP resources.  A DMaaP resource is a Data Router Feed or a Message Router Topic, and their associated publishers and subscribers.</description>
 </project>

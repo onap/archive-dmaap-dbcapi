@@ -18,7 +18,10 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.dmaap.dbcapi.service;
+
 import  org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
 import static org.junit.Assert.*;
 
@@ -33,6 +36,7 @@ public class DR_NodeServiceTest {
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
+	static DmaapObjectFactory factory = new DmaapObjectFactory();
 
 	DR_NodeService ns;
 
@@ -67,7 +71,7 @@ public class DR_NodeServiceTest {
 		String locname = "central-demo";
 
 		DcaeLocationService dls = new DcaeLocationService();
-		DcaeLocation loc = new DcaeLocation( "CLLI1234", "central-onap", locname, "aZone", "10.10.10.0/24" );
+		DcaeLocation loc = factory.genDcaeLocation( "central" ); 
 		dls.addDcaeLocation( loc );
 
 		ApiError err = new ApiError();
@@ -89,38 +93,5 @@ public class DR_NodeServiceTest {
 
 	}
 
-/*
-	@Test
-	public void test4() {
-		List<MR_Client> l = cls.getAllMr_Clients();
-
-		ArrayList<MR_Client> al = cls.getAllMrClients( "foo" );
-
-		ArrayList<MR_Client> al2 = cls.getClientsByLocation( "central" );
-	}
-
-	@Test
-	public void test5() {
-		Topic topic = new Topic();
-		ApiError err = new ApiError();
-		topic.setTopicName( "test3" );
-		topic.setFqtnStyle( FqtnType.Validator("none") );
-		topic.getFqtn();
-		Topic nTopic = ts.addTopic( topic, err );
-		if ( nTopic != null ) {
-			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
-		}
-		String[] actions = { "pub", "view" };
-		MR_Client c = new MR_Client( "central-onap", "org.onap.dmaap.demo.interestingTopic2", "org.onap.clientApp.publisher", actions );
-
-		c = cls.addMr_Client( c, topic, err );
-		if ( c != null ) {
-				actions[0] = "sub";
-				c.setAction( actions );
-				c = cls.updateMr_Client( c, err );
-				assertTrue( err.getCode() == 200 );
-		}
-	}
-*/
 
 }

@@ -17,7 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
+package org.onap.dmaap.dbcapi.testframework;
 
 import static org.junit.Assert.*;
 

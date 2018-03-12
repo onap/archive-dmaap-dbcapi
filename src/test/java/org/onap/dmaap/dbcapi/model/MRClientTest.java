@@ -24,6 +24,7 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
 
 public class MRClientTest {

@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 public class MR_ClusterTest {
 	String d, fqdn, a;
 

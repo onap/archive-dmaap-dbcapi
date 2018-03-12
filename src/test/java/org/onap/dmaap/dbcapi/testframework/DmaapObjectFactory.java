@@ -17,8 +17,16 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.model;
+package org.onap.dmaap.dbcapi.testframework;
 
+import org.onap.dmaap.dbcapi.model.DR_Node;
+import org.onap.dmaap.dbcapi.model.DR_Sub;
+import org.onap.dmaap.dbcapi.model.DcaeLocation;
+import org.onap.dmaap.dbcapi.model.Dmaap;
+import org.onap.dmaap.dbcapi.model.FqtnType;
+import org.onap.dmaap.dbcapi.model.MR_Client;
+import org.onap.dmaap.dbcapi.model.MR_Cluster;
+import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.util.RandomInteger;
 
 import static org.junit.Assert.*;
@@ -87,7 +95,8 @@ public class DmaapObjectFactory {
 		Topic t = new Topic();
 		t.setTopicName( tname );
         t.setFqtnStyle( FqtnType.Validator("none") );
-        t.getFqtn();
+        t.setTopicDescription( "a simple Topic named " + tname );
+        t.setOwner( "ut");
 		return t;
 	}
 

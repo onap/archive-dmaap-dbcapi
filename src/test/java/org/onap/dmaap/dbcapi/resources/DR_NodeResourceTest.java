@@ -18,8 +18,11 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.dmaap.dbcapi.resources;
+
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.service.*;
+import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
+
 import static org.junit.Assert.*;
 
 import org.junit.After;
@@ -38,13 +41,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 
 
-public class MR_ClusterResourceTest extends JerseyTest {
+public class DR_NodeResourceTest extends JerseyTest {
 
 	static DmaapObjectFactory factory = new DmaapObjectFactory();
+	static String entry_path = "dr_nodes";
 
 	@Override
 	protected Application configure() {
-		return new ResourceConfig( MR_ClusterResource.class );
+		return new ResourceConfig( DR_NodeResource.class );
 	}
 
 	private static final String  fmt = "%24s: %s%n";
@@ -64,22 +68,23 @@ public class MR_ClusterResourceTest extends JerseyTest {
 
 	@Test
 	public void GetTest() {
-		Response resp = target( "mr_clusters").request().get( Response.class );
-		System.out.println( "GET feed resp=" + resp.getStatus() );
+		Response resp = target( entry_path ).request().get( Response.class );
+		System.out.println( "GET " + entry_path + " resp=" + resp.getStatus() );
 
 		assertTrue( resp.getStatus() == 200 );
 	}
 	@Test
 	public void PostTest() {
-		MR_Cluster cluster = factory.genMR_Cluster( "central" );
-		Entity<MR_Cluster> reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
-		Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
-		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 201 );
+		DR_Node node = factory.genDR_Node( "central" );
+		Entity<DR_Node> reqEntity = Entity.entity( node, MediaType.APPLICATION_JSON );
+		Response resp = target( entry_path ).request().post( reqEntity, Response.class );
+		System.out.println( "POST " + entry_path + " resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
+		assertTrue( resp.getStatus() == 200 );
 	}
 
 	@Test
 	public void PutTest() {
+
 /*
 		try {
 			DcaeLocation loc = factory.genDcaeLocation( "central" );
@@ -90,34 +95,27 @@ public class MR_ClusterResourceTest extends JerseyTest {
 		} catch (Exception e ) {
 		}
 */
-		String h[] = {"host4", "host5", "host6" };
-		MR_Cluster cluster = factory.genMR_Cluster( "edge" );
-		Entity<MR_Cluster> reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
-		Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
+
+		DR_Node node = factory.genDR_Node( "central" );
+		Entity<DR_Node> reqEntity = Entity.entity( node, MediaType.APPLICATION_JSON );
+		Response resp = target( entry_path ).request().post( reqEntity, Response.class );
 
 		// first, add it 
-		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 201 );
+		System.out.println( "POST " + entry_path + " resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
+		assertTrue( resp.getStatus() == 200 );
 
 		// now change a field
-		cluster.setHosts( h );
-		reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
+		node.setVersion( "1.0.2" );
+		reqEntity = Entity.entity( node, MediaType.APPLICATION_JSON );
 
-		// update with incorrect key
-		resp = target( "mr_clusters")
-					.path( cluster.getFqdn())
+		// update  currently fails...
+		resp = target( entry_path )
+					.path( node.getFqdn())
 					.request()
 					.put( reqEntity, Response.class );
-		System.out.println( "PUT MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
+		System.out.println( "PUT " + entry_path + "/" + node.getFqdn() + " resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
 		assertTrue( resp.getStatus() == 404 );
 
-		// update with correct key
-		resp = target( "mr_clusters")
-					.path( cluster.getDcaeLocationName())
-					.request()
-					.put( reqEntity, Response.class );
-		System.out.println( "PUT MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
-		assertTrue( resp.getStatus() == 200 );
 	}
 
 

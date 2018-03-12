@@ -63,6 +63,24 @@ public abstract class DmaapObject extends BaseLoggingClass {
 		this.status = status;
 	}
 	
+	public void setStatus( String val ) {
+		if ( val == null || val.isEmpty() ) {
+			this.status = DmaapObject_Status.EMPTY;
+		} else if (val.compareToIgnoreCase("new") == 0 ) {
+			this.status = DmaapObject_Status.NEW;
+		} else if ( val.compareToIgnoreCase("staged" ) == 0) {
+			this.status = DmaapObject_Status.STAGED;
+		} else if ( val.compareToIgnoreCase("valid") == 0) {
+			this.status = DmaapObject_Status.VALID;
+		} else if ( val.compareToIgnoreCase("invalid") == 0) {
+			this.status = DmaapObject_Status.INVALID;
+		} else if ( val.compareToIgnoreCase("deleted") == 0) {
+			this.status = DmaapObject_Status.DELETED;
+		} else {
+			this.status = DmaapObject_Status.INVALID;
+		}
+	}
+	
 	public boolean isStatusValid() {
 		if ( this.status == DmaapObject_Status.VALID ) {
 			return true;

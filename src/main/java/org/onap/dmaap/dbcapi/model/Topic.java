@@ -23,7 +23,8 @@ package org.onap.dmaap.dbcapi.model;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
-
+import org.json.simple.*;
+import org.json.simple.parser.*;
 import javax.xml.bind.annotation.XmlRootElement;
 
 
@@ -122,6 +123,28 @@ public class Topic extends DmaapObject  {
 		this.replicationCase = ReplicationType.Validator("none");
 		this.fqtnStyle = FqtnType.Validator("none");
 		logger.debug( "Topic constructor " + this.getLastMod() );
+	}
+
+	// expects a String in JSON format, with known fields to populate Topic object
+	public Topic ( String json ) {
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObj;
+		try {
+			jsonObj = (JSONObject) parser.parse( json );
+		} catch ( ParseException pe ) {
+	           logger.error( "Error parsing provisioning data: " + json );
+	           this.setStatus( DmaapObject_Status.INVALID );
+	           return;
+	    }
+		this.setFqtn( (String) jsonObj.get( "fqtn" ) );
+		this.setTopicName( (String) jsonObj.get( "topicName" ) );
+		this.setTopicDescription( (String) jsonObj.get( "topicDescription" ));
+		this.setOwner( (String) jsonObj.get( "owner" ) );
+		//this.setLastMod();
+		this.setStatus( (String) jsonObj.get( "status" ) );
+		this.setReplicationCase( ReplicationType.Validator( (String) jsonObj.get( "replicationCase" ) ));
+		this.setFqtnStyle( FqtnType.Validator( (String) jsonObj.get( "fqtnStyle" ) ) );
+
 	}
 	public String getFqtn() {
 		return fqtn;

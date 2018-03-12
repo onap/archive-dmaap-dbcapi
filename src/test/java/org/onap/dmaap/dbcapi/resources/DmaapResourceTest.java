@@ -18,8 +18,11 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.dmaap.dbcapi.resources;
+
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.service.*;
+import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
+
 import static org.junit.Assert.*;
 
 import org.junit.After;

@@ -19,7 +19,11 @@
  * ============LICENSE_END=========================================================
  */
 package org.onap.dmaap.dbcapi.aaf.database;
+
+import org.onap.dmaap.dbcapi.aaf.database.DBSingleton;
 import org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
+
 import static org.junit.Assert.*;
 
 import org.junit.After;
