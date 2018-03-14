@@ -64,7 +64,7 @@ public class MR_ClusterResourceTest extends JerseyTest {
 	@Test
 	public void GetTest() {
 		Response resp = target( "mr_clusters").request().get( Response.class );
-		System.out.println( "GET feed resp=" + resp.getStatus() );
+		System.out.println( "GET MR_Cluster resp=" + resp.getStatus() );
 
 		assertTrue( resp.getStatus() == 200 );
 	}
@@ -107,7 +107,7 @@ public class MR_ClusterResourceTest extends JerseyTest {
 		// first, add it 
 		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
 		if( resp.getStatus() != 409 ) {
-			assertTrue( resp.getStatus() == 200 );
+			assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300 );
 		}
 
 		// now change a field
@@ -116,11 +116,11 @@ public class MR_ClusterResourceTest extends JerseyTest {
 
 		// update with incorrect key
 		resp = target( "mr_clusters")
-					.path( cluster.getDcaeLocationName())
+					.path( "invalidLocationNam" )
 					.request()
 					.put( reqEntity, Response.class );
 		System.out.println( "PUT MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
-		assertTrue( resp.getStatus() == 200 );
+		assertTrue( resp.getStatus() == 404 );
 
 		// update with correct key
 		resp = target( "mr_clusters")
@@ -128,7 +128,7 @@ public class MR_ClusterResourceTest extends JerseyTest {
 					.request()
 					.put( reqEntity, Response.class );
 		System.out.println( "PUT MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
-		assertTrue( resp.getStatus() == 200 );
+		assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300 );
 	}
 
 	@Test
