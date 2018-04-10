@@ -17,7 +17,7 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.aaf.authentication;
+package org.onap.dmaap.dbcapi.authentication;
 
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;

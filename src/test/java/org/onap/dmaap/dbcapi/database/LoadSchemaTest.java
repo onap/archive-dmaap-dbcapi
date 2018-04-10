@@ -17,8 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.aaf.database;
+package org.onap.dmaap.dbcapi.database;
 
+import org.onap.dmaap.dbcapi.database.LoadSchema;
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
@@ -30,29 +31,13 @@ import org.junit.Test;
 import java.util.*;
 import java.sql.*;
 
-public class TableHandlerTest {
+public class LoadSchemaTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-   private static class TopicReplicationTypeHandler implements DBFieldHandler.SqlOp {
-        public Object get(ResultSet rs, int index) throws Exception {
-            int val = rs.getInt(index);
-
-            return (ReplicationType.valueOf(val));
-        }
-        public void set(PreparedStatement ps, int index, Object val) throws Exception {
-            if (val == null) {
-                ps.setInt(index, 0);
-                return;
-            }
-            @SuppressWarnings("unchecked")
-            ReplicationType rep = (ReplicationType) val;
-            ps.setInt(index, rep.getValue());
-        }
-    }
-
+	LoadSchema ls;
 
 
 	@Before
@@ -68,33 +53,20 @@ public class TableHandlerTest {
 	public void test1() {
 
 
-		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.database.LoadSchema", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.database.LoadSchema", "set", v );
 
 	}
 
 	@Test
 	public void test3() {
-		TableHandler.setSpecialCase("topic", "replication_case", new TopicReplicationTypeHandler());
-
-		try {
-		ConnectionFactory cf = new ConnectionFactory();
-		TableHandler th = new TableHandler( cf, TopicReplicationTypeHandler.class, "foo", "bar" );
-		} catch (Exception e ) {
-		}
-		try {
-		ConnectionFactory cf = new ConnectionFactory();
-		TableHandler th = new TableHandler( TopicReplicationTypeHandler.class, "foo", "bar" );
-		th.getSpecialCase( "foo", "bar" );
-		} catch (Exception e ) {
-		}
-
+		ls = new LoadSchema();
 	}
 
 

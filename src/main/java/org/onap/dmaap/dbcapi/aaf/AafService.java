@@ -36,6 +36,13 @@ public class AafService extends BaseLoggingClass {
 	private AafConnection aaf;
 	private ServiceType ctype;
 	private String aafURL ;
+	private boolean useAAF = false;
+	
+	public AafService() {
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
+		
+	}
 	
 	private String getCred( boolean wPwd ) {
 		String mechIdProperty = null;
@@ -54,21 +61,10 @@ public class AafService extends BaseLoggingClass {
 			return null;
 		}
 		String user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
-		//String dClass = p.getProperty( "AafDecryption.Class", "org.openecomp.dmaapbc.aaf.ClearDecrypt");
+
 		String pwd = "";
 		String encPwd = p.getProperty( pwdProperty, "notSet" );
-		//DecryptionInterface dec = null;
-		//try {
-		//	dec = (DecryptionInterface) (Class.forName(dClass).newInstance());	
-		//	dec.init( p.getProperty("CredentialCodecKeyfile", "LocalKey"));
-		//} catch (Exception ee ) {
-		//	errorLogger.error(DmaapbcLogMessageEnum.UNEXPECTED_CONDITION, "attempting to use " + dClass + " to decrypt " + encPwd );		
-		//}	
-		//try {		
-		//	pwd = dec.decrypt( encPwd );
-		//} catch( IOException io ) {
-		//	errorLogger.error(DmaapbcLogMessageEnum.DECRYPT_IO_ERROR, dClass, encPwd );
-		//} 
+
 		
 		pwd = decryptor.decrypt(encPwd);
 		
@@ -101,7 +97,11 @@ public class AafService extends BaseLoggingClass {
 		int rc = -1;
 		logger.info( "entry: addPerm() "  );
 		String pURL = aafURL + "authz/perm";
-		rc = aaf.postAaf( perm, pURL );
+		if ( useAAF ) {
+			rc = aaf.postAaf( perm, pURL );
+		} else {
+			rc = 201;
+		}
         switch( rc ) {
     	case 401:
     	case 403:
@@ -127,7 +127,12 @@ public class AafService extends BaseLoggingClass {
 		logger.info( "entry: addGrant() "  );
 
 		String pURL = aafURL + "authz/role/perm";
-		rc = aaf.postAaf( grant, pURL );
+		if ( useAAF ) {
+			rc = aaf.postAaf( grant, pURL );
+		} else {
+			rc = 201;
+		}
+		
         switch( rc ) {
     	case 401:
     	case 403:
@@ -155,7 +160,12 @@ public class AafService extends BaseLoggingClass {
 		logger.info( "entry: delGrant() "  );
 
 		String pURL = aafURL + "authz/role/:" + grant.getRole() + "/perm";
-		rc = aaf.delAaf( grant, pURL );
+		
+		if ( useAAF ) {
+			rc = aaf.delAaf( grant, pURL );
+		} else {
+			rc = 200;
+		}
         switch( rc ) {
     	case 401:
        	case 403:

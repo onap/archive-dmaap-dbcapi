@@ -34,8 +34,8 @@ import java.util.Map;
 
 //import org.openecomp.dmaapbc.aaf.AndrewDecryptor;
 import org.onap.dmaap.dbcapi.aaf.AafDecrypt;
-import org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection;
-import org.onap.dmaap.dbcapi.aaf.database.DatabaseClass;
+import org.onap.dmaap.dbcapi.client.MrTopicConnection;
+import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;

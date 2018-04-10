@@ -21,9 +21,9 @@ package org.onap.dmaap.dbcapi.service;
 
 import  org.onap.dmaap.dbcapi.model.*;
 import  org.onap.dmaap.dbcapi.aaf.*;
+import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.resources.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
-import org.onap.dmaap.dbcapi.aaf.authentication.AuthenticationErrorException;
 
 import static org.junit.Assert.*;
 

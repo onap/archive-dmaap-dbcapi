@@ -40,7 +40,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
-import org.onap.dmaap.dbcapi.aaf.authentication.AuthenticationErrorException;
+import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;

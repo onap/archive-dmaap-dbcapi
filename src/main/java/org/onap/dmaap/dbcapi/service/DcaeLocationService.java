@@ -24,17 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-
-
-
-
-
-
-import org.onap.dmaap.dbcapi.aaf.database.DatabaseClass;
+import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
 

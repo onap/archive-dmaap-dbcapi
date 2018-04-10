@@ -17,8 +17,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.aaf.client;
+package org.onap.dmaap.dbcapi.client;
 
+import org.onap.dmaap.dbcapi.client.DrProvConnection;
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.service.*;
 import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;

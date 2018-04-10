@@ -23,8 +23,8 @@ import java.net.InetAddress;
 import java.util.Properties;
 import java.util.UUID;
 
-import org.onap.dmaap.dbcapi.aaf.authentication.ApiPerms;
-import org.onap.dmaap.dbcapi.aaf.database.DatabaseClass;
+import org.onap.dmaap.dbcapi.authentication.ApiPerms;
+import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.*;
 import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;

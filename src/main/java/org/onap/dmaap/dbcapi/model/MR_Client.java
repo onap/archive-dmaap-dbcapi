@@ -24,10 +24,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-
-
-
-import org.onap.dmaap.dbcapi.aaf.database.DatabaseClass;
+import org.onap.dmaap.dbcapi.database.DatabaseClass;
 
 @XmlRootElement
 public class MR_Client extends DmaapObject {

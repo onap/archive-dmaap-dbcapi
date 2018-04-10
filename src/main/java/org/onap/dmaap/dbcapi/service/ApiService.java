@@ -41,8 +41,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.DatatypeConverter;
 
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
-import org.onap.dmaap.dbcapi.aaf.authentication.ApiPolicy;
-import org.onap.dmaap.dbcapi.aaf.authentication.AuthenticationErrorException;
+import org.onap.dmaap.dbcapi.authentication.ApiPolicy;
+import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.Dmaap;

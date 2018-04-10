@@ -25,7 +25,7 @@ import java.io.IOException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 
-import org.onap.dmaap.dbcapi.aaf.authentication.AuthenticationErrorException;
+import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 

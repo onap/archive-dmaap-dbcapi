@@ -45,7 +45,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
-import org.onap.dmaap.dbcapi.aaf.database.LoadSchema;
+import org.onap.dmaap.dbcapi.database.LoadSchema;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 /**
  * A  Jetty server which supports:

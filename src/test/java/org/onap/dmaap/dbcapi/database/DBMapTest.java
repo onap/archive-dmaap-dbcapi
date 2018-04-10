@@ -17,38 +17,35 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.aaf.client;
+package org.onap.dmaap.dbcapi.database;
 
+import org.onap.dmaap.dbcapi.database.DBMap;
+import org.onap.dmaap.dbcapi.database.DBSingleton;
 import org.onap.dmaap.dbcapi.model.*;
-import org.onap.dmaap.dbcapi.service.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
+import org.onap.dmaap.dbcapi.util.Singleton;
 
 import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.List;
-import java.util.ArrayList;
-import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.util.*;
+import java.sql.*;
 
-public class MrTopicConnectionTest {
+public class DBMapTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-	MrTopicConnection ns;
-	MR_ClusterService mcs;
-	TopicService ts;
+
+    private static Singleton<Dmaap> dmaap;
+    private static Map<String, DcaeLocation> dcaeLocations;
+
 
 	@Before
 	public void setUp() throws Exception {
-		ns = new MrTopicConnection( "aUser", "aPwd" );
-		ts = new TopicService();
-		mcs = new MR_ClusterService();
 	}
 
 	@After
@@ -60,37 +57,28 @@ public class MrTopicConnectionTest {
 	public void test1() {
 
 
-		rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
+		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
+		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
 
 	}
 
 	@Test
 	public void test3() {
-		String locname = "central-demo";
-
-		DcaeLocationService dls = new DcaeLocationService();
-		DcaeLocation loc = new DcaeLocation( "CLLI1234", "central-onap", locname, "aZone", "10.10.10.0/24" );
-		dls.addDcaeLocation( loc );
-
-		ApiError err = new ApiError();
-		String[] hl = { "host1", "host2", "host3" };
-		MR_Cluster cluster = new MR_Cluster( locname, "localhost", "", hl );
-		mcs.addMr_Cluster( cluster, err );
-		ns.makeTopicConnection( cluster, "org.onap.dmaap.anInterestingTopic", "" );
-		String msg = "{ 'key': '1234', 'val': 'hello world' }";
-		ApiError e2 = ns.doPostMessage( msg );
-
 		try {
-			InputStream is = new FileInputStream( "./etc/dmaapbc.properties" );				
-			String body = ns.bodyToString( is );
-		} catch ( FileNotFoundException fnfe ) {
+                dmaap = new DBSingleton<Dmaap>(Dmaap.class, "dmaap");
+				Dmaap nd = new Dmaap();
+				dmaap.update(nd);
+		} catch (Exception e ) {
+		}
+		try {
+                dcaeLocations = new DBMap<DcaeLocation>(DcaeLocation.class, "dcae_location", "dcae_location_name");
+		} catch (Exception e ) {
 		}
 
 	}

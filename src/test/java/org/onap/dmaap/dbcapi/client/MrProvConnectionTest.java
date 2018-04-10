@@ -1,4 +1,3 @@
-
 /*-
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
@@ -18,9 +17,11 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.aaf.database;
+package org.onap.dmaap.dbcapi.client;
 
+import org.onap.dmaap.dbcapi.client.MrProvConnection;
 import org.onap.dmaap.dbcapi.model.*;
+import org.onap.dmaap.dbcapi.service.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
 import static org.junit.Assert.*;
@@ -28,36 +29,27 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.*;
-import java.sql.*;
+import java.util.List;
+import java.util.ArrayList;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
-public class DBFieldHandlerTest {
+public class MrProvConnectionTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
 
-   private static class TopicReplicationTypeHandler implements DBFieldHandler.SqlOp {
-        public Object get(ResultSet rs, int index) throws Exception {
-            int val = rs.getInt(index);
-
-            return (ReplicationType.valueOf(val));
-        }
-        public void set(PreparedStatement ps, int index, Object val) throws Exception {
-            if (val == null) {
-                ps.setInt(index, 0);
-                return;
-            }
-            @SuppressWarnings("unchecked")
-            ReplicationType rep = (ReplicationType) val;
-            ps.setInt(index, rep.getValue());
-        }
-    }
-
-
+	MrProvConnection ns;
+	MR_ClusterService mcs;
+	TopicService ts;
 
 	@Before
 	public void setUp() throws Exception {
+		ns = new MrProvConnection();
+		ts = new TopicService();
+		mcs = new MR_ClusterService();
 	}
 
 	@After
@@ -69,33 +61,38 @@ public class DBFieldHandlerTest {
 	public void test1() {
 
 
-		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrProvConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
 
 	@Test
 	public void test2() {
 		String v = "Validate";
-		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrProvConnection", "set", v );
 
 	}
 
 	@Test
 	public void test3() {
+		String locname = "central-demo";
+
+		DcaeLocationService dls = new DcaeLocationService();
+		DcaeLocation loc = new DcaeLocation( "CLLI1234", "central-onap", locname, "aZone", "10.10.10.0/24" );
+		dls.addDcaeLocation( loc );
+
+		ApiError err = new ApiError();
+		String[] hl = { "host1", "host2", "host3" };
+		MR_Cluster cluster = new MR_Cluster( locname, "localhost", "", hl );
+		mcs.addMr_Cluster( cluster, err );
+		ns.makeTopicConnection( cluster );
+		Topic topic = new Topic();
+		topic.setTopicName( "test5" );
+		String resp = ns.doPostTopic( topic, err );
 
 		try {
-			DBFieldHandler fh = new DBFieldHandler( String.class, "aString", 1 );
-		} catch (Exception e ) {
-		}
-
-	}
-
-	@Test
-	public void test4() {
-
-		try {
-			DBFieldHandler fh = new DBFieldHandler( String.class, "aString", 1, null );
-		} catch (Exception e ) {
+			InputStream is = new FileInputStream( "./etc/dmaapbc.properties" );				
+			String body = ns.bodyToString( is );
+		} catch ( FileNotFoundException fnfe ) {
 		}
 
 	}

@@ -1,3 +1,4 @@
+
 /*-
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
@@ -17,8 +18,9 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.aaf.database;
+package org.onap.dmaap.dbcapi.database;
 
+import org.onap.dmaap.dbcapi.database.DBSingleton;
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
@@ -30,13 +32,11 @@ import org.junit.Test;
 import java.util.*;
 import java.sql.*;
 
-public class LoadSchemaTest {
+public class DBSingletonTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
 	ReflectionHarness rh = new ReflectionHarness();
-
-	LoadSchema ls;
 
 
 	@Before
@@ -48,25 +48,23 @@ public class LoadSchemaTest {
 	}
 
 
-	@Test
-	public void test1() {
-
-
-		rh.reflect( "org.onap.dmaap.dbcapi.aaf.database.LoadSchema", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
-	
-	}
-
-	@Test
-	public void test2() {
-		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.aaf.database.LoadSchema", "set", v );
-
-	}
 
 	@Test
 	public void test3() {
-		ls = new LoadSchema();
+
+		try {
+			DBSingleton<Dmaap> dmaap = new DBSingleton<Dmaap>(Dmaap.class, "dmaap");
+			Dmaap d = new Dmaap();
+			dmaap.init( d );
+			d = dmaap.get();
+			d.setDmaapName( "foo" );
+			dmaap.update( d );
+			dmaap.remove();
+		} catch (Exception e ) {
+		}
+
 	}
+
 
 
 

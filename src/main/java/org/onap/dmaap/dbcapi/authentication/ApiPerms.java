@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.dmaap.dbcapi.aaf.authentication;
+package org.onap.dmaap.dbcapi.authentication;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;

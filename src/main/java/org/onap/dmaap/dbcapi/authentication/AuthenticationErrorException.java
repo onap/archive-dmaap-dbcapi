@@ -18,11 +18,12 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.dmaap.dbcapi.aaf.authentication;
+package org.onap.dmaap.dbcapi.authentication;
 
-import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
-
-public interface ApiPermissionInterface {
-	public void check( String mechid, String pwd, DmaapPerm p ) throws AuthenticationErrorException;
+public class AuthenticationErrorException extends Exception {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 }

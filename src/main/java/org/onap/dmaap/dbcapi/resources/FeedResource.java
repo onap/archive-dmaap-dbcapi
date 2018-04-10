@@ -46,26 +46,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.log4j.Logger;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import org.onap.dmaap.dbcapi.aaf.authentication.AuthenticationErrorException;
+import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;

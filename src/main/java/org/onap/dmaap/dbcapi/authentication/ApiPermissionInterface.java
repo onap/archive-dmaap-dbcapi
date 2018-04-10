@@ -18,17 +18,11 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.dmaap.dbcapi.aaf.database;
+package org.onap.dmaap.dbcapi.authentication;
 
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
+import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
+public interface ApiPermissionInterface {
+	public void check( String mechid, String pwd, DmaapPerm p ) throws AuthenticationErrorException;
 
-public class DBException extends RuntimeException {
-	static final EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
-	public DBException(Exception e) {
-		super(e);
-		errorLogger.error(DmaapbcLogMessageEnum.DB_ACCESS_ERROR,  e.getMessage());
-	}
 }

@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.dmaap.dbcapi.aaf.client;
+package org.onap.dmaap.dbcapi.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;

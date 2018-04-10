@@ -18,7 +18,7 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.dmaap.dbcapi.aaf.database;
+package org.onap.dmaap.dbcapi.database;
 
 import java.util.*;
 import java.lang.reflect.*;
