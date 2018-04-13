@@ -1,0 +1,7 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+2: varun gudisena <vg411h@att.com>
+Submitted-by: varun gudisena <vg411h@att.com>
+Submitted-at: Fri, 13 Apr 2018 13:06:07 +0000
+Reviewed-on: https://gerrit.onap.org/r/42623
+Project: dmaap/dbcapi
+Branch: refs/heads/master
