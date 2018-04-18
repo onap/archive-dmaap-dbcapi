@@ -30,7 +30,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 public class MR_ClusterTest {
-	String d, fqdn, a;
+	String d, fqdn;
 
 	ReflectionHarness rh = new ReflectionHarness();
 
@@ -38,7 +38,6 @@ public class MR_ClusterTest {
 	public void setUp() throws Exception {
 		d = "central-onap";
 		fqdn = "mr.onap.org";
-		a = "ignore";
 	}
 
 	@After
@@ -59,8 +58,7 @@ public class MR_ClusterTest {
 	@Test
 	public void testMR_ClusterClassConstructor() {
 
-		String[] h = { "host1", "host2", "host3" };
-		MR_Cluster t = new MR_Cluster( d, fqdn, a, h );
+		MR_Cluster t = new MR_Cluster( d, fqdn, "http", "3904");
 
 		t.getHosts();
 	

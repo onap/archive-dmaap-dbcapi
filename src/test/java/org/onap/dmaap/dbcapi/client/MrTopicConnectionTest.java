@@ -81,8 +81,8 @@ public class MrTopicConnectionTest {
 		dls.addDcaeLocation( loc );
 
 		ApiError err = new ApiError();
-		String[] hl = { "host1", "host2", "host3" };
-		MR_Cluster cluster = new MR_Cluster( locname, "localhost", "", hl );
+		
+		MR_Cluster cluster = new MR_Cluster( locname, "localhost", "http", "3904");
 		mcs.addMr_Cluster( cluster, err );
 		ns.makeTopicConnection( cluster, "org.onap.dmaap.anInterestingTopic", "" );
 		String msg = "{ 'key': '1234', 'val': 'hello world' }";

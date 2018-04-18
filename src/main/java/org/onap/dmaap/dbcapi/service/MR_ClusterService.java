@@ -32,10 +32,19 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class MR_ClusterService extends BaseLoggingClass {
 
 	private Map<String, MR_Cluster> mr_clusters = DatabaseClass.getMr_clusters();
+	private boolean multiSite;
+	
+	public MR_ClusterService() {
+		logger.info( "new ClusterService");
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		multiSite = "true".equalsIgnoreCase(p.getProperty("MR.multisite", "true"));
+				
+	}
 	
 	public Map<String, MR_Cluster> getMR_Clusters() {			
 		return mr_clusters;
@@ -89,7 +98,7 @@ public class MR_ClusterService extends BaseLoggingClass {
 		mr_clusters.put( cluster.getDcaeLocationName(), cluster );
 		DcaeLocationService svc = new DcaeLocationService();
 		DcaeLocation loc = svc.getDcaeLocation( cluster.getDcaeLocationName() );
-		if ( loc != null && loc.isCentral() ) {
+		if ( loc != null && loc.isCentral() && multiSite ) {
 			ApiError resp = TopicService.setBridgeClientPerms( cluster );
 			if ( ! resp.is2xx() ) {
 				logger.error( "Unable to provision Bridge to " + cluster.getDcaeLocationName() );
@@ -119,7 +128,7 @@ public class MR_ClusterService extends BaseLoggingClass {
 			cluster.setLastMod();
 			cluster.setStatus(DmaapObject_Status.INVALID);
 			mr_clusters.put( cluster.getDcaeLocationName(), cluster );
-		} else if ( loc.isCentral() ) {
+		} else if ( loc.isCentral()  & multiSite ) {
 			ApiError resp = TopicService.setBridgeClientPerms( cluster );
 			if ( ! resp.is2xx() ) {
 				logger.error( "Unable to provision Bridge to " + cluster.getDcaeLocationName() );

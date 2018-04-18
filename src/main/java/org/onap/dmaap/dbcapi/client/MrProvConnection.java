@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -49,7 +50,7 @@ public class MrProvConnection extends BaseLoggingClass{
 	    
 	private String provURL;
 	
-	private HttpsURLConnection uc;
+	private HttpURLConnection uc;
 
 	
 	private String topicMgrCred;
@@ -90,15 +91,37 @@ public class MrProvConnection extends BaseLoggingClass{
 
 		provURL = cluster.getTopicProtocol() + "://" + cluster.getFqdn() + ":" + cluster.getTopicPort() + "/topics/create";
 
+		if ( cluster.getTopicProtocol().equals( "https" ) ) {
+			return makeSecureConnection( provURL );
+		}
 		return makeConnection( provURL );
 	}
 
-	private boolean makeConnection( String pURL ) {
+	private boolean makeSecureConnection( String pURL ) {
 		logger.info( "makeConnection to " + pURL );
 	
 		try {
 			URL u = new URL( pURL );
 			uc = (HttpsURLConnection) u.openConnection();
+			uc.setInstanceFollowRedirects(false);
+			logger.info( "open connect to " + pURL );
+			return(true);
+		} catch( UnknownHostException uhe ){
+        	logger.error( "Caught UnknownHostException for " + pURL);
+        	return(false);
+        } catch (Exception e) {
+            logger.error("Unexpected error during openConnection of " + pURL );
+            e.printStackTrace();
+            return(false);
+        } 
+
+	}
+	private boolean makeConnection( String pURL ) {
+		logger.info( "makeConnection to " + pURL );
+	
+		try {
+			URL u = new URL( pURL );
+			uc = (HttpURLConnection) u.openConnection();
 			uc.setInstanceFollowRedirects(false);
 			logger.info( "open connect to " + pURL );
 			return(true);

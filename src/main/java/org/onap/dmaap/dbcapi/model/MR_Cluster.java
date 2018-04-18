@@ -55,6 +55,7 @@ public class MR_Cluster extends DmaapObject {
 		
 	}
 	
+	// Deprecate this constructor
 	public MR_Cluster( String dLN,
 						String f,
 						String a,
@@ -70,9 +71,27 @@ public class MR_Cluster extends DmaapObject {
 		this.lastMod = new DmaapTimestamp();
 		this.lastMod.mark();
 
-		debugLogger.debug( "MR_Cluster constructor w initialization complete" + this.lastMod.getVal() );
+		debugLogger.debug( "depracated MR_Cluster constructor w initialization complete" + this.lastMod.getVal() );
 	}
-
+	
+	// new style constructor
+	public MR_Cluster( String dLN,
+			String f,
+			String prot,
+			String port ) {
+		this.dcaeLocationName = dLN;
+		this.fqdn = f;
+		this.hosts = new String[3];
+		this.hosts[0] = fqdn;
+		this.hosts[1] = fqdn;
+		this.hosts[2] = fqdn;
+		this.topicProtocol = prot;
+		this.topicPort = port;
+		this.lastMod = new DmaapTimestamp();
+		this.lastMod.mark();
+		
+		debugLogger.debug( "MR_Cluster constructor w initialization complete" + this.lastMod.getVal() );
+}
 	public String getDcaeLocationName() {
 		return dcaeLocationName;
 	}

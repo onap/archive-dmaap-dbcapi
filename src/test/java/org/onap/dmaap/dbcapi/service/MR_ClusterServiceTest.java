@@ -74,7 +74,7 @@ public class MR_ClusterServiceTest {
 
 		ApiError err = new ApiError();
 		String[] h = { "zplvm009.onap.org", "zplvm007.onap.org", "zplvm008.onap.org" };
-		MR_Cluster node = new MR_Cluster( locname, f, "ignore",  h );
+		MR_Cluster node = new MR_Cluster( locname, f,  "http", "3904");
 		MR_Cluster n2 = ns.addMr_Cluster( node, err );	
 
 		if ( n2 != null ) {

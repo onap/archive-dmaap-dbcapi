@@ -71,6 +71,8 @@ public class DmaapObjectFactory {
 	private static final String edge_subnet = "10.10.20.0/24";
 	private static final String edge_cluster_fqdn = "localhost";
 	private static final String[]hosts = { "host1", "host2", "host3" };
+	private static final String port = "3904";
+	private static final String prot = "http";
 
 	public Dmaap genDmaap() {
 		return new Dmaap( dmaap_ver, dmaap_topic_root, dmaap_name, dmaap_dr, dmaap_log_url, dmaap_mm_topic, "nk", "ako" );
@@ -86,9 +88,9 @@ public class DmaapObjectFactory {
 
 	public MR_Cluster genMR_Cluster( String layer ) {
 		if ( layer.contains( "edge" ) ) {
-			return new MR_Cluster( edge_loc, edge_cluster_fqdn, "ignore", hosts );
+			return new MR_Cluster( edge_loc, edge_cluster_fqdn,  prot, port );
 		}
-		return new MR_Cluster( central_loc, central_cluster_fqdn, "ignore", hosts );
+		return new MR_Cluster( central_loc, central_cluster_fqdn, prot, port );
 	}
 
 	public Topic genSimpleTopic( String tname ) {

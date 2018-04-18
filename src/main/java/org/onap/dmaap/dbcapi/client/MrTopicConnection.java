@@ -27,6 +27,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.net.HttpURLConnection;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
@@ -41,7 +42,7 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 public class MrTopicConnection extends BaseLoggingClass  {
 	private String topicURL;
 	
-	private HttpsURLConnection uc;
+	private HttpURLConnection uc;
 
 	
 	private  String mmProvCred; 
@@ -62,15 +63,34 @@ public class MrTopicConnection extends BaseLoggingClass  {
 
 		topicURL = cluster.getTopicProtocol() + "://" + fqdn + ":" + cluster.getTopicPort() + "/events/" + topic ;
 
+		if ( cluster.getTopicProtocol().equals( "https")) {
+			return makeSecureConnection( topicURL );
+		}
 		return makeConnection( topicURL );
 	}
 
-	private boolean makeConnection( String pURL ) {
+	private boolean makeSecureConnection( String pURL ) {
 		logger.info( "makeConnection to " + pURL );
 	
 		try {
 			URL u = new URL( pURL );
 			uc = (HttpsURLConnection) u.openConnection();
+			uc.setInstanceFollowRedirects(false);
+			logger.info( "open connection to " + pURL );
+			return(true);
+		} catch (Exception e) {
+            logger.error("Unexpected error during openConnection of " + pURL );
+            e.printStackTrace();
+            return(false);
+        }
+
+	}
+	private boolean makeConnection( String pURL ) {
+		logger.info( "makeConnection to " + pURL );
+	
+		try {
+			URL u = new URL( pURL );
+			uc = (HttpURLConnection) u.openConnection();
 			uc.setInstanceFollowRedirects(false);
 			logger.info( "open connection to " + pURL );
 			return(true);

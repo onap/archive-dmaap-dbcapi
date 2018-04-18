@@ -52,12 +52,11 @@ public class DmaapService  extends BaseLoggingClass  {
 	
 	private Singleton<Dmaap> dmaapholder = DatabaseClass.getDmaap();
 	
-	// TODO put these in properties file
+	
 	String topicFactory; // = "org.openecomp.dcae.dmaap.topicFactory";
 	String topicMgrRole; // = "org.openecomp.dmaapBC.TopicMgr";
-	
-	// TODO confirm this is  equivalent to dmaap.getTopicNsRoot() so we can retire it
 	String dcaeTopicNs; // = "org.openecomp.dcae.dmaap";
+	private boolean multiSite;
 	
 	
 	public DmaapService() {
@@ -65,6 +64,7 @@ public class DmaapService  extends BaseLoggingClass  {
 		topicFactory = p.getProperty("MR.TopicFactoryNS", "MR.topicFactoryNS.not.set");
 		topicMgrRole = p.getProperty("MR.TopicMgrRole", "MR.TopicMgrRole.not.set" );
 		dcaeTopicNs = dmaapholder.get().getTopicNsRoot();
+		multiSite = "true".equalsIgnoreCase(p.getProperty("MR.multisite", "true"));
 		
 	}
 	
@@ -85,7 +85,11 @@ public class DmaapService  extends BaseLoggingClass  {
 			AafService aaf = new AafService( ServiceType.AAF_Admin);
 			ApiPerms p = new ApiPerms();
 			p.setEnvMap();
-			boolean anythingWrong = setTopicMgtPerms(  nd,  aaf ) || createMmaTopic();
+			boolean anythingWrong = false;
+			
+			if ( multiSite ) {
+				anythingWrong = setTopicMgtPerms(  nd,  aaf ) || createMmaTopic();
+			}
 					
 			if ( anythingWrong ) {
 				dmaap.setStatus(DmaapObject_Status.INVALID); 
@@ -121,7 +125,9 @@ public class DmaapService  extends BaseLoggingClass  {
 			ApiPerms p = new ApiPerms();
 			p.setEnvMap();
 			AafService aaf = new AafService( ServiceType.AAF_Admin);
-			anythingWrong = setTopicMgtPerms(  nd,  aaf ) || createMmaTopic();
+			if ( multiSite ) {
+				anythingWrong = setTopicMgtPerms(  nd,  aaf ) || createMmaTopic();
+			}
 		}
 					
 		if ( anythingWrong ) {
