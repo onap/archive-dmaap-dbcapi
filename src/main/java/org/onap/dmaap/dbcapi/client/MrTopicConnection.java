@@ -47,13 +47,14 @@ public class MrTopicConnection extends BaseLoggingClass  {
 	
 	private  String mmProvCred; 
 	private	String unit_test;
-	
+	private boolean useAAF;
 
 
 	public MrTopicConnection(String user, String pwd ) {
 		mmProvCred = new String( user + ":" + pwd );
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
         unit_test = p.getProperty( "UnitTest", "No" );
+    	useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
 	}
 	
 	public boolean makeTopicConnection( MR_Cluster cluster, String topic, String overrideFqdn ) {
@@ -126,8 +127,10 @@ public class MrTopicConnection extends BaseLoggingClass  {
 		try {
 			byte[] postData = postMessage.getBytes();
 			logger.info( "post fields=" + postMessage );
-			uc.setRequestProperty("Authorization", auth);
-			logger.info( "Authenticating with " + auth );
+			if ( useAAF ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			}
 			uc.setRequestMethod("POST");
 			uc.setRequestProperty("Content-Type", "application/json");
 			uc.setRequestProperty( "charset", "utf-8");

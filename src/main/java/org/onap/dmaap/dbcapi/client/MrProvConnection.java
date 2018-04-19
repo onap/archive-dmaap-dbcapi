@@ -54,36 +54,30 @@ public class MrProvConnection extends BaseLoggingClass{
 
 	
 	private String topicMgrCred;
+	private boolean useAAF;
+	private	String	user;
+	private	String	encPwd;
 	
-	private String getCred( ) {
+	public MrProvConnection() {
 		String mechIdProperty = "aaf.TopicMgrUser";
 		String pwdProperty = "aaf.TopicMgrPassword";
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		logger.info( "templog:getCred: 10");
+		user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
+		encPwd = p.getProperty( pwdProperty, "notSet" );
+		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
+		topicMgrCred =  getCred();
+		
+	}
+	
+	private String getCred( ) {
 
-		String user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
-		logger.info( "templog:getCred: 20");
 
 		String pwd = "";
-		String encPwd = p.getProperty( pwdProperty, "notSet" );
-		logger.info( "templog:getCred: 30");
-
-		AafDecrypt decryptor = new AafDecrypt();
-		logger.info( "templog:getCred: 40");
+		AafDecrypt decryptor = new AafDecrypt();	
 		pwd = decryptor.decrypt(encPwd);
-		logger.info( "templog:getCred: 50");
-	
-		return user + ":" + pwd;
-		
-		
-		
+		return user + ":" + pwd;	
 	}
 	
-	
-	public MrProvConnection( ) {
-		topicMgrCred =  getCred();
-
-	}
 	
 	public boolean makeTopicConnection( MR_Cluster cluster ) {
 		logger.info( "connect to cluster: " + cluster.getDcaeLocationName());
@@ -162,8 +156,12 @@ public class MrProvConnection extends BaseLoggingClass{
 		try {
 			byte[] postData = postTopic.getBytes();
 			logger.info( "post fields=" + postData.toString() );
-			uc.setRequestProperty("Authorization", auth);
-			logger.info( "Authenticating with " + auth );
+			
+			// when not using AAF, do not attempt Basic Authentication
+			if ( useAAF ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			}
 			uc.setRequestMethod("POST");
 			uc.setRequestProperty("Content-Type", "application/json");
 			uc.setRequestProperty( "charset", "utf-8");

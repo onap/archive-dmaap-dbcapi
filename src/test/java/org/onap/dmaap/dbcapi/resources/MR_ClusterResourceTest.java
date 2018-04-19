@@ -111,7 +111,7 @@ public class MR_ClusterResourceTest extends JerseyTest {
 		}
 
 		// now change a field
-		cluster.setHosts( h );
+
 		reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
 
 		// update with incorrect key

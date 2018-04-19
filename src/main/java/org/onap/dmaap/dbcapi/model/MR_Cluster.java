@@ -31,7 +31,6 @@ public class MR_Cluster extends DmaapObject {
 
 	private String dcaeLocationName;
 	private String fqdn;
-	private String[] hosts;
 	private	DmaapTimestamp lastMod;
 	private	String	topicProtocol;
 	private String	topicPort;
@@ -47,7 +46,6 @@ public class MR_Cluster extends DmaapObject {
 	public MR_Cluster() {
 		this.topicProtocol = defaultTopicProtocol;
 		this.topicPort = defaultTopicPort;
-		this.hosts = new String[3];
 		this.lastMod = new DmaapTimestamp();
 		this.lastMod.mark();
 
@@ -55,24 +53,7 @@ public class MR_Cluster extends DmaapObject {
 		
 	}
 	
-	// Deprecate this constructor
-	public MR_Cluster( String dLN,
-						String f,
-						String a,
-						String[] h ) {
-		this.dcaeLocationName = dLN;
-		this.fqdn = f;
-		this.hosts = new String[3];
-		this.hosts[0] = h[0];
-		this.hosts[1] = h[1];
-		this.hosts[2] = h[2];
-		this.topicProtocol = defaultTopicProtocol;
-		this.topicPort = defaultTopicPort;
-		this.lastMod = new DmaapTimestamp();
-		this.lastMod.mark();
 
-		debugLogger.debug( "depracated MR_Cluster constructor w initialization complete" + this.lastMod.getVal() );
-	}
 	
 	// new style constructor
 	public MR_Cluster( String dLN,
@@ -81,12 +62,19 @@ public class MR_Cluster extends DmaapObject {
 			String port ) {
 		this.dcaeLocationName = dLN;
 		this.fqdn = f;
-		this.hosts = new String[3];
-		this.hosts[0] = fqdn;
-		this.hosts[1] = fqdn;
-		this.hosts[2] = fqdn;
-		this.topicProtocol = prot;
-		this.topicPort = port;
+
+		if ( prot == null || prot.isEmpty() ) {
+			this.topicProtocol = defaultTopicProtocol;
+		} else {
+			this.topicProtocol = prot;
+		}
+		if ( port == null || port.isEmpty() ) {
+			this.topicPort = defaultTopicPort;
+		} else {
+			this.topicPort = port;
+		}
+		
+		
 		this.lastMod = new DmaapTimestamp();
 		this.lastMod.mark();
 		
@@ -108,13 +96,6 @@ public class MR_Cluster extends DmaapObject {
 		this.fqdn = fqdn;
 	}
 
-	public String[] getHosts() {
-		return hosts;
-	}
-
-	public void setHosts(String[] hosts) {
-		this.hosts = hosts;
-	}
 
 	public String getTopicProtocol() {
 		return topicProtocol;

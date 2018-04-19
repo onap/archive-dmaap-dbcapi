@@ -59,8 +59,6 @@ public class MR_ClusterTest {
 	public void testMR_ClusterClassConstructor() {
 
 		MR_Cluster t = new MR_Cluster( d, fqdn, "http", "3904");
-
-		t.getHosts();
 	
 		assertTrue( t.getDcaeLocationName() == d  );
 		assertTrue( t.getFqdn() == fqdn  );
@@ -70,8 +68,6 @@ public class MR_ClusterTest {
 	public void testw3() {
 
 		MR_Cluster t = new MR_Cluster();
-		String[] h = { "host1", "host2", "host3" };
-		t.setHosts( h );
 	
 		assertTrue( t.getDcaeLocationName() == null  );
 		assertTrue( t.getFqdn() == null  );
