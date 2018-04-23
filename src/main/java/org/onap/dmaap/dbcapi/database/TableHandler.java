@@ -68,7 +68,8 @@ class TableHandler<C>	{
 	private void setup(DatabaseMetaData dmd, Class<C> cls, String tabname, String keyname) throws Exception {
 		this.cls = cls;
 		Vector<DBFieldHandler> h = new Vector<DBFieldHandler>();
-		ResultSet rs = dmd.getColumns("", "public", tabname, null);
+		String qualifiedTableName = String.format( "%s.%s", cf.getSchema(), tabname );
+		ResultSet rs = dmd.getColumns("", cf.getSchema(), tabname, null);
 		StringBuffer sb1 = new StringBuffer();
 		StringBuffer sb2 = new StringBuffer();
 		StringBuffer sb3 = new StringBuffer();
@@ -100,15 +101,15 @@ class TableHandler<C>	{
 		if (haskey) {
 			count++;
 			h.add(new DBFieldHandler(cls, keyname, count, getSpecialCase(tabname, keyname)));
-			delstmt = "DELETE FROM " + tabname + " WHERE " + keyname + " = ?";
-			insorreplstmt = "INSERT INTO " + tabname + " (" + clist + ", " + keyname + ") VALUES (" + qlist + ", ?) ON CONFLICT(" + keyname + ") DO UPDATE SET (" + clist + ") = (" + elist + ")";
-			getstmt = "SELECT " + clist + ", " + keyname + " FROM " + tabname + " WHERE " + keyname + " = ?";
-			liststmt = "SELECT " + clist + ", " + keyname + " FROM " + tabname;
+			delstmt = "DELETE FROM " + qualifiedTableName + " WHERE " + keyname + " = ?";
+			insorreplstmt = "INSERT INTO " + qualifiedTableName + " (" + clist + ", " + keyname + ") VALUES (" + qlist + ", ?) ON CONFLICT(" + keyname + ") DO UPDATE SET (" + clist + ") = (" + elist + ")";
+			getstmt = "SELECT " + clist + ", " + keyname + " FROM " + qualifiedTableName + " WHERE " + keyname + " = ?";
+			liststmt = "SELECT " + clist + ", " + keyname + " FROM " + qualifiedTableName;
 		} else {
-			delstmt = "DELETE FROM " + tabname;
-			initstmt = "INSERT INTO " + tabname + " (" + clist + ") VALUES (" + qlist + ")";
-			insorreplstmt = "UPDATE " + tabname + " SET (" + clist + ") = (" + qlist + ")";
-			getstmt = "SELECT " + clist + ", " + keyname + " FROM " + tabname;
+			delstmt = "DELETE FROM " + qualifiedTableName;
+			initstmt = "INSERT INTO " + qualifiedTableName + " (" + clist + ") VALUES (" + qlist + ")";
+			insorreplstmt = "UPDATE " + qualifiedTableName + " SET (" + clist + ") = (" + qlist + ")";
+			getstmt = "SELECT " + clist + ", " + keyname + " FROM " + qualifiedTableName;
 		}
 		fields = h.toArray(new DBFieldHandler[h.size()]);
 	}

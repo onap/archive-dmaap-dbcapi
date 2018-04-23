@@ -55,7 +55,7 @@ public class LoadSchema	{
 		Connection c = null;
 		Statement stmt = null;
 		InputStream is = null;
-		try {
+		try { 
 			c = cf.get(true);
 			stmt = c.createStatement();
 			int newver = -1;
@@ -63,11 +63,17 @@ public class LoadSchema	{
 				newver = getVer(stmt);
 			} catch (Exception e) {}
 			logger.info("Database schema currently at version " + newver++);
+
 			while ((is = LoadSchema.class.getClassLoader().getResourceAsStream("schema_" + newver + ".sql")) != null) {
 				logger.info("Upgrading database schema to version " + newver);
 				BufferedReader br = new BufferedReader(new InputStreamReader(is));
 				String s;
-				String sofar = null;
+				String sofar;
+				if ( newver > 0 ) {
+					sofar = null;
+				} else {
+					sofar = String.format( "SET search_path to %s;", cf.getSchema());
+				}
 				while ((s = br.readLine()) != null) {
 					logger.info("SCHEMA: " + s);
 					s = s.trim();
