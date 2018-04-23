@@ -52,12 +52,15 @@ public class ConnectionFactory	{
 	private String	dbname;
 	private String	dbuser;
 	private String	dbcr;
+	private String  schema;
+	
 	public ConnectionFactory() {
 		Properties p = DmaapConfig.getConfig();
 		host = p.getProperty("DB.host", "dcae-pstg-write-ftl.domain.notset.com");
 		dbname = p.getProperty("DB.name", "dmaap");
 		dbuser = p.getProperty("DB.user", "dmaap_admin");
 		dbcr = p.getProperty("DB.cred", "test234-ftl");
+		schema = p.getProperty("DB.schema", "public");
 	}
 	public static ConnectionFactory getDefaultInstance() {
 		return(instance);
@@ -76,6 +79,9 @@ public class ConnectionFactory	{
 		p.put("user", dbuser);
 		p.put("password", dbcr);
 		return(DriverManager.getConnection("jdbc:postgresql://" + host + "/" + dbname, p));
+	}
+	public String getSchema() {
+		return(schema);
 	}
 	public void release(Connection c) {
 		synchronized(this) {
