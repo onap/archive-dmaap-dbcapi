@@ -58,22 +58,35 @@ public class LoadSchema	{
 		try { 
 			c = cf.get(true);
 			stmt = c.createStatement();
+			
+			// this sets the PG search_path to a consistent schema, otherwise sometimes
+			// we get public, and sometimes we get dmaap_admin
+			String cmd = String.format( "SET search_path to %s;", cf.getSchema());
+			try {
+				stmt.execute(cmd);
+				logger.info("SCHEMA: " + cmd);
+			} catch (SQLException sqle) {
+					throw sqle;
+			}
+			
+			
+			// determine if an upgrade is needed
 			int newver = -1;
 			try {
 				newver = getVer(stmt);
 			} catch (Exception e) {}
 			logger.info("Database schema currently at version " + newver++);
+			
+
 
 			while ((is = LoadSchema.class.getClassLoader().getResourceAsStream("schema_" + newver + ".sql")) != null) {
 				logger.info("Upgrading database schema to version " + newver);
 				BufferedReader br = new BufferedReader(new InputStreamReader(is));
 				String s;
-				String sofar;
-				if ( newver > 0 ) {
-					sofar = null;
-				} else {
-					sofar = String.format( "SET search_path to %s;", cf.getSchema());
-				}
+				String sofar = null;
+				
+
+				
 				while ((s = br.readLine()) != null) {
 					logger.info("SCHEMA: " + s);
 					s = s.trim();
