@@ -137,11 +137,11 @@ public class MirrorMaker extends DmaapObject {
 			        }
 			}
 	 */
-	public String createMirrorMaker() {
+	public String createMirrorMaker( String consumerPort, String producerPort ) {
 		StringBuilder str = new StringBuilder( "{ \"messageID\": \"" + MirrorMakerService.genTransactionId() + "\", \"createMirrorMaker\": {"  );
 		str.append( " \"name\": \"" + this.getMmName() + "\", " );
-		str.append( " \"consumer\": \"" + this.sourceCluster + ":2181\", " );
-		str.append( " \"producer\": \"" + this.targetCluster + ":9092\" ");
+		str.append( " \"consumer\": \"" + this.sourceCluster + ":" + consumerPort + "\", " );
+		str.append( " \"producer\": \"" + this.targetCluster + ":" + producerPort + "\" ");
 		
 		str.append( " } }" );
 		

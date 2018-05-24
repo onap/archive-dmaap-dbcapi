@@ -22,6 +22,7 @@ package org.onap.dmaap.dbcapi.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 import org.onap.dmaap.dbcapi.util.DmaapTimestamp;
 
 
@@ -34,32 +35,53 @@ public class MR_Cluster extends DmaapObject {
 	private	DmaapTimestamp lastMod;
 	private	String	topicProtocol;
 	private String	topicPort;
+	private	String	replicationGroup;
+	private	String	sourceReplicationPort;
+	private	String	targetReplicationPort;
 
 	
 	// TODO: make this a system property
-	private static String defaultTopicProtocol = "https";
-	private	static String defaultTopicPort = "3905";
+	private static  String defaultTopicProtocol;
+	private static	 String defaultTopicPort;
+	private static  String defaultReplicationGroup;
+	private static  String defaultSourceReplicationPort;
+	private static  String defaultTargetReplicationPort;
 	
-
+	private static void setDefaults() {
+		boolean been_here = false;
+		if ( been_here ) {
+			return;
+		}
+		DmaapConfig dc = (DmaapConfig)DmaapConfig.getConfig();
+		defaultTopicProtocol = dc.getProperty("MR.TopicProtocol", "https");
+		defaultTopicPort = dc.getProperty( "MR.TopicPort", "3905");
+		defaultReplicationGroup = dc.getProperty( "MR.ReplicationGroup", "" );
+		defaultSourceReplicationPort = dc.getProperty( "MR.SourceReplicationPort", "2181");
+		defaultTargetReplicationPort = dc.getProperty( "MR.TargetReplicationPort", "9092");
+		been_here = true;
+	}
 
 
 	public MR_Cluster() {
+		setDefaults();
 		this.topicProtocol = defaultTopicProtocol;
 		this.topicPort = defaultTopicPort;
+		this.replicationGroup = null;
+		this.sourceReplicationPort = defaultSourceReplicationPort;
+		this.targetReplicationPort = defaultTargetReplicationPort;
 		this.lastMod = new DmaapTimestamp();
 		this.lastMod.mark();
 
 		debugLogger.debug( "MR_Cluster constructor " + this.lastMod );
 		
 	}
-	
 
-	
 	// new style constructor
 	public MR_Cluster( String dLN,
 			String f,
 			String prot,
-			String port ) {
+			String port) {
+		setDefaults();
 		this.dcaeLocationName = dLN;
 		this.fqdn = f;
 
@@ -73,13 +95,59 @@ public class MR_Cluster extends DmaapObject {
 		} else {
 			this.topicPort = port;
 		}
-		
-		
+
+		this.replicationGroup = defaultReplicationGroup;
+		this.sourceReplicationPort = defaultSourceReplicationPort;
+		this.targetReplicationPort = defaultTargetReplicationPort;
+
 		this.lastMod = new DmaapTimestamp();
 		this.lastMod.mark();
 		
 		debugLogger.debug( "MR_Cluster constructor w initialization complete" + this.lastMod.getVal() );
-}
+	}
+
+	public MR_Cluster( String dLN,
+			String f,
+			String prot,
+			String port,
+			String repGroup,
+			String sourceRepPort,
+			String targetRepPort ) {
+		setDefaults();
+		this.dcaeLocationName = dLN;
+		this.fqdn = f;
+
+		if ( prot == null || prot.isEmpty() ) {
+			this.topicProtocol = defaultTopicProtocol;
+		} else {
+			this.topicProtocol = prot;
+		}
+		if ( port == null || port.isEmpty() ) {
+			this.topicPort = defaultTopicPort;
+		} else {
+			this.topicPort = port;
+		}
+		if ( repGroup == null || repGroup.isEmpty() ) {
+			this.replicationGroup = defaultReplicationGroup;
+		} else {
+			this.replicationGroup = repGroup;
+		}
+		if ( sourceRepPort == null || sourceRepPort.isEmpty()) {
+			this.sourceReplicationPort = defaultSourceReplicationPort;
+		} else {
+			this.sourceReplicationPort = sourceRepPort;
+		}
+		if ( targetRepPort == null || targetRepPort.isEmpty()) {
+			this.targetReplicationPort = defaultTargetReplicationPort;
+		} else {
+			this.targetReplicationPort = targetRepPort;
+		}
+				
+		this.lastMod = new DmaapTimestamp();
+		this.lastMod.mark();
+		
+		debugLogger.debug( "MR_Cluster constructor w initialization complete" + this.lastMod.getVal() );
+	}
 	public String getDcaeLocationName() {
 		return dcaeLocationName;
 	}
@@ -111,6 +179,39 @@ public class MR_Cluster extends DmaapObject {
 
 	public void setTopicPort(String topicPort) {
 		this.topicPort = topicPort;
+	}
+
+	public String getReplicationGroup() {
+		return replicationGroup;
+	}
+
+	public void setReplicationGroup(String replicationGroup) {
+		this.replicationGroup = replicationGroup;
+	}
+
+
+
+
+	public String getSourceReplicationPort() {
+		return sourceReplicationPort;
+	}
+
+
+
+	public void setSourceReplicationPort(String sourceReplicationPort) {
+		this.sourceReplicationPort = sourceReplicationPort;
+	}
+
+
+
+	public String getTargetReplicationPort() {
+		return targetReplicationPort;
+	}
+
+
+
+	public void setTargetReplicationPort(String targetReplicationPort) {
+		this.targetReplicationPort = targetReplicationPort;
 	}
 
 

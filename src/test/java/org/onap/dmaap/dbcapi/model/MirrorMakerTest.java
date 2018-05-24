@@ -79,6 +79,8 @@ public class MirrorMakerTest {
 		String f = "org.onap.interestingTopic";
 		String c1 =  "cluster1.onap.org";
 		String c2 =  "cluster2.onap.org";
+		String p1 = "9092";
+		String p2 = "2081";
 		MirrorMaker t = new MirrorMaker( c1, c2 );
 		String m = t.getMmName();
 
@@ -94,7 +96,7 @@ public class MirrorMakerTest {
 
 		s = t.updateWhiteList();
 
-		s = t.createMirrorMaker();
+		s = t.createMirrorMaker(p1, p2);
 
 		t.delVector( f, c1, c2 );
 
