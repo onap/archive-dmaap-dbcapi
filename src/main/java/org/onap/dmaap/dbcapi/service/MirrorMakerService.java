@@ -51,26 +51,30 @@ public class MirrorMakerService extends BaseLoggingClass {
 	private static MrTopicConnection prov;
 	private static AafDecrypt decryptor;
 	
+	private static String provUser;
+	private static String provUserPwd;
+	private static String defaultProducerPort;
+	private static String defaultConsumerPort;
+	private static String centralFqdn;
+	
 	public MirrorMakerService() {
 		super();
-		
 		decryptor = new AafDecrypt();
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		provUser = p.getProperty("MM.ProvUserMechId");
+		provUserPwd = decryptor.decrypt(p.getProperty( "MM.ProvUserPwd", "notSet" ));
+		defaultProducerPort = p.getProperty( "MR.SourceReplicationPort", "9092");
+		defaultConsumerPort = p.getProperty( "MR.TargetReplicationPort", "2181");	
+		centralFqdn = p.getProperty("MR.CentralCname", "notSet");
 	}
 
 	// will create a MM on MMagent if needed
 	// will update the MMagent whitelist with all topics for this MM
 	public MirrorMaker updateMirrorMaker( MirrorMaker mm ) {
 		logger.info( "updateMirrorMaker");
-		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		String provUser = p.getProperty("MM.ProvUserMechId");
-		String provUserPwd = decryptor.decrypt(p.getProperty( "MM.ProvUserPwd", "notSet" ));
-		String defaultProducerPort = p.getProperty( "MM.KafkaProducerPort", "9092");
-		String defaultConsumerPort = p.getProperty( "MM.KafkaConsumerPort", "2181");
 	
 		prov = new MrTopicConnection( provUser, provUserPwd );
-
-		String centralFqdn = p.getProperty("MR.CentralCname", "notSet");
-		
+	
 		DmaapService dmaap = new DmaapService();
 		MR_ClusterService clusters = new MR_ClusterService();
 	
@@ -114,11 +118,6 @@ public class MirrorMakerService extends BaseLoggingClass {
 		return mirrors.get(key);
 	}
 	
-	/*public MirrorMaker updateMirrorMaker( MirrorMaker mm ) {
-		logger.info( "updateMirrorMaker");
-		return mirrors.put( mm.getMmName(), mm);
-	}
-	*/
 	
 	public void delMirrorMaker( MirrorMaker mm ) {
 		logger.info( "delMirrorMaker");

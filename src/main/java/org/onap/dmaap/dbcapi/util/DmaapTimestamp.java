@@ -36,12 +36,10 @@ public class DmaapTimestamp {
 	public DmaapTimestamp() {
 
 		stamp = cal.getTime();
-		logger.info("constructor: set val to " + stamp);
 	}
 	
 	public void mark() {
 		stamp =  cal.getTime();
-		logger.info("mark: set val to " + stamp);
 	}
 	
 	public Date getVal() {
