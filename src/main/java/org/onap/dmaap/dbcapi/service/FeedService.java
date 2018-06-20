@@ -193,7 +193,7 @@ public class FeedService  extends BaseLoggingClass {
 	// need to save the Sub objects independently
 	private boolean saveSubs( Feed fnew, Feed req ) {	
 		ArrayList<DR_Sub> subs = req.getSubs();
-		if ( subs.size() == 0 ) {
+		if ( subs == null || subs.size() == 0 ) {
 			logger.info( "No subs specified");
 		} else {
 			DR_SubService subSvc = new DR_SubService( fnew.getSubscribeURL() );
@@ -393,12 +393,21 @@ public class FeedService  extends BaseLoggingClass {
 			}
 			return feeds.remove(req.getFeedId());
 		} else {
-			req.setStatus(DmaapObject_Status.DELETED);
-			req.setPubs(null);
+		
+			logger.info( "Disable pubs for deleted feed - creating tmp pub");
+			ArrayList<DR_Pub> tmppub = new ArrayList<DR_Pub>();
+			tmppub.add( new DR_Pub( dcaeLocations.getCentralLocation())
+								.setRandomUserName()
+								.setRandomPassword());
+			req.setPubs(tmppub);
 			req.setSubs(null);
-			req.setLastMod();
-			feeds.put( req.getFeedId(), req );
-			return null;
+			Feed fnew = updateFeed( req, err );
+			if ( ! err.is2xx()) {
+				return req;
+			}
+			fnew.setStatus(DmaapObject_Status.DELETED);
+			feeds.put( fnew.getFeedId(), fnew );
+			return null;	
 		}
 
 		

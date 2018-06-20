@@ -127,7 +127,8 @@ public class FeedResource extends BaseLoggingClass {
 				return resp.error();			
 			}
 		} else if ( nfeed.getStatus() == DmaapObject_Status.DELETED ) {
-			nfeed =  feedService.updateFeed(nfeed, resp.getErr());
+			feed.setFeedId( nfeed.getFeedId());
+			nfeed =  feedService.updateFeed(feed, resp.getErr());
 			if ( nfeed != null ) {
 				return resp.success(nfeed);
 			} else {
