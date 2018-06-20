@@ -200,7 +200,8 @@ public class DR_Sub extends DmaapObject {
 		// TODO:
 		//   - introduce Bus Controller API support for these attributes
 		//   - store the default values in the DB
-		String postJSON = String.format("{\"delivery\": {\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}, \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s }", 
+		String postJSON = String.format("{\"suspend\": \"%s\", \"delivery\": {\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}, \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s }", 
+				this.suspended,
 				this.getDeliveryURL(), 
 				this.getUsername(),
 				this.getUserpwd(),

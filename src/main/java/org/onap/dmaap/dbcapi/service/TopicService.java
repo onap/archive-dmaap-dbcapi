@@ -43,6 +43,7 @@ import org.onap.dmaap.dbcapi.model.ReplicationType;
 import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
+import org.onap.dmaap.dbcapi.util.Fqdn;
 import org.onap.dmaap.dbcapi.util.Graph;
 
 public class TopicService extends BaseLoggingClass {
@@ -124,6 +125,20 @@ public class TopicService extends BaseLoggingClass {
 				return null;
 			}
 		}
+		if ( topic.getReplicationCase().involvesGlobal() ) {
+			if ( topic.getGlobalMrURL() == null ) {
+				topic.setGlobalMrURL(defaultGlobalMrHost);
+			}
+			if ( ! Fqdn.isValid( topic.getGlobalMrURL())) {
+				logger.error( "GlobalMR FQDN not valid: " + topic.getGlobalMrURL());
+				topic.setStatus( DmaapObject_Status.INVALID);
+				err.setCode(500);
+				err.setMessage("Value is not a valid FQDN:" +  topic.getGlobalMrURL() );
+				err.setFields("globalMrURL");
+	
+				return null;
+			}
+		}
 
 
 		if ( topic.getNumClients() > 0 ) {
@@ -146,11 +161,7 @@ public class TopicService extends BaseLoggingClass {
 
 			topic.setClients(clients2);
 		}
-		if ( topic.getReplicationCase().involvesGlobal() ) {
-			if ( topic.getGlobalMrURL() == null ) {
-				topic.setGlobalMrURL(defaultGlobalMrHost);
-			}
-		}
+
 		Topic ntopic = checkForBridge( topic, err );
 		if ( ntopic == null ) {
 			topic.setStatus( DmaapObject_Status.INVALID);

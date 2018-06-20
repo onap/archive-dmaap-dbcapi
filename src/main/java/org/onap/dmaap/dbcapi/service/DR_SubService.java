@@ -167,14 +167,21 @@ public class DR_SubService extends BaseLoggingClass {
 		
 	public void removeDr_Sub( String key, ApiError apiError ) {
 		logger.debug( "enter removeDR_Subs()");
+		
 		DR_Sub sub = dr_subs.get( key );
 		if ( sub == null ) {
 			apiError.setCode(Status.NOT_FOUND.getStatusCode());
 			apiError.setFields( "subId");
 			apiError.setMessage("subId " + key + " not found");
 		} else {	
-			dr_subs.remove(key);
-			apiError.setCode(200);
+			DrProvConnection prov = new DrProvConnection();
+			prov.makeSubPutConnection( key );
+			String resp = prov.doDeleteDr_Sub( sub, apiError );
+			logger.debug( "resp=" + resp );
+			
+			if ( apiError.is2xx() ) {
+				dr_subs.remove(key);
+			}
 		}
 
 		return;

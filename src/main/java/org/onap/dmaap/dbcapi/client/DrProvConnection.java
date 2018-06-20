@@ -778,6 +778,80 @@ public class DrProvConnection extends BaseLoggingClass {
 		return responseBody;
 	}
 	
+	public String doDeleteDr_Sub(DR_Sub delSub, ApiError err) {
+		logger.info( "entry: doDeleteDr_Sub() "  );
+		byte[] postData = delSub.getBytes();
+		logger.info( "post fields=" + postData );
+		String responsemessage = null;
+		String responseBody = null;
+
+		try {
+	
+			uc.setRequestMethod("DELETE");
+		
+			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.subscription");
+			uc.setRequestProperty( "charset", "utf-8");
+			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", "DGL" );
+			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			uc.setUseCaches(false);
+			uc.setDoOutput(true);
+			OutputStream os = null;
+			int rc = -1;
+			
+			try {
+                 uc.connect();
+                 os = uc.getOutputStream();
+                 //os.write( postData );
+
+            } catch (ProtocolException pe) {
+                 // Rcvd error instead of 100-Continue
+                 try {
+                     // work around glitch in Java 1.7.0.21 and likely others
+                     // without this, Java will connect multiple times to the server to run the same request
+                     uc.setDoOutput(false);
+                 } catch (Exception e) {
+                 }
+            }
+			rc = uc.getResponseCode();
+			logger.info( "http response code:" + rc );
+            responsemessage = uc.getResponseMessage();
+            logger.info( "responsemessage=" + responsemessage );
+
+
+            if (responsemessage == null) {
+                 // work around for glitch in Java 1.7.0.21 and likely others
+                 // When Expect: 100 is set and a non-100 response is received, the response message is not set but the response code is
+                 String h0 = uc.getHeaderField(0);
+                 if (h0 != null) {
+                     int i = h0.indexOf(' ');
+                     int j = h0.indexOf(' ', i + 1);
+                     if (i != -1 && j != -1) {
+                         responsemessage = h0.substring(j + 1);
+                     }
+                 }
+            }
+            if (rc == 204 ) {
+     			responseBody = bodyToString( uc.getInputStream() );
+    			logger.info( "responseBody=" + responseBody );
+
+            } else {
+            	err.setCode(rc);
+            	err.setMessage(responsemessage);
+            }
+            
+		} catch (ConnectException ce) {
+            errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
+            err.setCode( 500 );
+        	err.setMessage("Backend connection refused");
+		} catch (Exception e) {
+            System.err.println("Unable to read response  " );
+            e.printStackTrace();
+        } finally {
+        	uc.disconnect();
+        }
+		return responseBody;
+
+	}
 	/*
 	 public static void main( String[] args ) throws Exception {
 	        PropertyConfigurator.configure("log4j.properties");
