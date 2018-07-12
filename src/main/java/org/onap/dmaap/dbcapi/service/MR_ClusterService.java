@@ -77,8 +77,12 @@ public class MR_ClusterService extends BaseLoggingClass {
 		DcaeLocationService locations = new DcaeLocationService();
 		List<MR_Cluster> result = new ArrayList<MR_Cluster>();
 		for( MR_Cluster c: mr_clusters.values() ) {
-			if ( locations.getDcaeLocation(c.getDcaeLocationName()).isCentral() ) {
-				result.add(c);
+			try {
+				if ( locations.getDcaeLocation(c.getDcaeLocationName()).isCentral() ) {
+					result.add(c);
+				}
+			} catch ( NullPointerException npe ) {
+				logger.warn( "Failed test isCentral for location:" + c.getDcaeLocationName() );
 			}
 		}
 		return result;

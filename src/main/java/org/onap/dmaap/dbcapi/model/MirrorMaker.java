@@ -194,7 +194,10 @@ public class MirrorMaker extends DmaapObject {
 
 	
 	public void addTopic( String topic ) {
-		topics.add(topic);
+		if ( ! topics.contains(topic)) {	
+			topics.add(topic);
+		}
+		logger.info( "Mirrormaker.addTopic: topic=" + topic + " . Now have " + topics.size() + " topics" );
 	}
 	
 	public int getTopicCount() {
