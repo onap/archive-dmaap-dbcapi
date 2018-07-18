@@ -89,7 +89,7 @@ public class GraphTest {
 
 		s = g.getCentralLoc();		
 		g.setHasCentral( true );
-		g.isHasCentral();
+		g.hasCentral();
 
 		hm = g.getGraph();
 

@@ -21,8 +21,10 @@
 package org.onap.dmaap.dbcapi.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -32,6 +34,7 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
+import org.onap.dmaap.dbcapi.service.DcaeLocationService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class MR_ClusterService extends BaseLoggingClass {
@@ -73,6 +76,10 @@ public class MR_ClusterService extends BaseLoggingClass {
 		return null;
 	}
 	
+	public MR_Cluster getMr_ClusterByLoc( String loc ) {
+		return mr_clusters.get( loc );
+	}
+	
 	public List<MR_Cluster> getCentralClusters() {
 		DcaeLocationService locations = new DcaeLocationService();
 		List<MR_Cluster> result = new ArrayList<MR_Cluster>();
@@ -87,6 +94,20 @@ public class MR_ClusterService extends BaseLoggingClass {
 		}
 		return result;
 	}	
+	
+	// builds the set of unique cluster groups
+	public Set<String> getGroups() {
+		Set<String> result = new HashSet<String>();
+		for( MR_Cluster c: mr_clusters.values() ) {
+			try {
+				result.add(c.getReplicationGroup());
+			} catch ( NullPointerException npe ) {
+				logger.warn( "Failed to add Group for cluster:" + c.getDcaeLocationName() );
+			}
+		}
+		return result;
+	}	
+
 
 	public MR_Cluster addMr_Cluster( MR_Cluster cluster, ApiError apiError ) {
 		logger.info( "Entry: addMr_Cluster");

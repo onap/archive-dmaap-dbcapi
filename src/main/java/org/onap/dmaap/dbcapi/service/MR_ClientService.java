@@ -57,10 +57,12 @@ public class MR_ClientService extends BaseLoggingClass{
 	private Map<String, Topic> topics = DatabaseClass.getTopics();
 	private Map<String, DcaeLocation> locations = DatabaseClass.getDcaeLocations();
 	private DmaapService dmaap = new DmaapService();
+	private String centralCname;
 	
 	public MR_ClientService() {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		
+	
+		centralCname = p.getProperty("MR.CentralCname", "MRcname.not.set");
 		deleteLevel = Integer.valueOf(p.getProperty("MR.ClientDeleteLevel", "0" ));
 	}
 	
@@ -132,12 +134,12 @@ public class MR_ClientService extends BaseLoggingClass{
 		}
 		String centralFqdn = null;
 		DcaeLocation candidate = locations.get(client.getDcaeLocationName());
-		if ( candidate != null && candidate.isCentral() ) {
-			DmaapConfig p = ( DmaapConfig)DmaapConfig.getConfig();
-			centralFqdn = p.getProperty("MR.CentralCname");
-		}
+
 		MR_Cluster cluster = clusters.get( client.getDcaeLocationName());
-		if (  cluster != null ) {
+		if (  cluster != null && candidate != null ) {
+			if ( candidate.isCentral() && ! topic.getReplicationCase().involvesFQDN() ) {
+				centralFqdn = centralCname;
+			}
 			client.setTopicURL(cluster.genTopicURL(centralFqdn, client.getFqtn()));
 			if ( centralFqdn == null ) {
 				client.setStatus( addTopicToCluster( cluster, topic, err));
@@ -148,8 +150,8 @@ public class MR_ClientService extends BaseLoggingClass{
 			
 			} else {
 				MR_ClusterService clusters = new MR_ClusterService();	
-				// in 1610, MM should only exist for edge-to-central
-				//  we use a cname for the central target
+				//  MM should only exist for edge-to-central
+				//  we use a cname for the central target (default resiliency with no replicationGroup set)
 				// but still need to provision topics on all central MRs
 				for( MR_Cluster central: clusters.getCentralClusters() ) {
 					client.setStatus( addTopicToCluster( central, topic, err));
@@ -161,7 +163,7 @@ public class MR_ClientService extends BaseLoggingClass{
 			}
 			
 		} else {
-			logger.info( "Client references a dcaeLocation that doesn't exist:" + client.getDcaeLocationName());
+			logger.warn( "Client references a dcaeLocation that doesn't exist:" + client.getDcaeLocationName());
 			client.setStatus( DmaapObject_Status.STAGED);
 			//return null;
 		}
