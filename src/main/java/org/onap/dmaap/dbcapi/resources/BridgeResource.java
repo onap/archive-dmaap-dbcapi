@@ -20,36 +20,30 @@
 
 package org.onap.dmaap.dbcapi.resources;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.Status;
 
-import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.BrTopic;
-import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.model.MirrorMaker;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.MirrorMakerService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 @Path("/bridge")
 @Api( value= "bridge", description = "Endpoint for retreiving MR Bridge metrics" )
@@ -77,7 +71,7 @@ public class BridgeResource extends BaseLoggingClass {
 			BrTopic brTopic = new BrTopic();
 			
 			logger.info( "getBridgeTopics():" + " source=" + source + ", target=" + target);
-	//		System.out.println("getBridgedTopics() " + "source=" + source + ", target=" + target );
+	
 			if (source != null && target != null) {		// get topics between 2 bridged locations
 				brTopic.setBrSource(source);
 				brTopic.setBrTarget(target);

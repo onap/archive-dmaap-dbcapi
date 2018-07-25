@@ -20,9 +20,15 @@
 
 package org.onap.dmaap.dbcapi.database;
 
-import java.util.*;
 import java.lang.reflect.*;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Vector;
 
 class TableHandler<C>	{
 	protected ConnectionFactory cf;

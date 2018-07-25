@@ -36,7 +36,6 @@ public class MirrorMaker extends DmaapObject {
 	private String	mmName;
 	private	ArrayList<String> topics;  //re-using this var name for backwards DB compatibility
 	
-	private Set<ReplicationVector> vectors;
 
 	
 	public MirrorMaker(){
@@ -47,7 +46,6 @@ public class MirrorMaker extends DmaapObject {
 		sourceCluster = source;
 		targetCluster = target;
 		mmName = genKey(source, target);
-		vectors = new HashSet<ReplicationVector>();
 		topics = new ArrayList<String>();
 
 	}
@@ -60,36 +58,6 @@ public class MirrorMaker extends DmaapObject {
 		this.mmName = mmName;
 	}
 
-	
-	public void addVector( String fqtn, String source, String target ) {
-		logger.info( "addVector: fqtn=" + fqtn + " source=" + source + " target=" + target );
-		if ( ! sourceCluster.equals( source ) ){
-			errorLogger.error( DmaapbcLogMessageEnum.MM_CIRCULAR_REF,  source,  sourceCluster );
-		}
-		vectors.add(new ReplicationVector( fqtn, source, target ));
-	}
-	
-	public void delVector( String fqtn, String source, String target ) {
-		vectors.remove(new ReplicationVector( fqtn, source, target));
-	}
-
-	
-	
-	public String toJSON() {
-		StringBuilder str = new StringBuilder( "{ \"source\": " + sourceCluster + ",\"topics\": ["  );
-		int numTargets = 0;
-		for (ReplicationVector rv: vectors) {
-			if ( numTargets > 0 ) {
-				str.append( ",");
-			}
-			str.append( " \"target\": " + rv.getTargetCluster() + ", \"topic\": " + rv.getFqtn());
-			numTargets++;
-		}
-		str.append( "] }" );
-		
-		return str.toString();
-	}
-		
 	
 	// returns the JSON for MM message containing which Topics to replicate
 	/* 
@@ -166,18 +134,11 @@ public class MirrorMaker extends DmaapObject {
 	}
 
 
-	public Set<ReplicationVector> getVectors() {
-		return vectors;
-	}
-
-	public void setVectors(Set<ReplicationVector> vectors) {
-		this.vectors = vectors;
-	}
 	public ArrayList<String> getTopics() {
 		return topics;
 	}
 
-	//public void setVectors(Set<ReplicationVector> vectors) {
+	
 	public void setTopics(ArrayList<String> topics) {
 		this.topics = topics;
 	}

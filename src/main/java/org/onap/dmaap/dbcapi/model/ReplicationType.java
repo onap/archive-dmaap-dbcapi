@@ -34,7 +34,13 @@ public enum ReplicationType {
 	REPLICATION_CENTRAL_TO_EDGE(20),
 	REPLICATION_CENTRAL_TO_GLOBAL(21),
 	REPLICATION_GLOBAL_TO_CENTRAL(30),
-	REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE(120);
+	REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE(120),
+	REPLICATION_EDGE_TO_FQDN(40),
+	REPLICATION_FQDN_TO_EDGE(41),
+	REPLICATION_FQDN_TO_GLOBAL(50),
+	REPLICATION_GLOBAL_TO_FQDN(51),
+	REPLICATION_EDGE_TO_FQDN_TO_GLOBAL(130),
+	REPLICATION_GLOBAL_TO_FQDN_TO_EDGE (140);
 
     private int value;
     private static Map map = new HashMap<>();
@@ -69,10 +75,30 @@ public enum ReplicationType {
 	}
 
 	public boolean involvesGlobal() {
-		if ( this.compareTo(REPLICATION_CENTRAL_TO_GLOBAL) == 0 ||
-				this.compareTo(REPLICATION_GLOBAL_TO_CENTRAL) == 0 ||
-				this.compareTo(REPLICATION_EDGE_TO_CENTRAL_TO_GLOBAL) == 0 ||
-				this.compareTo(REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE) == 0) {
+	
+		
+		if ( ( this.compareTo(REPLICATION_CENTRAL_TO_GLOBAL) == 0 ) ||
+			 ( this.compareTo(REPLICATION_GLOBAL_TO_CENTRAL) == 0 ) ||
+			 ( this.compareTo(REPLICATION_EDGE_TO_CENTRAL_TO_GLOBAL) == 0 ) ||
+			 ( this.compareTo(REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE) == 0 ) ||
+			 ( this.compareTo(REPLICATION_EDGE_TO_FQDN_TO_GLOBAL) == 0 ) ||
+			 ( this.compareTo(REPLICATION_GLOBAL_TO_FQDN_TO_EDGE) == 0 ) ||
+			 ( this.compareTo(REPLICATION_FQDN_TO_GLOBAL) == 0 ) ||
+			 ( this.compareTo(REPLICATION_GLOBAL_TO_FQDN) == 0 ) ) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean involvesFQDN() {
+		if ( 
+				( this.compareTo(REPLICATION_EDGE_TO_FQDN) == 0 ) ||
+				( this.compareTo(REPLICATION_EDGE_TO_FQDN_TO_GLOBAL) == 0 ) ||
+				( this.compareTo(REPLICATION_GLOBAL_TO_FQDN_TO_EDGE) == 0 ) ||
+				( this.compareTo(REPLICATION_FQDN_TO_GLOBAL) == 0 ) ||
+				( this.compareTo(REPLICATION_GLOBAL_TO_FQDN) == 0 ) ||
+				( this.compareTo(REPLICATION_FQDN_TO_EDGE) == 0 ) 
+				) {
 			return true;
 		}
 		return false;

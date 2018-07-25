@@ -29,6 +29,8 @@ import java.util.Map;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.MR_Client;
+import org.onap.dmaap.dbcapi.model.MR_Cluster;
+import org.onap.dmaap.dbcapi.service.MR_ClusterService;
 
 
 public class Graph {
@@ -49,20 +51,37 @@ public class Graph {
 	public Graph( List<MR_Client> clients, boolean strict ) {
 		if ( clients == null )
 			return;
+		initGraph( clients, strict, "" );
+		return;
+
+	}
+	public Graph( List<MR_Client> clients, boolean strict, String group ) {
+		if ( clients == null )
+			return;
+		initGraph( clients, strict, group );
+		return;
+	}
+	
+	private void initGraph(List<MR_Client> clients, boolean strict, String group ) {
+		MR_ClusterService clusters = new MR_ClusterService();
 		this.graph = new HashMap<String, String>();
 		this.hasCentral = false;
 		for( MR_Client client: clients ) {
 			if ( ! strict || client.isStatusValid()) {
 				String loc = client.getDcaeLocationName();
-				for( String action : client.getAction() ){
-					DcaeLocation dcaeLoc = locations.get(loc);
+				DcaeLocation dcaeLoc = locations.get(loc);
+				if ( dcaeLoc == null ) continue;
+				MR_Cluster c = clusters.getMr_ClusterByLoc(loc);
+				if ( group != null &&  ! group.isEmpty() && ! group.equals(c.getReplicationGroup())) continue;
+				
+				for( String action : client.getAction() ){			
 					if ( ! action.equals("view") && dcaeLoc != null ) {
-						graph.put(loc, dcaeLoc.getDcaeLayer());
+						String layer = dcaeLoc.getDcaeLayer();
+						if ( layer != null && layer.contains(centralDcaeLayerName) ) {
+							this.hasCentral = true;
+						}
+						graph.put(loc, layer);
 					}
-				}
-				String layer = graph.get(loc);
-				if ( layer != null && layer.contains(centralDcaeLayerName) ) {
-					this.hasCentral = true;
 				}
 	
 			}		
@@ -88,7 +107,7 @@ public class Graph {
 	public Collection<String> getKeys() {
 		return graph.keySet();
 	}
-	public boolean isHasCentral() {
+	public boolean hasCentral() {
 		return hasCentral;
 	}
 	public void setHasCentral(boolean hasCentral) {
@@ -105,6 +124,9 @@ public class Graph {
 			}
 		}
 		return null;
+	}
+	public boolean isEmpty() {
+		return graph.isEmpty();
 	}
 	
 	

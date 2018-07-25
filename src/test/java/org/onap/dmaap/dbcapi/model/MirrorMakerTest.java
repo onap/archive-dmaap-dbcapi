@@ -83,8 +83,8 @@ public class MirrorMakerTest {
 		String p2 = "2081";
 		MirrorMaker t = new MirrorMaker( c1, c2 );
 		String m = t.getMmName();
+	
 
-		t.addVector( f, c1, c2 );
 		ArrayList<String> topics = new ArrayList<String>();
 		topics.add( f );
 		t.setTopics( topics );
@@ -92,13 +92,9 @@ public class MirrorMakerTest {
 
 		int i = t.getTopicCount();
 
-		String s = t.toJSON();
-
-		s = t.updateWhiteList();
+		String s = t.updateWhiteList();
 
 		s = t.createMirrorMaker(p1, p2);
-
-		t.delVector( f, c1, c2 );
 
 	}
 

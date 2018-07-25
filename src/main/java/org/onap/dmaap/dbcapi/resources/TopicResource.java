@@ -120,7 +120,7 @@ public class TopicResource extends BaseLoggingClass {
 		topic.setLastMod();
 		
 		Topic mrc =  mr_topicService.addTopic(topic, check.getErr());
-		if ( mrc != null && mrc.isStatusValid() ) {
+		if ( mrc != null && check.getErr().is2xx() ) {
 			return check.success(Status.CREATED.getStatusCode(), mrc);
 		}
 		return check.error();

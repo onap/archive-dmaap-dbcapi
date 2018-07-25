@@ -47,40 +47,8 @@ public class DatabaseClass extends BaseLoggingClass {
 	
 	private static long lastTime = 0L;
 	
-	private static class MirrorVectorHandler implements DBFieldHandler.SqlOp {
-		public Object get(ResultSet rs, int index) throws Exception {
-			String val = rs.getString(index);
-			if (val == null) {
-				return(null);
-			}
-			Set<ReplicationVector> rv = new HashSet<ReplicationVector>();
-			for (String s: val.split(",")) {
-				String[] f = s.split(";");
-				if (f.length < 3) {
-					continue;
-				}
-				rv.add(new ReplicationVector(DBFieldHandler.funesc(f[0]), DBFieldHandler.funesc(f[1]), DBFieldHandler.funesc(f[2])));
-			}
-			return(rv);
-		}
-		public void set(PreparedStatement ps, int index, Object val) throws Exception {
-			if (val == null) {
-				ps.setString(index, null);
-				return;
-			}
-			Set xv = (Set)val;
-			StringBuffer sb = new StringBuffer();
-			String sep = "";
-			for (Object o: xv) {
-				ReplicationVector rv = (ReplicationVector)o;
-				sb.append(sep).append(DBFieldHandler.fesc(rv.getFqtn())).append(';').append(DBFieldHandler.fesc(rv.getSourceCluster())).append(';').append(DBFieldHandler.fesc(rv.getTargetCluster()));
-				sep = ",";
-			}
-			ps.setString(index, sb.toString());
-		}
-	}
 
-	// modified version of MirrorVectorHandler for Topics
+
 	private static class MirrorTopicsHandler implements DBFieldHandler.SqlOp {
 		public Object get(ResultSet rs, int index) throws Exception {
 			String val = rs.getString(index);
@@ -192,8 +160,7 @@ public class DatabaseClass extends BaseLoggingClass {
 				mr_clusters = new DBMap<MR_Cluster>(MR_Cluster.class, "mr_cluster", "dcae_location_name");
 				feeds = new DBMap<Feed>(Feed.class, "feed", "feed_id");
 				TableHandler.setSpecialCase("topic", "replication_case", new TopicReplicationTypeHandler());
-				topics = new DBMap<Topic>(Topic.class, "topic", "fqtn");
-				//TableHandler.setSpecialCase("mirror_maker", "vectors", new MirrorVectorHandler());
+				topics = new DBMap<Topic>(Topic.class, "topic", "fqtn");			
 				TableHandler.setSpecialCase("mirror_maker", "topics", new MirrorTopicsHandler());
 				mirrors = new DBMap<MirrorMaker>(MirrorMaker.class, "mirror_maker", "mm_name");
 			} catch (Exception e) {
