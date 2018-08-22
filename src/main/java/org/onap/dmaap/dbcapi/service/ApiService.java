@@ -88,7 +88,7 @@ public class ApiService extends BaseLoggingClass {
 	}
 
 	 private String apiNamespace;
-	 private boolean usePE;
+
 	 private String uri;
 	 private String uriPath;
 	 private String method;
@@ -114,11 +114,12 @@ public class ApiService extends BaseLoggingClass {
 		
 		if (apiNamespace == null) {
 			DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-			usePE = "true".equalsIgnoreCase(p.getProperty("UsePE", "false"));
 			apiNamespace = p.getProperty("ApiNamespace", "org.openecomp.dmaapBC.api");
+			logger.info( "config param usePE has been deprecated.  Use ApiPermission.Class property instead.");
 		}
 		apiPolicy = new ApiPolicy();
-		logger.info( "usePE=" + usePE + " apiNamespace=" + apiNamespace);	
+
+		logger.info(  "apiNamespace=" + apiNamespace);	
 	}
 
 	public ApiService setAuth( String auth ) {
@@ -295,7 +296,7 @@ public class ApiService extends BaseLoggingClass {
 		if ( env == null || env.isEmpty() ) {
 			env = "boot";
 		}
-		if ( ! usePE ) return;  // skip authorization if not enabled
+		if ( ! apiPolicy.getUseAuthClass() ) return;  // skip authorization if not enabled
 		if ( authorization == null || authorization.isEmpty()) {
 			String errmsg = "No basic authorization value provided ";
 			err.setMessage(errmsg);

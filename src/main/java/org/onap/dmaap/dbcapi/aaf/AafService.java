@@ -20,13 +20,13 @@
 
 package org.onap.dmaap.dbcapi.aaf;
 
-import java.io.IOException;
-
-import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
+/*
+ * this service uses the AAF REST API endpoints to provision values in AAF
+ */
 public class AafService extends BaseLoggingClass {
 	public enum ServiceType {
 		AAF_Admin,
@@ -38,11 +38,6 @@ public class AafService extends BaseLoggingClass {
 	private String aafURL ;
 	private boolean useAAF = false;
 	
-	public AafService() {
-		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
-		
-	}
 	
 	private String getCred( boolean wPwd ) {
 		String mechIdProperty = null;
@@ -88,6 +83,9 @@ public class AafService extends BaseLoggingClass {
 	}
 		
 	private void initAafService( ServiceType t ) {
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "true"));
+		
 		ctype = t;
 		aaf = new AafConnection( getCred( true ) );
 	}
@@ -112,7 +110,7 @@ public class AafService extends BaseLoggingClass {
     		break;
  		
     	case 201:
-    		logger.info( "expected response" );
+    		logger.info( "expected response: " + rc);
     		break;
        	default :
     		logger.error( "Unexpected response: " + rc );
@@ -187,4 +185,6 @@ public class AafService extends BaseLoggingClass {
 		
 		return rc;
 	}
+
+
 }
