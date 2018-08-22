@@ -47,4 +47,5 @@ public class DmaapConfig extends Properties	{
 			System.exit(1);
 		}
 	}
+	
 }

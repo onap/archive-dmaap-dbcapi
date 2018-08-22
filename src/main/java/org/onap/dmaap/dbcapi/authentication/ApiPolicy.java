@@ -27,18 +27,21 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 public class ApiPolicy extends BaseLoggingClass {
 	static String allow = "allow";
 	String dClass = null;
-	ApiPermissionInterface perm = null;
+	private boolean useAuthClass;
+	ApiAuthorizationCheckInterface perm = null;
 	
 	public ApiPolicy() {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		dClass = p.getProperty( "ApiPermission.Class", allow );
 		logger.info( "ApiPolicy implements " + dClass);
 		if ( dClass.equalsIgnoreCase( allow )) {
+			useAuthClass = false;
 			return;
-		}
-
+		} 		
+		useAuthClass = true;
+		logger.info( "dClass=" + dClass + " useAuthClass=" + useAuthClass );
 		try {
-			perm = (ApiPermissionInterface) (Class.forName(dClass).newInstance());	
+			perm = (ApiAuthorizationCheckInterface) (Class.forName(dClass).newInstance());	
 		} catch (Exception ee ) {
 			errorLogger.error(DmaapbcLogMessageEnum.UNEXPECTED_CONDITION, "attempting to instantiate " + dClass  );		
 			errorLogger.error( "trace is: " + ee );
@@ -53,6 +56,10 @@ public class ApiPolicy extends BaseLoggingClass {
 		// execute check of loaded class
 		perm.check( mechid, pwd, p );
 	
+	}
+	
+	public boolean getUseAuthClass() {
+		return useAuthClass;
 	}
 
 }
