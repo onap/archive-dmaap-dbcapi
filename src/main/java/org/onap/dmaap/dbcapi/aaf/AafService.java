@@ -84,7 +84,7 @@ public class AafService extends BaseLoggingClass {
 		
 	private void initAafService( ServiceType t ) {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "true"));
+		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
 		
 		ctype = t;
 		aaf = new AafConnection( getCred( true ) );
