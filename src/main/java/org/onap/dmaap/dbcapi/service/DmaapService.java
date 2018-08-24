@@ -36,6 +36,7 @@ import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
 import org.onap.dmaap.dbcapi.authentication.ApiPerms;
+import org.onap.dmaap.dbcapi.authentication.ApiPolicy;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
@@ -83,8 +84,11 @@ public class DmaapService  extends BaseLoggingClass  {
 			dmaapholder.update(nd);
 
 			AafService aaf = new AafService( ServiceType.AAF_Admin);
-			ApiPerms p = new ApiPerms();
-			p.setEnvMap();
+			ApiPolicy apiPolicy = new ApiPolicy();
+			if ( apiPolicy.getUseAuthClass() ) {
+				ApiPerms p = new ApiPerms();
+				p.setEnvMap();
+			}
 			boolean anythingWrong = false;
 			
 			if ( multiSite ) {
@@ -122,8 +126,11 @@ public class DmaapService  extends BaseLoggingClass  {
 		if ( ! dmaap.isStatusValid()  || ! nd.getDmaapName().equals(dmaap.getDmaapName()) || dmaap.getVersion().equals( "0") ) {
 			nd.setLastMod();
 			dmaapholder.update(nd);  //need to set this so the following perms will pick up any new vals.
-			ApiPerms p = new ApiPerms();
-			p.setEnvMap();
+			ApiPolicy apiPolicy = new ApiPolicy();
+			if ( apiPolicy.getUseAuthClass()) {
+				ApiPerms p = new ApiPerms();
+				p.setEnvMap();
+			}
 			AafService aaf = new AafService( ServiceType.AAF_Admin);
 			if ( multiSite ) {
 				anythingWrong = setTopicMgtPerms(  nd,  aaf ) || createMmaTopic();

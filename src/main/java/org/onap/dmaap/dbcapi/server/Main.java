@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.onap.dmaap.dbcapi.authentication.ApiPerms;
+import org.onap.dmaap.dbcapi.authentication.ApiPolicy;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.*;
 import org.onap.dmaap.dbcapi.model.Dmaap;
@@ -97,7 +98,8 @@ public class Main extends BaseLoggingClass {
 		// for fresh installs, we may come up with no dmaap name so need to have a way for Controller to talk to us
 		Singleton<Dmaap> dmaapholder = DatabaseClass.getDmaap();
 		String name = dmaapholder.get().getDmaapName();
-		if ( name == null || name.isEmpty()) {
+		ApiPolicy apiPolicy = new ApiPolicy();
+		if ( apiPolicy.getUseAuthClass() && (name == null || name.isEmpty())) {
 			ApiPerms p = new ApiPerms();
 			p.setBootMap();
 		}
