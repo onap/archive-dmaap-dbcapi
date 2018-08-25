@@ -356,7 +356,7 @@
 	    <jackson.version>2.9.5</jackson.version>
 		<jersey.version>2.26</jersey.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jettyVersion>9.3.8.RC0</jettyVersion> 
+		<jettyVersion>9.4.12.RC0</jettyVersion> 
 		<eelf.version>0.0.1</eelf.version>
 		<artifact.version>1.0.15-SNAPSHOT</artifact.version>
 		<!-- SONAR -->
