@@ -212,8 +212,9 @@
 			<artifactId>jackson-databind</artifactId>
 <!-- for DMAAP-205, a point release on the common version
 	 addresses a security issue.  Note the add notation here
-  -->
 			<version>${jackson.version}.1</version>
+  -->
+			<version>${jackson.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -230,20 +231,26 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.2.0</version>
 		</dependency>
+<!-- DMAAP-656:
+   - removed this dependency because it utilized a third party
+   - lib called com.google.guava:20.0 which had severe threat identified.
+   - build code without this dependency and it seemed to work, so perhaps it
+   - is not needed?
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-core</artifactId>
-			<version>1.5.13</version>
+			<version>${swagger.version}</version>
 		</dependency>
+ -->
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jersey2-jaxrs</artifactId>
-			<version>1.5.13</version>
+			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-annotations</artifactId>
-			<version>1.5.13</version>
+			<version>${swagger.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
@@ -286,7 +293,7 @@
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
-			<version>1.6</version>
+			<version>1.11</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
 		<dependency>
@@ -345,12 +352,13 @@
 		</site>
 	</distributionManagement>
 	<properties>
-	    <jackson.version>2.8.11</jackson.version>
+		<swagger.version>1.5.19</swagger.version>
+	    <jackson.version>2.9.5</jackson.version>
 		<jersey.version>2.26</jersey.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jettyVersion>9.3.9.v20160517</jettyVersion> 
+		<jettyVersion>9.3.8.RC0</jettyVersion> 
 		<eelf.version>0.0.1</eelf.version>
-		<artifact.version>1.0.14-SNAPSHOT</artifact.version>
+		<artifact.version>1.0.15-SNAPSHOT</artifact.version>
 		<!-- SONAR -->
 		<jacoco.version>0.7.7.201606060606</jacoco.version>
 		<sonar-jacoco-listeners.version>3.2</sonar-jacoco-listeners.version>
