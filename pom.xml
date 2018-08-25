@@ -232,16 +232,19 @@
 			<version>1.2.0</version>
 		</dependency>
 <!-- DMAAP-656:
-   - removed this dependency because it utilized a third party
-   - lib called com.google.guava:20.0 which had severe threat identified.
-   - build code without this dependency and it seemed to work, so perhaps it
-   - is not needed?
+   - override this dependency because it utilized a third party
+   - lib called com.google.guava:20.0 which had severe security threat identified.
+ -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>24.1.1-jre</version>
+		</dependency>
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-core</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
- -->
 		<dependency>
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-jersey2-jaxrs</artifactId>
