@@ -30,6 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -155,7 +156,7 @@ public class MrProvConnection extends BaseLoggingClass{
 
 		try {
 			byte[] postData = postTopic.getBytes();
-			logger.info( "post fields=" + postData.toString() );
+			logger.info( "post fields=" + Arrays.toString(postData));
 			
 			// when not using AAF, do not attempt Basic Authentication
 			if ( useAAF ) {
