@@ -30,6 +30,7 @@ import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -143,7 +144,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	public  String doPostFeed( Feed postFeed, ApiError err ) {
 
 		byte[] postData = postFeed.getBytes();
-		logger.info( "post fields=" + postData.toString() );
+		logger.info( "post fields=" + Arrays.toString(postData) );
 		String responsemessage = null;
 		String responseBody = null;
 
@@ -361,7 +362,7 @@ public class DrProvConnection extends BaseLoggingClass {
 
 	public String doPutFeed(Feed putFeed, ApiError err) {
 		byte[] postData = putFeed.getBytes();
-		logger.info( "post fields=" + postData.toString() );
+		logger.info( "post fields=" + Arrays.toString(postData) );
 		String responsemessage = null;
 		String responseBody = null;
 
