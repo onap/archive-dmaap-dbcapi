@@ -48,17 +48,17 @@ public class MR_Cluster extends DmaapObject {
 	private static  String defaultTargetReplicationPort;
 	
 	private static void setDefaults() {
-		boolean been_here = false;
+		/* boolean been_here = false;
 		if ( been_here ) {
 			return;
-		}
+		} */
 		DmaapConfig dc = (DmaapConfig)DmaapConfig.getConfig();
 		defaultTopicProtocol = dc.getProperty("MR.TopicProtocol", "https");
 		defaultTopicPort = dc.getProperty( "MR.TopicPort", "3905");
 		defaultReplicationGroup = dc.getProperty( "MR.ReplicationGroup", "" );
 		defaultSourceReplicationPort = dc.getProperty( "MR.SourceReplicationPort", "2181");
 		defaultTargetReplicationPort = dc.getProperty( "MR.TargetReplicationPort", "9092");
-		been_here = true;
+		// been_here = true;
 	}
 
 
