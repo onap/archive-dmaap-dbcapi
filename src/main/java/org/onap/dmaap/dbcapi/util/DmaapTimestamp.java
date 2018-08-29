@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 @XmlRootElement
 public class DmaapTimestamp {
 	static final Logger logger = Logger.getLogger(DmaapTimestamp.class);
-	private static Calendar cal = Calendar.getInstance();
+	private Calendar cal = Calendar.getInstance();
 	private Date stamp;
 	
 	public DmaapTimestamp() {
