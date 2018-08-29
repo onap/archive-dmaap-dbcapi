@@ -197,7 +197,9 @@ public class TopicService extends BaseLoggingClass {
 				return null;
 			}
 		}
-		mr_topics.put( ntopic.getFqtn(), ntopic );
+		if(ntopic != null) {
+			mr_topics.put( ntopic.getFqtn(), ntopic );
+		}
 		err.setCode(Status.OK.getStatusCode());
 		return ntopic;
 	}
