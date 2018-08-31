@@ -37,13 +37,13 @@ import org.onap.aaf.cadi.aaf.v2_0.AAFLurPerm;
 import org.onap.aaf.cadi.principal.UnAuthPrincipal;
 import org.onap.aaf.misc.env.APIException;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
-import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 /*
  * this service uses the AAF Lur object to lookup identities and perms
  */
 public class AafLurService extends BaseLoggingClass {
+	
+	static Logger logger = Logger.getLogger(AafLurService.class.getName());
 
 	
 	 private static AAFConHttp aafcon;
@@ -66,6 +66,7 @@ public class AafLurService extends BaseLoggingClass {
 		} catch ( CadiException | LocatorException e) {
 			appLogger.error( "Failure of AAFConHttp: " + e.getMessage() );
 			errorLogger.error( "Failure of AAFConHttp: " + e.getMessage() );
+			logger.error(e);
 			e.printStackTrace();
 			throw e;
 		} 
@@ -74,6 +75,7 @@ public class AafLurService extends BaseLoggingClass {
 		} catch ( CadiException  e) {
 			appLogger.error( "Failure of newLur(): " + e.getMessage() );
 			errorLogger.error( "Failure of newLur(): " + e.getMessage() );
+			logger.error(e);
 			e.printStackTrace();
 			throw e;
 		} 
@@ -87,6 +89,7 @@ public class AafLurService extends BaseLoggingClass {
 				init( myAccess );
 			} catch (APIException | CadiException | LocatorException e) {
 				// TODO Auto-generated catch block
+				logger.error(e);
 				e.printStackTrace();
 				throw e;
 			} 
@@ -120,7 +123,10 @@ public class AafLurService extends BaseLoggingClass {
 			return rc;
 		}
 		rc =  aafLur.fish( principal, aafPerm );
-		if (rc == true ) return rc;
+		boolean flag = true;
+		if (rc == flag ) {
+			return rc;
+		}
 		
 		List<Permission> perms = new ArrayList<Permission>();
 		aafLur.fishAll( principal,  perms);
