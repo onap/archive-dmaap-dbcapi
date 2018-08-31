@@ -36,6 +36,7 @@ public class AafDecrypt extends BaseLoggingClass  {
 			dec = (DecryptionInterface) (Class.forName(dClass).newInstance());	
 			dec.init( p.getProperty("CredentialCodecKeyfile", "LocalKey"));
 		} catch (Exception ee ) {
+			logger.error("Error", ee);
 			errorLogger.error(DmaapbcLogMessageEnum.UNEXPECTED_CONDITION, "attempting to instantiate " + dClass  );		
 		}	
 	}
@@ -46,6 +47,7 @@ public class AafDecrypt extends BaseLoggingClass  {
 		try {		
 			pwd = dec.decrypt( encPwd );
 		} catch( IOException io ) {
+			logger.error("Error", io);
 			errorLogger.error(DmaapbcLogMessageEnum.DECRYPT_IO_ERROR, dClass, encPwd );
 		} 
 		
