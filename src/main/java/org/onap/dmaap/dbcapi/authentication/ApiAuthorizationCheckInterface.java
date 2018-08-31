@@ -22,6 +22,7 @@ package org.onap.dmaap.dbcapi.authentication;
 
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 
+@FunctionalInterface
 public interface ApiAuthorizationCheckInterface {
 	public void check( String mechid, String pwd, DmaapPerm p ) throws AuthenticationErrorException;
 
