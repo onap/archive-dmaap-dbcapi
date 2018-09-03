@@ -23,12 +23,9 @@ package org.onap.dmaap.dbcapi.database;
 import java.sql.*;
 import java.util.*;
 
-import org.apache.log4j.Logger;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class ConnectionFactory	{
@@ -90,6 +87,10 @@ public class ConnectionFactory	{
 				return;
 			}
 		}
-		try { c.close(); } catch (Exception e) {}
+		try { 
+			c.close(); 
+		} catch (Exception e) {
+			logger.error("Error", e);
+		}
 	}
 }
