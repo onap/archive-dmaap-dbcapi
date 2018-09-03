@@ -22,17 +22,22 @@ package org.onap.dmaap.dbcapi.database;
 
 import java.sql.*;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
+
 
 public abstract class ConnWrapper<T, U>	{
+	EELFLogger logger = EELFManager.getInstance().getLogger( ConnWrapper.class );
 	protected Connection c;
 	protected PreparedStatement ps;
 	protected ResultSet	rs;
 	protected abstract T run(U u) throws Exception;
-	public T protect(ConnectionFactory cf, U u) throws DBException {
+	public T protect(ConnectionFactory cf, U u) {
 		try {
 			try {
 				return(attempt(cf, u, false));
 			} catch (SQLException sqle) {
+				logger.error("Error", sqle);
 				return(attempt(cf, u, true));
 			}
 		} catch (RuntimeException rte) {
@@ -52,11 +57,26 @@ public abstract class ConnWrapper<T, U>	{
 			c = null;
 			return(ret);
 		} finally {
-			if (rs != null) { try { rs.close(); } catch (Exception e) {}}
+			if (rs != null) { 
+				try { 
+					rs.close(); 
+				} catch (Exception e) {
+					logger.error("Error", e);
+				}}
 			rs = null;
-			if (ps != null) { try { ps.close(); } catch (Exception e) {}}
+			if (ps != null) { 
+				try { 
+					ps.close(); 
+				} catch (Exception e) {
+					logger.error("Error", e);
+				}}
 			ps = null;
-			if (c != null) { try { c.close(); } catch (Exception e) {}}
+			if (c != null) { 
+				try { 
+					c.close(); 
+				} catch (Exception e) {
+					logger.error("Error", e);
+				}}
 			c = null;
 		}
 	}
