@@ -30,42 +30,42 @@ public class DBMap<C> extends TableHandler<C> implements Map<String, C>	{
 	public DBMap(ConnectionFactory cf, Class<C> cls, String tabname, String keyfield) throws Exception {
 		super(cf, cls, tabname, keyfield);
 	}
-	public void clear() throws UnsupportedOperationException {
+	public void clear() {
 		throw new UnsupportedOperationException();
 	}
-	public boolean containsKey(Object key) throws DBException {
+	public boolean containsKey(Object key) {
 		return(get(key) != null);
 	}
-	public boolean containsValue(Object value) throws UnsupportedOperationException {
+	public boolean containsValue(Object value) {
 		throw new UnsupportedOperationException();
 	}
 	public boolean isEmpty() {
 		return(false);
 	}
-	public Set<Map.Entry<String, C>> entrySet() throws DBException {
+	public Set<Map.Entry<String, C>> entrySet() {
 		return(list());
 	}
-	public Set<String> keySet() throws DBException {
-		Set<String> ret = new HashSet<String>();
+	public Set<String> keySet() {
+		Set<String> ret = new HashSet<>();
 		for (Map.Entry<String, C> x: list()) {
 			ret.add(x.getKey());
 		}
 		return(ret);
 	}
-	public void putAll(Map<? extends String, ? extends C> m) throws UnsupportedOperationException {
+	public void putAll(Map<? extends String, ? extends C> m) {
 		throw new UnsupportedOperationException();
 	}
 	public int size() {
 		return(2);
 	}
-	public Collection<C> values() throws DBException {
-		Collection<C> ret = new Vector<C>();
+	public Collection<C> values() {
+		Collection<C> ret = new Vector<>();
 		for (Map.Entry<String, C> x: list()) {
 			ret.add(x.getValue());
 		}
 		return(ret);
 	}
-	public C get(Object key) throws DBException {
+	public C get(Object key) {
 		if (!(key instanceof String)) {
 			return(null);
 		}
@@ -85,13 +85,13 @@ public class DBMap<C> extends TableHandler<C> implements Map<String, C>	{
 			}
 		}).protect(cf, (String)key));
 	}
-	public Set<Map.Entry<String, C>> list() throws DBException {
+	public Set<Map.Entry<String, C>> list() {
 		return((new ConnWrapper<Set<Map.Entry<String, C>>, Object>() {
 			protected Set<Map.Entry<String, C>> run(Object junk) throws Exception {
 				DBFieldHandler keyfield = fields[fields.length - 1];
 				ps = c.prepareStatement(liststmt);
 				rs = ps.executeQuery();
-				Set<Map.Entry<String, C>> ret = new HashSet<Map.Entry<String, C>>();
+				Set<Map.Entry<String, C>> ret = new HashSet<>();
 				while (rs.next()) {
 					C val = cls.newInstance();
 					for (DBFieldHandler f: fields) {
@@ -104,7 +104,7 @@ public class DBMap<C> extends TableHandler<C> implements Map<String, C>	{
 			}
 		}).protect(cf, null));
 	}
-	public C put(String key, C val) throws DBException {
+	public C put(String key, C val) {
 		try {
 			fields[fields.length - 1].setKey(val, key);
 		} catch (Exception e) {
@@ -122,7 +122,7 @@ public class DBMap<C> extends TableHandler<C> implements Map<String, C>	{
 			}
 		}).protect(cf, val));
 	}
-	public C remove(Object key) throws DBException {
+	public C remove(Object key) {
 		if (!(key instanceof String)) {
 			return(null);
 		}
