@@ -33,7 +33,6 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
@@ -81,7 +80,7 @@ public class MrTopicConnection extends BaseLoggingClass  {
 			return(true);
 		} catch (Exception e) {
             logger.error("Unexpected error during openConnection of " + pURL );
-            e.printStackTrace();
+            logger.error("Error", e);;
             return(false);
         }
 
@@ -97,7 +96,7 @@ public class MrTopicConnection extends BaseLoggingClass  {
 			return(true);
 		} catch (Exception e) {
             logger.error("Unexpected error during openConnection of " + pURL );
-            e.printStackTrace();
+            logger.error("error", e);
             return(false);
         }
 
@@ -147,13 +146,10 @@ public class MrTopicConnection extends BaseLoggingClass  {
 
             } catch (ProtocolException pe) {
                  // Rcvd error instead of 100-Continue
-                 try {
-                     // work around glitch in Java 1.7.0.21 and likely others
-                     // without this, Java will connect multiple times to the server to run the same request
-                     uc.setDoOutput(false);
-                 } catch (Exception e) {
-                 }
+            	callSetDoOutputOnError();
+                 
             }  catch ( SSLException se ) {
+            	logger.error("Error", se);
         		response.setCode(500);
     			response.setMessage( se.getMessage());
     			return response;
@@ -194,16 +190,28 @@ public class MrTopicConnection extends BaseLoggingClass  {
 				response.setCode(500);
 				response.setMessage( "Unable to read response");
 				logger.warn( response.getMessage() );
-            	e.printStackTrace();
+            	logger.error("Error", e);
 			}
         }
 		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
+			} catch ( Exception e ) {
+				logger.error("Error", e);
+			}
 		}
 		return response;
 
+	}
+	
+	public void callSetDoOutputOnError() {
+		try {
+            // work around glitch in Java 1.7.0.21 and likely others
+            // without this, Java will connect multiple times to the server to run the same request
+            uc.setDoOutput(false);
+        } catch (Exception e) {
+       	 	logger.error("Error", e);
+        }
 	}
 
 }
