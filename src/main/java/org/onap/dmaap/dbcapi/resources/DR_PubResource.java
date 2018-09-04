@@ -196,7 +196,7 @@ public class DR_PubResource extends BaseLoggingClass {
 		for( Iterator<DR_Pub> i = pubs.iterator(); i.hasNext(); ) {
 			DR_Pub listItem = i.next();
 			if ( listItem.getPubId().equals(id)) {
-				pubs.remove( listItem );
+				i.remove();
 			}
 		}
 		fnew.setPubs(pubs);

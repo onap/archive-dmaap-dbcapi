@@ -831,12 +831,11 @@ public class DrProvConnection extends BaseLoggingClass {
                      }
                  }
             }
+        	err.setCode(rc);
             if (rc == 204 ) {
      			responseBody = bodyToString( uc.getInputStream() );
     			logger.info( "responseBody=" + responseBody );
-
             } else {
-            	err.setCode(rc);
             	err.setMessage(responsemessage);
             }
             
