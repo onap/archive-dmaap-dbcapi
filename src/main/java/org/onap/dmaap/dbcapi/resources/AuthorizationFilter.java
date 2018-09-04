@@ -25,15 +25,15 @@ import java.io.IOException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 
+import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.service.ApiService;
-import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 
 @Authorization
 public class AuthorizationFilter implements ContainerRequestFilter   {
 	
-
+	private Logger logger = Logger.getLogger(AuthorizationFilter.class.getName());
 	
 	@Override
 	public void filter(ContainerRequestContext requestContext)
@@ -48,9 +48,11 @@ public class AuthorizationFilter implements ContainerRequestFilter   {
 		try {
 			apiResp.checkAuthorization();
 		} catch ( AuthenticationErrorException ae ) {
+			logger.error("Error", ae);
 			requestContext.abortWith( apiResp.unauthorized( apiResp.getErr().getMessage() ) );
 			return ;
 		} catch ( Exception e ) {
+			logger.error("Error", e);
 			requestContext.abortWith( apiResp.unavailable() ); 
 			return;
 		}
