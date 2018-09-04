@@ -34,7 +34,7 @@ public class DBSingleton<C> extends TableHandler<C> implements Singleton<C>	{
 		super(cf, cls, tabname, null);
 		singleton = cls.newInstance();
 	}
-	public C get() throws DBException {
+	public C get() {
 		return((new ConnWrapper<C, Object>() {
 			protected C run(Object junk) throws Exception {
 				ps = c.prepareStatement(getstmt);
@@ -49,7 +49,7 @@ public class DBSingleton<C> extends TableHandler<C> implements Singleton<C>	{
 			}
 		}).protect(cf, null));
 	}
-	public void init(C val) throws DBException {
+	public void init(C val) {
 		if (get() != null) {
 			return;
 		}
@@ -69,7 +69,7 @@ public class DBSingleton<C> extends TableHandler<C> implements Singleton<C>	{
 			}
 		}).protect(cf, val);
 	}
-	public void update(C val) throws DBException {
+	public void update(C val) {
 		(new ConnWrapper<Void, C>() {
 			protected Void run(C val) throws Exception {
 				ps = c.prepareStatement(insorreplstmt);
