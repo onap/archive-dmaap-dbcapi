@@ -31,8 +31,6 @@ import org.onap.aaf.cadi.PropAccess;
 import org.onap.aaf.misc.env.APIException;
 import org.onap.dmaap.dbcapi.aaf.AafLurService;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
-import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
-import org.onap.dmaap.dbcapi.server.Main;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 
@@ -45,7 +43,6 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 	
 	AafLurAndFish()  throws AuthenticationErrorException  {
 	
-		String[] args = new String[1];
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		api_namespace = p.getProperty( "ApiNamespace", "org.onap.dmaap-bc.api");
 
@@ -61,13 +58,15 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 			}
 		} catch ( IOException e ) {
 			logger.error( "Unable to load " + cadiprop );
+			logger.error("Error", e);
 			throw new AuthenticationErrorException( );
 		}
 		try {
 			PropAccess myAccess = new PropAccess( props );
 		
 			svc =  AafLurService.getInstance(myAccess);
-		} catch (APIException | CadiException | LocatorException e ) { 
+		} catch (APIException | CadiException | LocatorException e ) {
+			logger.error("Error", e);
 			logger.error( e.toString() );
 			throw new AuthenticationErrorException();
 		}
@@ -78,10 +77,12 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 	
 		try {
 			boolean resp = svc.checkPerm( api_namespace, mechid, pwd, p );
-			if ( resp == false ) {
+			boolean flag = false;
+			if ( resp == flag ) {
 				throw new AuthenticationErrorException();
 			}
 		} catch ( IOException | CadiException  e ) { 
+			logger.error("Error", e);
 			logger.error( e.toString() );
 			throw new AuthenticationErrorException();
 		}
