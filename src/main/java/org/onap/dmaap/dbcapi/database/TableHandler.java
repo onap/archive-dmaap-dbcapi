@@ -40,22 +40,10 @@ class TableHandler<C>	{
 	protected String	initstmt;
 	protected Class<C>	cls;
 	protected DBFieldHandler[] fields;
-	private static Map<String, Map<String, DBFieldHandler.SqlOp>> exceptions = new HashMap<String, Map<String, DBFieldHandler.SqlOp>>();
-	public static void setSpecialCase(String dbtabname, String dbfldname, DBFieldHandler.SqlOp handler) {
-		Map<String, DBFieldHandler.SqlOp> m = exceptions.get(dbtabname);
-		if (m == null) {
-			m = new HashMap<String, DBFieldHandler.SqlOp>();
-			exceptions.put(dbtabname, m);
-		}
-		m.put(dbfldname, handler);
-	}
-	public static DBFieldHandler.SqlOp getSpecialCase(String dbtabname, String dbfldname) {
-		Map<String, DBFieldHandler.SqlOp> m = exceptions.get(dbtabname);
-		if (m != null) {
-			return(m.get(dbfldname));
-		}
-		return(null);
-	}
+	private static Map<String, Map<String, DBFieldHandler.SqlOp>> exceptions = new HashMap<>();
+	private String select = "SELECT ";
+	private String from = " FROM ";
+	
 	protected TableHandler(Class<C> cls, String tabname, String keyname) throws Exception {
 		this(ConnectionFactory.getDefaultInstance(), cls, tabname, keyname);
 	}
@@ -71,14 +59,31 @@ class TableHandler<C>	{
 			}
 		}
 	}
+	
+	public static void setSpecialCase(String dbtabname, String dbfldname, DBFieldHandler.SqlOp handler) {
+		Map<String, DBFieldHandler.SqlOp> m = exceptions.get(dbtabname);
+		if (m == null) {
+			m = new HashMap<>();
+			exceptions.put(dbtabname, m);
+		}
+		m.put(dbfldname, handler);
+	}
+	public static DBFieldHandler.SqlOp getSpecialCase(String dbtabname, String dbfldname) {
+		Map<String, DBFieldHandler.SqlOp> m = exceptions.get(dbtabname);
+		if (m != null) {
+			return(m.get(dbfldname));
+		}
+		return(null);
+	}
+	
 	private void setup(DatabaseMetaData dmd, Class<C> cls, String tabname, String keyname) throws Exception {
 		this.cls = cls;
-		Vector<DBFieldHandler> h = new Vector<DBFieldHandler>();
+		Vector<DBFieldHandler> h = new Vector<>();
 		String qualifiedTableName = String.format( "%s.%s", cf.getSchema(), tabname );
 		ResultSet rs = dmd.getColumns("", cf.getSchema(), tabname, null);
-		StringBuffer sb1 = new StringBuffer();
-		StringBuffer sb2 = new StringBuffer();
-		StringBuffer sb3 = new StringBuffer();
+		StringBuilder sb1 = new StringBuilder();
+		StringBuilder sb2 = new StringBuilder();
+		StringBuilder sb3 = new StringBuilder();
 		int	count = 0;
 		while (rs.next()) {
 			if (!rs.getString(3).equals(tabname)) {
@@ -109,13 +114,13 @@ class TableHandler<C>	{
 			h.add(new DBFieldHandler(cls, keyname, count, getSpecialCase(tabname, keyname)));
 			delstmt = "DELETE FROM " + qualifiedTableName + " WHERE " + keyname + " = ?";
 			insorreplstmt = "INSERT INTO " + qualifiedTableName + " (" + clist + ", " + keyname + ") VALUES (" + qlist + ", ?) ON CONFLICT(" + keyname + ") DO UPDATE SET (" + clist + ") = (" + elist + ")";
-			getstmt = "SELECT " + clist + ", " + keyname + " FROM " + qualifiedTableName + " WHERE " + keyname + " = ?";
-			liststmt = "SELECT " + clist + ", " + keyname + " FROM " + qualifiedTableName;
+			getstmt = select + clist + ", " + keyname + from + qualifiedTableName + " WHERE " + keyname + " = ?";
+			liststmt = select + clist + ", " + keyname + from + qualifiedTableName;
 		} else {
 			delstmt = "DELETE FROM " + qualifiedTableName;
 			initstmt = "INSERT INTO " + qualifiedTableName + " (" + clist + ") VALUES (" + qlist + ")";
 			insorreplstmt = "UPDATE " + qualifiedTableName + " SET (" + clist + ") = (" + qlist + ")";
-			getstmt = "SELECT " + clist + ", " + keyname + " FROM " + qualifiedTableName;
+			getstmt = select + clist + ", " + keyname + from + qualifiedTableName;
 		}
 		fields = h.toArray(new DBFieldHandler[h.size()]);
 	}
