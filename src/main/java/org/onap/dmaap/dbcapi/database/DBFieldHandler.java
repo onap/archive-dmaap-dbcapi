@@ -24,7 +24,6 @@ import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
 
-import org.apache.log4j.Logger;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
@@ -33,7 +32,40 @@ import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 
 
 public class DBFieldHandler	{
-	static final EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
+	static final EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();	
+
+	public DBFieldHandler(Class<?> c, String fieldname, int fieldnum) throws Exception {
+		this(c, fieldname, fieldnum, null);
+	}
+	public DBFieldHandler(Class<?> c, String fieldname, int fieldnum, SqlOp op) throws Exception {
+		this.fieldnum = fieldnum;
+		StringBuilder sb = new StringBuilder();
+		for (String s: fieldname.split("_")) {	
+			sb.append(s.substring(0, 1).toUpperCase()).append(s.substring(1));
+		}
+		String camelcase = sb.toString();
+		try {
+			objget = c.getMethod("is" + camelcase);
+		} catch (Exception e) {
+			errorLogger.error("Error", e);
+			objget = c.getMethod("get" + camelcase);
+		}
+		objset = c.getMethod("set" + camelcase, objget.getReturnType());
+		sqlop = op;
+		if (sqlop != null) {
+			return;
+		}
+		Class<?> x = objget.getReturnType();
+		if (x.isEnum()) {
+			sqlop = new EnumSql(x);
+			return;
+		}
+		sqlop = sqltypes.get(x.getName());
+		if (sqlop != null) {
+			return;
+		}
+		errorLogger.error(DmaapbcLogMessageEnum.DB_NO_FIELD_HANDLER,  c.getName(),  fieldname,  Integer.toString(fieldnum),  x.getName());
+	}
 	
 	public static interface	SqlOp	{
 		public Object get(ResultSet rs, int index) throws Exception;
@@ -121,7 +153,7 @@ public class DBFieldHandler	{
         }
         private static Map<String, SqlOp> sqltypes;
         static {
-                sqltypes = new HashMap<String, SqlOp>();
+                sqltypes = new HashMap<>();
 		sqltypes.put("[Ljava.lang.String;", new AofString());
 		sqltypes.put("java.util.Date", new SqlDate());
                 try {
@@ -134,6 +166,7 @@ public class DBFieldHandler	{
                         new SqlType("Short");
                         new SqlType("String");
                 } catch (Exception e) {
+                	errorLogger.error("Error", e);
                 	errorLogger.error(DmaapbcLogMessageEnum.DB_ACCESS_INIT_ERROR,  e.getMessage() );
                 }
         }
@@ -155,37 +188,6 @@ public class DBFieldHandler	{
 	}
 	public void fromSQL(ResultSet r, Object o) throws Exception {
 		objset.invoke(o, sqlop.get(r, fieldnum));
-	}
-	public DBFieldHandler(Class<?> c, String fieldname, int fieldnum) throws Exception {
-		this(c, fieldname, fieldnum, null);
-	}
-	public DBFieldHandler(Class<?> c, String fieldname, int fieldnum, SqlOp op) throws Exception {
-		this.fieldnum = fieldnum;
-		StringBuffer sb = new StringBuffer();
-		for (String s: fieldname.split("_")) {
-			sb.append(s.substring(0, 1).toUpperCase()).append(s.substring(1));
-		}
-		String camelcase = sb.toString();
-		try {
-			objget = c.getMethod("is" + camelcase);
-		} catch (Exception e) {
-			objget = c.getMethod("get" + camelcase);
-		}
-		objset = c.getMethod("set" + camelcase, objget.getReturnType());
-		sqlop = op;
-		if (sqlop != null) {
-			return;
-		}
-		Class<?> x = objget.getReturnType();
-		if (x.isEnum()) {
-			sqlop = new EnumSql(x);
-			return;
-		}
-		sqlop = sqltypes.get(x.getName());
-		if (sqlop != null) {
-			return;
-		}
-		errorLogger.error(DmaapbcLogMessageEnum.DB_NO_FIELD_HANDLER,  c.getName(),  fieldname,  Integer.toString(fieldnum),  x.getName());
 	}
 	public static String fesc(String s) {
 		if (s == null) {
