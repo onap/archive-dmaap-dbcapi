@@ -96,7 +96,7 @@ public class TopicResource extends BaseLoggingClass {
 	public Response  addTopic( 
 			Topic topic
 			) {
-		logger.info( "addTopic request: " + String.valueOf(topic) );
+		logger.info( "addTopic request: " + topic );
 		ApiService check = new ApiService();
 
 		try {
@@ -104,10 +104,10 @@ public class TopicResource extends BaseLoggingClass {
 			check.required( "topicDescription", topic.getTopicDescription(), "" );
 			check.required( "owner", topic.getOwner(), "" );
 		} catch( RequiredFieldException rfe ) {
+			logger.error("Error", rfe);
 			return check.error();
 		}
 		
-		//String repReq = topic.getReplicationRequest();
 		ReplicationType t = topic.getReplicationCase();
 		if ( t == null || t == ReplicationType.REPLICATION_NOT_SPECIFIED ) {
 			topic.setReplicationCase( mr_topicService.reviewTopic(topic));
@@ -163,6 +163,7 @@ public class TopicResource extends BaseLoggingClass {
 		try {
 			check.required( "fqtn", id, "" );
 		} catch( RequiredFieldException rfe ) {
+			logger.error("Error", rfe);
 			return check.error();
 		}
 		
@@ -192,6 +193,7 @@ public class TopicResource extends BaseLoggingClass {
 		try {
 			check.required( "topicName", id, "^\\S+$" );  //no white space allowed in topicName
 		} catch( RequiredFieldException rfe ) {
+			logger.error("Error", rfe);
 			return check.error();
 		}
 		Topic mrc =  mr_topicService.getTopic( id, check.getErr() );
