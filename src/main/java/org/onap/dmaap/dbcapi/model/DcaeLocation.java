@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 
 @XmlRootElement
 public class DcaeLocation extends DmaapObject {
-	static final Logger logger = Logger.getLogger(MR_Cluster.class);
+	static final Logger errorLogger = Logger.getLogger(MR_Cluster.class);
 	private String clli;
 	private String dcaeLayer;
 	private String dcaeLocationName;
