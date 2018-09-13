@@ -23,20 +23,12 @@ package org.onap.dmaap.dbcapi.database;
 import java.io.*;
 import java.sql.*;
 
-import org.apache.log4j.Logger;
-
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
+;
 
 public class LoadSchema	{
 	private static final EELFLogger logger = EELFManager.getInstance().getLogger(LoadSchema.class);
-	private static final EELFLogger appLogger = EELFManager.getInstance().getApplicationLogger();
-	private static final EELFLogger auditLogger = EELFManager.getInstance().getAuditLogger();
-	private static final EELFLogger debugLogger = EELFManager.getInstance().getDebugLogger();
-	private static final EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
-	private static final EELFLogger metricsLogger = EELFManager.getInstance().getMetricsLogger();
 	
 	static int getVer(Statement s) throws SQLException {
 		ResultSet rs = null;
@@ -66,6 +58,7 @@ public class LoadSchema	{
 				stmt.execute(cmd);
 				logger.info("SCHEMA: " + cmd);
 			} catch (SQLException sqle) {
+				logger.error("Error", sqle);
 					throw sqle;
 			}
 			
@@ -74,7 +67,9 @@ public class LoadSchema	{
 			int newver = -1;
 			try {
 				newver = getVer(stmt);
-			} catch (Exception e) {}
+			} catch (Exception e) {
+				logger.error("Error", e);
+			}
 			logger.info("Database schema currently at version " + newver++);
 			
 
@@ -126,8 +121,20 @@ public class LoadSchema	{
 		} catch (IOException ioe) {
 			throw new SQLException(ioe);
 		} finally {
-			if (stmt != null) { try { stmt.close(); } catch (Exception e) {}}
-			if (c != null) { try { c.close(); } catch (Exception e) {}}
+			if (stmt != null) { 
+				try { 
+					stmt.close(); 
+				} catch (Exception e) {
+					logger.error("Error", e);
+				}
+			}
+			if (c != null) { 
+				try { 
+					c.close(); 
+					} catch (Exception e) {
+						logger.error("Error", e);
+					}
+				}
 		}
 	}
 	public static void main(String[] args) throws Exception {
