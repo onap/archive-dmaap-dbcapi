@@ -42,32 +42,6 @@ public class DR_Sub extends DmaapObject {
 	private boolean use100;
 	private boolean suspended;
 	private String owner;
-	
-	public String getOwner() {
-		return owner;
-	}
-
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
-
-	public boolean isSuspended() {
-		return suspended;
-	}
-
-	public void setSuspended(boolean suspended) {
-		this.suspended = suspended;
-	}
-
-
-
-	public boolean isUse100() {
-		return use100;
-	}
-
-	public void setUse100(boolean use100) {
-		this.use100 = use100;
-	}
 
 	public DR_Sub() {
 
@@ -124,6 +98,32 @@ public class DR_Sub extends DmaapObject {
 		this.setStatus( DmaapObject_Status.VALID );
 
 		logger.info( "new DR_Sub returning");
+	}
+	
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
+
+	public boolean isSuspended() {
+		return suspended;
+	}
+
+	public void setSuspended(boolean suspended) {
+		this.suspended = suspended;
+	}
+
+
+
+	public boolean isUse100() {
+		return use100;
+	}
+
+	public void setUse100(boolean use100) {
+		this.use100 = use100;
 	}
 
 	public String getDcaeLocationName() {
