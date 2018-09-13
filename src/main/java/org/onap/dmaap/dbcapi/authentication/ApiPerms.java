@@ -34,6 +34,20 @@ import org.onap.dmaap.dbcapi.service.DmaapService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public  class ApiPerms extends BaseLoggingClass {
+	static String topic = "topics";
+	static String mrClusters = "mr_clusters";
+	static String mrClients = "mr_clients";
+	static String feed = "feeds";
+	static String drSubs = "dr_subs";
+	static String drPubs = "dr_pubs";
+	static String drNodes = "dr_nodes";
+	static String dcaeLocations = "dcaeLocations";
+	static String inventory = "Inventory";
+	static String portalUser = "PortalUser";
+	static String orchestrator = "Orchestrator";
+	static String delete = "DELETE";
+	static String dmaap = "dmaap";
+	static String controller = "Controller";
 	
 	private static class PermissionMap {
 		static final EELFLogger logger = EELFManager.getInstance().getLogger( PermissionMap.class );
@@ -41,6 +55,12 @@ public  class ApiPerms extends BaseLoggingClass {
 		String uri;
 		String action;
 		String[] roles;
+		
+		private PermissionMap( String u, String a, String[] r ) {
+			this.setUri(u);
+			this.setAction(a);
+			this.setRoles(r);
+		}	
 		
 		public String getUri() {
 			return uri;
@@ -62,13 +82,7 @@ public  class ApiPerms extends BaseLoggingClass {
 			this.roles = roles;
 		}
 
-		private PermissionMap( String u, String a, String[] r ) {
-			this.setUri(u);
-			this.setAction(a);
-			this.setRoles(r);
-		}
-		
-		static public void initMap( PermissionMap[] pmap, String instance ) {
+		public static void initMap( PermissionMap[] pmap, String instance ) {
 
 			DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 			String api = p.getProperty("ApiNamespace", "apiNamespace.not.set");
@@ -102,54 +116,54 @@ public  class ApiPerms extends BaseLoggingClass {
 	}
 	
 	static PermissionMap[] bootMap = {
-		new PermissionMap( "dmaap", "GET", new String[] { "Controller" }),
-		new PermissionMap( "dmaap", "POST", new String[] { "Controller" }),	
-		new PermissionMap( "dmaap", "PUT", new String[] { "Controller" }),
-		new PermissionMap( "dmaap", "DELETE", new String[] { "Controller" })
+		new PermissionMap( dmaap, "GET", new String[] { controller }),
+		new PermissionMap( dmaap, "POST", new String[] { controller }),	
+		new PermissionMap( dmaap, "PUT", new String[] { controller }),
+		new PermissionMap( dmaap, delete, new String[] { controller })
 	
 	};
 
 	static PermissionMap[] envMap = {
-		new PermissionMap( "dmaap", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "dmaap", "POST", new String[] { "Controller" } ),		
-		new PermissionMap( "dmaap", "PUT", new String[] { "Controller" }),
-		new PermissionMap( "dmaap", "DELETE", new String[] { "Controller" }),
+		new PermissionMap( dmaap, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( dmaap, "POST", new String[] { controller } ),		
+		new PermissionMap( dmaap, "PUT", new String[] { controller }),
+		new PermissionMap( dmaap, delete, new String[] { controller }),
 		new PermissionMap( "bridge", "GET", new String[] {  "Metrics" }),
 		//new PermissionMap( "bridge", "POST", new String[] { "Metrics" } ),		
 		//new PermissionMap( "bridge", "PUT", new String[] { "Metrics" }),
-		//new PermissionMap( "bridge", "DELETE", new String[] { "Metrics" }),
-		new PermissionMap( "dcaeLocations", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "dcaeLocations", "POST", new String[] { "Controller" } ),		
-		new PermissionMap( "dcaeLocations", "PUT", new String[] { "Controller" }),
-		new PermissionMap( "dcaeLocations", "DELETE", new String[] { "Controller" }),
-		new PermissionMap( "dr_nodes", "GET", new String[] { "Controller", "Orchestrator", "Inventory",  "PortalUser" }),
-		new PermissionMap( "dr_nodes", "POST", new String[] { "Controller" } ),		
-		new PermissionMap( "dr_nodes", "PUT", new String[] { "Controller" }),
-		new PermissionMap( "dr_nodes", "DELETE", new String[] { "Controller" }),
-		new PermissionMap( "dr_pubs", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "dr_pubs", "POST", new String[] { "Controller", "Orchestrator","PortalUser" } ),		
-		new PermissionMap( "dr_pubs", "PUT", new String[] { "Controller", "Orchestrator","PortalUser" }),
-		new PermissionMap( "dr_pubs", "DELETE", new String[] { "Controller", "Orchestrator","PortalUser" }),
-		new PermissionMap( "dr_subs", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "dr_subs", "POST", new String[] { "Controller", "Orchestrator","PortalUser" } ),		
-		new PermissionMap( "dr_subs", "PUT", new String[] { "Controller", "Orchestrator","PortalUser" }),
-		new PermissionMap( "dr_subs", "DELETE", new String[] { "Controller", "Orchestrator","PortalUser" }),
-		new PermissionMap( "feeds", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "feeds", "POST", new String[] { "Controller", "Orchestrator","PortalUser" } ),		
-		new PermissionMap( "feeds", "PUT", new String[] { "Controller", "Orchestrator", "PortalUser" }),
-		new PermissionMap( "feeds", "DELETE", new String[] { "Controller", "PortalUser" }),
-		new PermissionMap( "mr_clients", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "mr_clients", "POST", new String[] { "Controller","Orchestrator", "PortalUser" } ),		
-		new PermissionMap( "mr_clients", "PUT", new String[] { "Controller", "Orchestrator","PortalUser" }),
-		new PermissionMap( "mr_clients", "DELETE", new String[] { "Controller","Orchestrator", "PortalUser" }),
-		new PermissionMap( "mr_clusters", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "mr_clusters", "POST", new String[] { "Controller" } ),		
-		new PermissionMap( "mr_clusters", "PUT", new String[] { "Controller" }),
-		new PermissionMap( "mr_clusters", "DELETE", new String[] { "Controller" }),
-		new PermissionMap( "topics", "GET", new String[] { "Controller", "Orchestrator", "Inventory", "Metrics", "PortalUser" }),
-		new PermissionMap( "topics", "POST", new String[] { "Controller", "Orchestrator" } ),		
-		new PermissionMap( "topics", "PUT", new String[] { "Controller", "Orchestrator" }),
-		new PermissionMap( "topics", "DELETE", new String[] { "Controller", "Orchestrator" })
+		//new PermissionMap( "bridge", delete, new String[] { "Metrics" }),
+		new PermissionMap( dcaeLocations, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( dcaeLocations, "POST", new String[] { controller } ),		
+		new PermissionMap( dcaeLocations, "PUT", new String[] { controller }),
+		new PermissionMap( dcaeLocations, delete, new String[] { controller }),
+		new PermissionMap( drNodes, "GET", new String[] { controller, orchestrator, inventory,  portalUser }),
+		new PermissionMap( drNodes, "POST", new String[] { controller } ),		
+		new PermissionMap( drNodes, "PUT", new String[] { controller }),
+		new PermissionMap( drNodes, delete, new String[] { controller }),
+		new PermissionMap( drPubs, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( drPubs, "POST", new String[] { controller, orchestrator,portalUser } ),		
+		new PermissionMap( drPubs, "PUT", new String[] { controller, orchestrator,portalUser }),
+		new PermissionMap( drPubs, delete, new String[] { controller, orchestrator,portalUser }),
+		new PermissionMap( drSubs, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( drSubs, "POST", new String[] { controller, orchestrator,portalUser } ),		
+		new PermissionMap( drSubs, "PUT", new String[] { controller, orchestrator,portalUser }),
+		new PermissionMap( drSubs, delete, new String[] { controller, orchestrator,portalUser }),
+		new PermissionMap( feed, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( feed, "POST", new String[] { controller, orchestrator,portalUser } ),		
+		new PermissionMap( feed, "PUT", new String[] { controller, orchestrator, portalUser }),
+		new PermissionMap( feed, delete, new String[] { controller, portalUser }),
+		new PermissionMap( mrClients, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( mrClients, "POST", new String[] { controller,orchestrator, portalUser } ),		
+		new PermissionMap( mrClients, "PUT", new String[] { controller, orchestrator,portalUser }),
+		new PermissionMap( mrClients, delete, new String[] { controller,orchestrator, portalUser }),
+		new PermissionMap( mrClusters, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( mrClusters, "POST", new String[] { controller } ),		
+		new PermissionMap( mrClusters, "PUT", new String[] { controller }),
+		new PermissionMap( mrClusters, delete, new String[] { controller }),
+		new PermissionMap( topic, "GET", new String[] { controller, orchestrator, inventory, "Metrics", portalUser }),
+		new PermissionMap( topic, "POST", new String[] { controller, orchestrator } ),		
+		new PermissionMap( topic, "PUT", new String[] { controller, orchestrator }),
+		new PermissionMap( topic, delete, new String[] { controller, orchestrator })
 	};
 	
 	public void setBootMap() {
@@ -159,8 +173,8 @@ public  class ApiPerms extends BaseLoggingClass {
 	
 	public void setEnvMap() {
 		Dmaap dmaap = new DmaapService().getDmaap();
-		String dmaap_name = dmaap.getDmaapName();
-		PermissionMap.initMap( envMap, dmaap_name );
+		String dmaapName = dmaap.getDmaapName();
+		PermissionMap.initMap( envMap, dmaapName );
 	}
 	
 
