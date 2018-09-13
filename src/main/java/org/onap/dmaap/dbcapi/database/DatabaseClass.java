@@ -57,10 +57,6 @@ public class DatabaseClass extends BaseLoggingClass {
 			}
 			List<String> rv = new ArrayList<String>();
 			for (String s: val.split(",")) {
-				//String[] f = s.split(";");
-				//if (f.length < 3) {
-				//	continue;
-				//}
 				rv.add(new String(s));
 			}
 			return(rv);
@@ -72,7 +68,7 @@ public class DatabaseClass extends BaseLoggingClass {
 			}
 			@SuppressWarnings("unchecked")
 			List<String> xv = (List<String>)val;
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			String sep = "";
 			for (Object o: xv) {
 				String rv = (String)o;
@@ -152,17 +148,17 @@ public class DatabaseClass extends BaseLoggingClass {
 			}
 			try {
 				dmaap = new DBSingleton<Dmaap>(Dmaap.class, "dmaap");
-				dcaeLocations = new DBMap<DcaeLocation>(DcaeLocation.class, "dcae_location", "dcae_location_name");
-				dr_nodes = new DBMap<DR_Node>(DR_Node.class, "dr_node", "fqdn");
-				dr_pubs = new DBMap<DR_Pub>(DR_Pub.class, "dr_pub", "pub_id");
-				dr_subs = new DBMap<DR_Sub>(DR_Sub.class, "dr_sub", "sub_id");
-				mr_clients = new DBMap<MR_Client>(MR_Client.class, "mr_client", "mr_client_id");
-				mr_clusters = new DBMap<MR_Cluster>(MR_Cluster.class, "mr_cluster", "dcae_location_name");
-				feeds = new DBMap<Feed>(Feed.class, "feed", "feed_id");
+				dcaeLocations = new DBMap<>(DcaeLocation.class, "dcae_location", "dcae_location_name");
+				dr_nodes = new DBMap<>(DR_Node.class, "dr_node", "fqdn");
+				dr_pubs = new DBMap<>(DR_Pub.class, "dr_pub", "pub_id");
+				dr_subs = new DBMap<>(DR_Sub.class, "dr_sub", "sub_id");
+				mr_clients = new DBMap<>(MR_Client.class, "mr_client", "mr_client_id");
+				mr_clusters = new DBMap<>(MR_Cluster.class, "mr_cluster", "dcae_location_name");
+				feeds = new DBMap<>(Feed.class, "feed", "feed_id");
 				TableHandler.setSpecialCase("topic", "replication_case", new TopicReplicationTypeHandler());
-				topics = new DBMap<Topic>(Topic.class, "topic", "fqtn");			
+				topics = new DBMap<>(Topic.class, "topic", "fqtn");			
 				TableHandler.setSpecialCase("mirror_maker", "topics", new MirrorTopicsHandler());
-				mirrors = new DBMap<MirrorMaker>(MirrorMaker.class, "mirror_maker", "mm_name");
+				mirrors = new DBMap<>(MirrorMaker.class, "mirror_maker", "mm_name");
 			} catch (Exception e) {
 				errorLogger.error("Error initializing database access " + e, e);
 				System.exit(1);
@@ -193,15 +189,15 @@ public class DatabaseClass extends BaseLoggingClass {
 					dmaap.setAccessKeyOwner(nd.getAccessKeyOwner());
 				}
 			};
-			dcaeLocations = new HashMap<String, DcaeLocation>();
-			dr_nodes = new HashMap<String, DR_Node>();
-			dr_pubs = new HashMap<String, DR_Pub>();
-			dr_subs = new HashMap<String, DR_Sub>();
-			mr_clients = new HashMap<String, MR_Client>();
-			mr_clusters = new HashMap<String, MR_Cluster>();
-			feeds = new HashMap<String, Feed>();
-			topics = new HashMap<String, Topic>();
-			mirrors = new HashMap<String, MirrorMaker>();
+			dcaeLocations = new HashMap<>();
+			dr_nodes = new HashMap<>();
+			dr_pubs = new HashMap<>();
+			dr_subs = new HashMap<>();
+			mr_clients = new HashMap<>();
+			mr_clusters = new HashMap<>();
+			feeds = new HashMap<>();
+			topics = new HashMap<>();
+			mirrors = new HashMap<>();
 		}
 		dmaap.init(new Dmaap("0", "", "", "", "", "", "", ""));
 		// check for, and set up initial data, if it isn't already there
@@ -217,11 +213,12 @@ public class DatabaseClass extends BaseLoggingClass {
 			dmaap.update(dmx);
 		}
 		} catch (Exception e) {
+			errorLogger.error("Error", e);
 			errorLogger.error(DmaapbcLogMessageEnum.DB_UPDATE_ERROR, e.getMessage());
 		}
 	}
 	
-	public synchronized static String getNextClientId() {
+	public static synchronized String getNextClientId() {
 		
 		long id = System.currentTimeMillis();
 		if ( id <= lastTime ) {
