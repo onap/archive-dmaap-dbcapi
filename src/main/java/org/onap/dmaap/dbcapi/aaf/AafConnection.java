@@ -40,7 +40,6 @@ import javax.net.ssl.SSLHandshakeException;
 import org.apache.commons.codec.binary.Base64;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
-import org.onap.dmaap.dbcapi.service.DmaapService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 
@@ -73,11 +72,12 @@ public class AafConnection extends BaseLoggingClass {
 			uc.setInstanceFollowRedirects(false);
 			logger.info( "successful connect to " + pURL );
 			return(true);
-		} catch ( UnknownHostException uhe ) {
+		} catch ( UnknownHostException uhe ) {			
 	        errorLogger.error(DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION,  pURL, uhe.getMessage() );
-            uhe.printStackTrace();
+	        logger.error("Error", uhe);
             return(false);
 		} catch (Exception e) {
+			logger.error("Error", e);
 	        errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_ERROR,  pURL, e.getMessage() );
             e.printStackTrace();
             return(false);
@@ -137,21 +137,26 @@ public class AafConnection extends BaseLoggingClass {
                  os.write( postData );
 
             } catch (ProtocolException pe) {
+            	logger.error("Error", pe);
                  // Rcvd error instead of 100-Continue
                  try {
                      // work around glitch in Java 1.7.0.21 and likely others
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error("Error", e);
                  }
             } catch ( SSLHandshakeException she ) {
+            	logger.error("Error", she);
                	errorLogger.error( DmaapbcLogMessageEnum.SSL_HANDSHAKE_ERROR, pURL);
 			} catch ( UnknownHostException uhe ) {
+				logger.error("Error", uhe);
 				errorLogger.error(DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION,  pURL, uhe.getMessage() );
             	rc = 500;
             	return rc;
             } catch ( ConnectException ce ) {
-				if ( unit_test.equals( "Yes" ) ) {
+            	logger.error("Error", ce);
+				if ( "Yes".equals(unit_test) ) {
 					rc = 201;
 					return rc;
 				}
@@ -162,6 +167,7 @@ public class AafConnection extends BaseLoggingClass {
 			try {
 				rc = uc.getResponseCode();
 			} catch ( SSLHandshakeException she ) {
+				logger.error("Error", she);
 				errorLogger.error( DmaapbcLogMessageEnum.SSL_HANDSHAKE_ERROR, pURL);
             	rc = 500;
             	return rc;
@@ -190,16 +196,16 @@ public class AafConnection extends BaseLoggingClass {
             } 
             
 		} catch (Exception e) {
-            System.err.println("Unable to read response  " );
-            e.printStackTrace();
+            logger.error("Unable to read response  ");
+            logger.error("Error", e);
         }
 		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
-		}
-		//return responseBody;
-	
+			} catch ( Exception e ) {
+				logger.error("Error", e);
+			}
+		}	
 		return rc;
 		
 	}
@@ -239,12 +245,14 @@ public class AafConnection extends BaseLoggingClass {
                  os.write( postData );
 
             } catch (ProtocolException pe) {
+            	logger.error("Error", pe);
                  // Rcvd error instead of 100-Continue
                  try {
                      // work around glitch in Java 1.7.0.21 and likely others
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error("Error", e);
                  }
             } catch ( SSLHandshakeException she ) {
             	errorLogger.error( DmaapbcLogMessageEnum.SSL_HANDSHAKE_ERROR, pURL);
@@ -252,6 +260,7 @@ public class AafConnection extends BaseLoggingClass {
 			try {
 				rc = uc.getResponseCode();
 			} catch ( SSLHandshakeException she ) {
+				logger.error("Error", she);
 				errorLogger.error( DmaapbcLogMessageEnum.SSL_HANDSHAKE_ERROR, pURL);
             	rc = 500;
             	return rc;
@@ -280,11 +289,9 @@ public class AafConnection extends BaseLoggingClass {
             } 
             
 		} catch (Exception e) {
-            System.err.println("Unable to read response  " );
-            e.printStackTrace();
-        }
-		//return responseBody;
-	
+            logger.error("Unable to read response  ");
+            logger.error("Error", e);
+        }	
 		return rc;
 		
 	}
