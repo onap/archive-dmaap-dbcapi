@@ -46,13 +46,13 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 public class AafConnection extends BaseLoggingClass {
 
 
-	   
-   
+
+
 
 	private String aafCred;
 	private String unit_test;
 
-	
+
 	private HttpsURLConnection uc;
 
 
@@ -62,10 +62,10 @@ public class AafConnection extends BaseLoggingClass {
         unit_test = p.getProperty( "UnitTest", "No" );
 
 	}
-	
+
 
 	private boolean makeConnection( String pURL ) {
-	
+
 		try {
 			URL u = new URL( pURL );
 			uc = (HttpsURLConnection) u.openConnection();
@@ -78,7 +78,7 @@ public class AafConnection extends BaseLoggingClass {
             return(false);
 		} catch (Exception e) {
 			logger.error("Error", e);
-	        errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_ERROR,  pURL, e.getMessage() );
+	        errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_ERROR,  pURL, e.getMessage());
             e.printStackTrace();
             return(false);
         }
@@ -94,9 +94,9 @@ public class AafConnection extends BaseLoggingClass {
 				sb.append( line );
 			}
 		} catch (IOException ex ) {
-			errorLogger.error( DmaapbcLogMessageEnum.IO_EXCEPTION,  ex.getMessage());
+			errorLogger.error( DmaapbcLogMessageEnum.IO_EXCEPTION + ex.getMessage(),ex);
 		}
-			
+
 		return sb.toString();
 	}
 	
@@ -107,11 +107,11 @@ public class AafConnection extends BaseLoggingClass {
 		String auth =  "Basic " + Base64.encodeBase64String(aafCred.getBytes());
 		int rc = -1;
 
-		
+
 		if ( ! makeConnection( pURL ) ) {
 			return rc;
 		};
-		
+
 
 		byte[] postData = obj.getBytes();
 		//logger.info( "post fields=" + postData );  //byte isn't very readable
@@ -255,7 +255,7 @@ public class AafConnection extends BaseLoggingClass {
                 	 logger.error("Error", e);
                  }
             } catch ( SSLHandshakeException she ) {
-            	errorLogger.error( DmaapbcLogMessageEnum.SSL_HANDSHAKE_ERROR, pURL);
+            	errorLogger.error( DmaapbcLogMessageEnum.SSL_HANDSHAKE_ERROR +"For:- "+pURL,she);
             }
 			try {
 				rc = uc.getResponseCode();
