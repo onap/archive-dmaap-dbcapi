@@ -69,6 +69,9 @@ public class JettyServer extends BaseLoggingClass {
        	boolean allowHttp = Boolean.valueOf(params.getProperty("HttpAllowed", "false"));
     	serverLogger.info( "port params: http=" + httpPort + " https=" + sslPort );
     	serverLogger.info( "allowHttp=" + allowHttp );
+        String keystore=null;
+        String keystorePwd = null;
+        String keyPwd = null;
         
         // HTTP Server
 
@@ -79,50 +82,50 @@ public class JettyServer extends BaseLoggingClass {
 
     	
     	
-        ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(http_config));
-        httpConnector.setPort(httpPort);  
-        httpConnector.setIdleTimeout(30000);
-  
-        
-        // HTTPS Server
- 
-        HttpConfiguration https_config = new HttpConfiguration(http_config);
-        https_config.addCustomizer(new SecureRequestCustomizer());
-        SslContextFactory sslContextFactory = new SslContextFactory();
-        String keystore = params.getProperty("KeyStoreFile", "etc/keystore");
-        logger.info( "https Server using keystore at " + keystore );
-        String keystorePwd = params.getProperty( "KeyStorePassword", "changeit");
-        String keyPwd = params.getProperty("KeyPassword", "changeit");
- 
+        try(ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(http_config))) {
+			httpConnector.setPort(httpPort);
+			httpConnector.setIdleTimeout(30000);
 
-        sslContextFactory.setKeyStorePath(keystore);
-        sslContextFactory.setKeyStorePassword(keystorePwd);
-        sslContextFactory.setKeyManagerPassword(keyPwd);     
 
-  
-		ServerConnector sslConnector = null;
-		if ( sslPort != 0 ) {
-			sslConnector = new ServerConnector(server,
-					new SslConnectionFactory(sslContextFactory, "http/1.1"),
-					new HttpConnectionFactory(https_config));
-			sslConnector.setPort(sslPort);
-        	if ( allowHttp ) {
-            	logger.info("Starting httpConnector on port " + httpPort );
-            	logger.info("Starting sslConnector on port " +   sslPort + " for https");
-        		server.setConnectors( new Connector[] { httpConnector, sslConnector });
-        	} else {
-            	logger.info("NOT starting httpConnector because HttpAllowed param is " + allowHttp  );	
-            	logger.info("Starting sslConnector on port " +   sslPort + " for https");
-          		server.setConnectors( new Connector[] { sslConnector });     	
-        	}
+			// HTTPS Server
+
+			HttpConfiguration https_config = new HttpConfiguration(http_config);
+			https_config.addCustomizer(new SecureRequestCustomizer());
+			SslContextFactory sslContextFactory = new SslContextFactory();
+			keystore = params.getProperty("KeyStoreFile", "etc/keystore");
+			logger.info("https Server using keystore at " + keystore);
+			keystorePwd = params.getProperty("KeyStorePassword", "changeit");
+			keyPwd = params.getProperty("KeyPassword", "changeit");
+
+
+			sslContextFactory.setKeyStorePath(keystore);
+			sslContextFactory.setKeyStorePassword(keystorePwd);
+			sslContextFactory.setKeyManagerPassword(keyPwd);
+
+
+			if (sslPort != 0) {
+                try(ServerConnector sslConnector = new ServerConnector(server,
+						new SslConnectionFactory(sslContextFactory, "http/1.1"),
+						new HttpConnectionFactory(https_config))) {
+                    sslConnector.setPort(sslPort);
+                    if (allowHttp) {
+                        logger.info("Starting httpConnector on port " + httpPort);
+                        logger.info("Starting sslConnector on port " + sslPort + " for https");
+                        server.setConnectors(new Connector[]{httpConnector, sslConnector});
+                    } else {
+                        logger.info("NOT starting httpConnector because HttpAllowed param is " + allowHttp);
+                        logger.info("Starting sslConnector on port " + sslPort + " for https");
+                        server.setConnectors(new Connector[]{sslConnector});
+                    }
+                }
+			} else {
+				serverLogger.info("NOT starting sslConnector on port " + sslPort + " for https");
+				if (allowHttp) {
+					serverLogger.info("Starting httpConnector on port " + httpPort);
+					server.setConnectors(new Connector[]{httpConnector});
+				}
+			}
 		}
-		else {
-            serverLogger.info("NOT starting sslConnector on port " +   sslPort + " for https");
-        	if ( allowHttp ) {
-            	serverLogger.info("Starting httpConnector on port " + httpPort );
-        		server.setConnectors( new Connector[] { httpConnector });
-			} 
-        } 
  
         // Set context for servlet.  This is shared for http and https
        	ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
