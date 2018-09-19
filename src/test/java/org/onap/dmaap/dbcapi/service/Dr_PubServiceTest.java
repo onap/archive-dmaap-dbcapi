@@ -76,8 +76,7 @@ public class Dr_PubServiceTest {
 		ApiError err = new ApiError();
 		Feed f = new Feed( "aTest", "1.0", "a unit test", "dgl", "unrestricted" );
 		f = fs.addFeed( f, 	err );
-/*
-TODO: make this not be null...
+
 		assertTrue( f != null );
 		DR_Pub node = new DR_Pub( locname, "aUser", "aPwd", f.getFeedId(), "pubId01" );
 		DR_Pub n2 = ns.addDr_Pub( node );	
@@ -94,8 +93,7 @@ TODO: make this not be null...
 		}
 
 		n2 = ns.removeDr_Pub( n2.getPubId(),  err );
-*/
-				
+			
 
 	}
 
