@@ -20,11 +20,6 @@
 
 package org.onap.dmaap.dbcapi.resources;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +44,11 @@ import org.onap.dmaap.dbcapi.model.Feed;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.DR_SubService;
 import org.onap.dmaap.dbcapi.service.FeedService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 
 
 @Path("/dr_subs")

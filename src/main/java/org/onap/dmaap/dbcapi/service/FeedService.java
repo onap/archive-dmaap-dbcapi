@@ -299,6 +299,7 @@ public class FeedService  extends BaseLoggingClass {
 		if ( unit_test.equals( "Yes" ) ) {
 			// assume resp is null, so need to simulate it
 			resp = simulateResp( req, "PUT" );
+			err.setCode(200);
 		}
 		logger.info( "resp=" + resp );
 		if ( resp == null ) {
@@ -425,15 +426,30 @@ public class FeedService  extends BaseLoggingClass {
 			feedid = "99";
 		}
 		String ret = String.format( 
-"{\"suspend\":false,\"groupid\":0,\"description\":\"%s\",\"version\":\"1.0\",\"authorization\":{\"endpoint_addrs\":[],\"classification\":\"unclassified\",\"endpoint_ids\":[{\"password\":\"topSecret123\",\"id\":\"sim\"}]},\"name\":\"%s\",\"business_description\":\"\",\"publisher\":\"sim\",\"links\":{\"subscribe\":\"https://%s/subscribe/%s\",\"log\":\"https://%s/feedlog/%s\",\"publish\":\"https://%s/publish/%s\",\"self\":\"https://%s/feed/%s\"}}",
-		f.getFeedDescription(),
-		f.getFeedName(),
-		server, feedid,
-		server, feedid,
-		server, feedid,
-		server, feedid
+"{\"suspend\":false,\"groupid\":0,\"description\":\"%s\",\"version\":\"1.0\",\"authorization\":",
+			f.getFeedDescription() );
 
-		);
+		String endpoints = "{\"endpoint_addrs\":[],\"classification\":\"unclassified\",\"endpoint_ids\":[";
+		String sep = "";
+		for( DR_Pub pub: f.getPubs()) {
+			endpoints +=  String.format( "%s{\"password\":\"%s\",\"id\":\"%s\"}", 
+					sep, pub.getUserpwd(), pub.getUsername() );
+			sep = ",";
+			
+		}
+		endpoints += "]},";
+		ret += endpoints;
+		
+		ret += String.format(
+		"\"name\":\"%s\",\"business_description\":\"\",\"publisher\":\"sim\",\"links\":{\"subscribe\":\"https://%s/subscribe/%s\",\"log\":\"https://%s/feedlog/%s\",\"publish\":\"https://%s/publish/%s\",\"self\":\"https://%s/feed/%s\"}}",
+
+			f.getFeedName(),
+			server, feedid,
+			server, feedid,
+			server, feedid,
+			server, feedid
+				);
+		logger.info( "simulateResp ret=" + ret );
 		return ret;
 	}
 	private String simulateDelResp( Feed f ){

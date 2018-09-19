@@ -96,6 +96,7 @@ public class DR_SubService extends BaseLoggingClass {
 		String resp = prov.doPostDr_Sub( sub, apiError );
 		if ( unit_test.equals( "Yes" ) ) {
 			resp = simulateResp( sub, "POST" );
+			apiError.setCode(200);
 		}
 		logger.debug( "addDr_Sub resp=" + resp );
 
@@ -147,6 +148,10 @@ public class DR_SubService extends BaseLoggingClass {
 		DrProvConnection prov = new DrProvConnection();
 		prov.makeSubPutConnection( obj.getSubId() );
 		String resp = prov.doPutDr_Sub( obj, apiError );
+		if ( unit_test.equals( "Yes" ) ) {
+			resp = simulateResp( obj, "PUT" );
+			apiError.setCode(200);
+		}
 		logger.debug( "resp=" + resp );
 
 		DR_Sub snew = null;
@@ -179,7 +184,7 @@ public class DR_SubService extends BaseLoggingClass {
 			String resp = prov.doDeleteDr_Sub( sub, apiError );
 			logger.debug( "resp=" + resp );
 			
-			if ( apiError.is2xx() ) {
+			if ( apiError.is2xx() || unit_test.equals( "Yes" ) ) {
 				dr_subs.remove(key);
 			}
 		}
@@ -198,8 +203,14 @@ public class DR_SubService extends BaseLoggingClass {
 		} else {
 			subid = "99";
 		}
-		String ret = String.format("{\"delivery\": {\"url\": \"https://%s/delivery/%s\", \"user\": \"joe\", \"password\": \"secret\", \"use100\":  true}, \"metadataOnly\": false, \"groupid\": \"0\" , \"follow_redirect\": true }", 
-			server, subid );
+		String ret = String.format("{\"suspend\": false, \"delivery\": {\"url\": \"https://%s/delivery/%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  true}, \"metadataOnly\": false, \"groupid\": \"0\" , \"follow_redirect\": true, ", 
+			server, subid, sub.getUsername(), sub.getUserpwd());
+		String links = String.format( "\"links\": {\"feed\": \"https://dr-prov/feedlog/%s\", \"self\": \"https://dr-prov/sub/%s\", \"log\": \"https://dr-prov/sublog/%s\" }", 
+				sub.getFeedId(),
+				sub.getSubId(),
+				sub.getSubId() );
+		ret += links + "}";
+		logger.info( "DR_SubService:simulateResp=" + ret);
 
 		return ret;
 	}
