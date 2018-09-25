@@ -85,6 +85,7 @@ public class AafService extends BaseLoggingClass {
 	private void initAafService( ServiceType t ) {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
+		logger.info( "AafService initAafService: useAAF=" + useAAF);
 		
 		ctype = t;
 		aaf = new AafConnection( getCred( true ) );
@@ -95,7 +96,9 @@ public class AafService extends BaseLoggingClass {
 		int rc = -1;
 		logger.info( "entry: addPerm() "  );
 		String pURL = aafURL + "authz/perm";
+		logger.info( "addPerm=" + useAAF );
 		if ( useAAF ) {
+			logger.info( "addPerm: " + perm.toJSON());
 			rc = aaf.postAaf( perm, pURL );
 		} else {
 			rc = 201;
@@ -125,7 +128,9 @@ public class AafService extends BaseLoggingClass {
 		logger.info( "entry: addGrant() "  );
 
 		String pURL = aafURL + "authz/role/perm";
+		logger.info( "addGrant: useAAF=" + useAAF );
 		if ( useAAF ) {
+			logger.info( "addGrant: " + grant.toJSON() );
 			rc = aaf.postAaf( grant, pURL );
 		} else {
 			rc = 201;
