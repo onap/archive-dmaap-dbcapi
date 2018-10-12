@@ -52,6 +52,7 @@ public class DmaapService  extends BaseLoggingClass  {
 
 	
 	private Singleton<Dmaap> dmaapholder = DatabaseClass.getDmaap();
+	private static String noEnvironmentPrefix;
 	
 	
 	String topicFactory; // = "org.openecomp.dcae.dmaap.topicFactory";
@@ -66,6 +67,15 @@ public class DmaapService  extends BaseLoggingClass  {
 		topicMgrRole = p.getProperty("MR.TopicMgrRole", "MR.TopicMgrRole.not.set" );
 		dcaeTopicNs = dmaapholder.get().getTopicNsRoot();
 		multiSite = "true".equalsIgnoreCase(p.getProperty("MR.multisite", "true"));
+		noEnvironmentPrefix = p.getProperty( "AAF.NoEnvironmentPrefix", "org.onap");
+		
+		logger.info( "DmaapService settings: " + 
+				" topicFactory=" + topicFactory +
+				" topicMgrRole=" + topicMgrRole +
+				" dcaeTopicNs=" + dcaeTopicNs +
+				" multisite=" + multiSite +
+				" noEnvironmentPrefix=" + noEnvironmentPrefix
+				);
 		
 	}
 	
@@ -155,7 +165,15 @@ public class DmaapService  extends BaseLoggingClass  {
 	}
 	public String getTopicPerm( String val ) {
 		Dmaap dmaap = dmaapholder.get();
-		return dmaap.getTopicNsRoot() + "." + val + ".mr.topic";
+		String nsRoot = dmaap.getTopicNsRoot();
+		String t;
+		// in ONAP Casablanca, we assume no distinction of environments reflected in topic namespace
+		if ( nsRoot.startsWith(noEnvironmentPrefix) ) {
+			t = nsRoot +  ".mr.topic";
+		} else {
+			t = nsRoot + "." + val + ".mr.topic";
+		}
+		return t;
 	}
 	
 	public String getBridgeAdminFqtn(){

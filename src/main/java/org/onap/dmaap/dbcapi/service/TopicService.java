@@ -70,7 +70,9 @@ public class TopicService extends BaseLoggingClass {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		defaultGlobalMrHost = p.getProperty("MR.globalHost", "global.host.not.set");
 		centralCname = p.getProperty("MR.CentralCname");
-		logger.info( "TopicService properties: CentralCname=" + centralCname + "   defaultGlobarlMrHost=" + defaultGlobalMrHost );
+		
+		logger.info( "TopicService properties: CentralCname=" + centralCname + 
+				"   defaultGlobarlMrHost=" + defaultGlobalMrHost  );
 	}
 	
 	public Map<String, Topic> getTopics() {			
@@ -116,9 +118,11 @@ public class TopicService extends BaseLoggingClass {
 		err.reset();  // err filled with NOT_FOUND is expected case, but don't want to litter...
 
 		topic.setFqtn( nFqtn );
-
+		
 		AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
-		String t = dmaap.getTopicNsRoot() + "." + dmaap.getDmaapName() + ".mr.topic";
+
+		String t = dmaapSvc.getTopicPerm();
+
 		String instance = ":topic." + topic.getFqtn();
 
 		String[] actions = { "pub", "sub", "view" };

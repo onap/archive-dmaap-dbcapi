@@ -89,10 +89,17 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 		
 	}
 	
-	   public static void main(String[] args) throws Exception {
+	 public static void main(String[] args) throws Exception {
 	        AafLurAndFish alaf = new AafLurAndFish();
 	        DmaapPerm p = new DmaapPerm( "org.onap.dmaap-bc.api.dmaap", "boot", "GET");
 	        
-	        alaf.check("demo@people.osaaf.org", "demo123456!", p);
+	        try {
+	        	alaf.check("mmanager@people.osaaf.org", "demo123456!", p);
+	        } catch (AuthenticationErrorException aee ) {
+	        	logger.error( "Check failed for: " + p.toJSON());
+	        	System.exit(-1);
+	        }
+	        logger.info( "Check succeeded for: " + p.toJSON() );
+	        
 	    }
 }
