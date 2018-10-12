@@ -26,6 +26,7 @@ import java.util.*;
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
+import java.util.concurrent.TimeUnit;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class ConnectionFactory	{
@@ -36,6 +37,7 @@ public class ConnectionFactory	{
 	 static final EELFLogger errorLogger = EELFManager.getInstance().getErrorLogger();
 	 static final EELFLogger metricsLogger = EELFManager.getInstance().getMetricsLogger();
 	 static final EELFLogger serverLogger = EELFManager.getInstance().getServerLogger();
+	 static final int PREPARE_PSQL_CONNECTION_ATTEMPTS = 5;
 
 	static {
 		try {
@@ -75,6 +77,14 @@ public class ConnectionFactory	{
 		Properties p = new Properties();
 		p.put("user", dbuser);
 		p.put("password", dbcr);
+		for (int i=1; i<PREPARE_PSQL_CONNECTION_ATTEMPTS; i++){
+			try{
+				return(DriverManager.getConnection("jdbc:postgresql://" + host + "/" + dbname, p));
+			}catch(SQLException e){
+				logger.error("Unable to connect to the postgres server. " + i + "attempt failed. ", e);
+				waitFor(1);
+			}
+		}
 		return(DriverManager.getConnection("jdbc:postgresql://" + host + "/" + dbname, p));
 	}
 	public String getSchema() {
@@ -91,6 +101,13 @@ public class ConnectionFactory	{
 			c.close(); 
 		} catch (Exception e) {
 			logger.error("Error", e);
+		}
+	}
+	private void waitFor(long seconds){
+		try {
+			TimeUnit.SECONDS.sleep(seconds);
+		} catch (InterruptedException e) {
+			logger.debug("Waiting interrupted. ", e);
 		}
 	}
 }
