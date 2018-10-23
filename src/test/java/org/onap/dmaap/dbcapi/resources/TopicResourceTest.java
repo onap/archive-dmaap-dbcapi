@@ -31,6 +31,7 @@ import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
+import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
@@ -46,7 +47,8 @@ public class TopicResourceTest extends JerseyTest {
 		return new ResourceConfig()
 				.register( TopicResource.class )
 				.register( MR_ClusterResource.class )
-				.register( DcaeLocationResource.class );
+				.register( DcaeLocationResource.class )
+				.register( DmaapResource.class );
 	}
 
 	private static final String  fmt = "%24s: %s%n";
@@ -56,6 +58,15 @@ public class TopicResourceTest extends JerseyTest {
 
 	@Before
 	public void preTest() throws Exception {
+		try {
+
+			Dmaap dmaap = factory.genDmaap();
+			Entity<Dmaap> reqEntity = Entity.entity( dmaap, MediaType.APPLICATION_JSON );
+			Response resp = target( "dmaap").request().post( reqEntity, Response.class );
+			System.out.println( resp.getStatus() );
+			assertTrue( resp.getStatus() == 200 );
+		}catch (Exception e ) {
+		}
 		try {
 			DcaeLocation loc = factory.genDcaeLocation( "central" );
 			Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
@@ -72,7 +83,7 @@ public class TopicResourceTest extends JerseyTest {
 			Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
 			System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
 			if (resp.getStatus() != 409 ) {
-				assertTrue( resp.getStatus() == 200);
+				assertTrue( resp.getStatus() == 201);
 			}	
 		} catch (Exception e ) {
 			
@@ -93,6 +104,8 @@ public class TopicResourceTest extends JerseyTest {
 
 		assertTrue( resp.getStatus() == 200 );
 	}
+	
+
 	@Test
 	public void PostTest() {
 		Topic topic = factory.genSimpleTopic( "test1" );
@@ -109,6 +122,7 @@ public class TopicResourceTest extends JerseyTest {
 		assertTrue( resp.getStatus() == 200 );
 		
 	}
+
 
 	@Test
 	public void PutTest() {

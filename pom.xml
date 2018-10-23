@@ -244,12 +244,12 @@
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-core</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.2.0</version>
+			<version>1.2.3</version>
 		</dependency>
 <!-- DMAAP-656:
    - override this dependency because it utilized a third party
@@ -322,7 +322,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.4.1208.jre7</version>
+			<version>42.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.att.eelf</groupId>
