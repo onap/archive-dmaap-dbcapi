@@ -102,14 +102,19 @@ public class TopicService extends BaseLoggingClass {
 		return t;
 	}
 
-	public Topic addTopic( Topic topic, ApiError err ) {
+	public Topic addTopic( Topic topic, ApiError err, Boolean useExisting ) {
 		logger.info( "Entry: addTopic");
 		logger.info( "Topic name=" + topic.getTopicName() + " fqtnStyle=" + topic.getFqtnStyle() );
 		String nFqtn =  topic.genFqtn();
 		logger.info( "FQTN=" + nFqtn );
-		if ( getTopic( nFqtn, err ) != null ) {
+		Topic pTopic = getTopic( nFqtn, err );
+		if ( pTopic != null ) {
 			String t = "topic already exists: " + nFqtn;
 			logger.info( t );
+			if (  useExisting ) {
+				err.setCode(Status.OK.getStatusCode());
+				return pTopic;
+			}
 			err.setMessage( t );
 			err.setFields( "fqtn");
 			err.setCode(Status.CONFLICT.getStatusCode());
@@ -251,7 +256,7 @@ public class TopicService extends BaseLoggingClass {
 		
 		TopicService ts = new TopicService();
 		ApiError err = new ApiError();
-		ts.addTopic(bridgeAdminTopic, err);
+		ts.addTopic(bridgeAdminTopic, err, true);
 		
 		if ( err.is2xx() || err.getCode() == 409 ){
 			err.setCode(200);

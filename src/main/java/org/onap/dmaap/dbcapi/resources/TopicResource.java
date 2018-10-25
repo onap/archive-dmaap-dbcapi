@@ -35,6 +35,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -94,9 +95,10 @@ public class TopicResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response  addTopic( 
-			Topic topic
+			Topic topic,
+			@QueryParam("useExisting") String useExisting
 			) {
-		logger.info( "addTopic request: " + topic );
+		logger.info( "addTopic request: " + topic  + " useExisting=" + useExisting );
 		ApiService check = new ApiService();
 
 		try {
@@ -118,8 +120,12 @@ public class TopicResource extends BaseLoggingClass {
 			topic.setFqtnStyle( defaultTopicStyle );
 		}
 		topic.setLastMod();
+		Boolean flag = false;
+		if (useExisting != null) {
+			flag = "true".compareToIgnoreCase( useExisting ) == 0;
+		}
 		
-		Topic mrc =  mr_topicService.addTopic(topic, check.getErr());
+		Topic mrc =  mr_topicService.addTopic(topic, check.getErr(), flag);
 		if ( mrc != null && check.getErr().is2xx() ) {
 			return check.success(Status.CREATED.getStatusCode(), mrc);
 		}

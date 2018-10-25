@@ -290,7 +290,7 @@ public class DmaapService  extends BaseLoggingClass  {
 		TopicService svc = new TopicService();
 		try {
 			@SuppressWarnings("unused")
-			Topic nTopic = svc.addTopic(mmaTopic, err);
+			Topic nTopic = svc.addTopic(mmaTopic, err, true);
 			if ( err.is2xx() || err.getCode() == 409 ) {
 				return false;
 			}

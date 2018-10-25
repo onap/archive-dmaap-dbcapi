@@ -73,7 +73,7 @@ public class TopicServiceTest {
 		topic.setTopicName( "test3" );
 		topic.setFqtnStyle( FqtnType.Validator("none") );
 		topic.getFqtn();
-		Topic nTopic = ts.addTopic( topic, err );
+		Topic nTopic = ts.addTopic( topic, err, false );
 		if ( nTopic != null ) {
 			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
 		}
@@ -104,7 +104,7 @@ public class TopicServiceTest {
 		ts.reviewTopic( topic );
 		ts.checkForBridge( topic, err );
 		
-		Topic nTopic = ts.addTopic( topic, err );
+		Topic nTopic = ts.addTopic( topic, err, false );
 		if ( nTopic != null ) {
 			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
 		}

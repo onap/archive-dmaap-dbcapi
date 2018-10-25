@@ -93,7 +93,7 @@ public class MR_ClientServiceTest {
 	public void test3() {
 		Topic topic = factory.genSimpleTopic( "test3" );
 		ApiError err = new ApiError();
-		Topic nTopic = ts.addTopic( topic, err );
+		Topic nTopic = ts.addTopic( topic, err, false );
 		if ( nTopic != null ) {
 			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
 		}
@@ -117,7 +117,7 @@ public class MR_ClientServiceTest {
 	public void test5() {
 		Topic topic = factory.genSimpleTopic( "test5" );
 		ApiError err = new ApiError();
-		Topic nTopic = ts.addTopic( topic, err );
+		Topic nTopic = ts.addTopic( topic, err, false );
 		if ( nTopic != null ) {
 			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
 		}

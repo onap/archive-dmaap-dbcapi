@@ -100,7 +100,8 @@ public class FeedResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response addFeed( 
-			@WebParam(name = "feed") Feed feed 
+			@WebParam(name = "feed") Feed feed,
+			@QueryParam("useExisting") String useExisting
 			) {
 
 		ApiService resp = new ApiService();
@@ -114,6 +115,7 @@ public class FeedResource extends BaseLoggingClass {
 			logger.debug( resp.toString() );
 			return resp.error();	
 		}
+		
 		
 		FeedService feedService = new FeedService();
 		Feed nfeed =  feedService.getFeedByName( feed.getFeedName(), feed.getFeedVersion(), resp.getErr() );
@@ -136,6 +138,8 @@ public class FeedResource extends BaseLoggingClass {
 
 				return resp.error();	
 			}
+		} else if ( (useExisting != null) && ("true".compareToIgnoreCase( useExisting ) == 0)) {
+			return resp.success(nfeed);
 		}
 
 		resp.setCode(Status.CONFLICT.getStatusCode());
