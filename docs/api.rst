@@ -14,7 +14,7 @@ Objects managed by DMaaP are deployed in a dcaeLocation which is a unique identi
 
 A dcaeEnvironment (e.g. FTL or prod) has a single DMaaP. A DMaaP is managed by a one or more stateless DMaaP Bus Controller(s), though Bus Controller relies on PGaaS for persistence. Each DMaaP has a single instance of Data Router, which has 1 or more DR_Nodes deployed at each dcaeLocation. DR Clients of type DR_Pub generally publish to a DR_Node that is local to its dcaeLocation. Routing for a Feed is determined by the dcaelocation of its DR_Sub clients.
 
-A DMaaP may have many Message Router instances. Each instance is deployed as an MR_Cluster. One MR_Cluster is deployed at each dcaeLocation. MR_Clients generally communicate to the MR_Cluster at the same dcaeLocation. Replication of messages between MR_Clusters is accomplished by MR Bridge, which is provioned by DMaaP Bus Controller based on Topic attributes.
+A DMaaP may have many Message Router instances. Each instance is deployed as an MR_Cluster. One MR_Cluster is deployed at each dcaeLocation. MR_Clients generally communicate to the MR_Cluster at the same dcaeLocation. Replication of messages between MR_Clusters is accomplished by MR Bridge, which is provisioned by DMaaP Bus Controller based on Topic attributes.
 
 Therefore, the role of DMaaP Bus Controller is to support other DCAE infrastructure components to dynamically provision DMaaP services on behalf of DMaaP clients, and to assist in any management or discovery activity of its clients.
 
@@ -52,7 +52,7 @@ BRIDGE
 ~~~~~~
 
 
-Endpoint for retreiving MR Bridge metrics
+Endpoint for retrieving MR Bridge metrics
 
 
 
@@ -3505,7 +3505,7 @@ TOPICS
 ~~~~~~
 
 
-Endpoint for retreiving MR Topics
+Endpoint for retrieving MR Topics
 
 
 

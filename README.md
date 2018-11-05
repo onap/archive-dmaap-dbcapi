@@ -24,7 +24,7 @@ DMaaP Bus Controller API
 
 Data Movement as a Platform (DMaaP) Bus Controller provides an API for other ONAP infrastructure components to provision DMaaP resources.
 A typical DMaaP resource is a Data Router Feed or a Message Router Topic, and their associated publishers and subscribers.
-Other infrastucture resources such as DR Nodes and MR Clusters are also provisioned through this API.
+Other infrastructure resources such as DR Nodes and MR Clusters are also provisioned through this API.
 
 ### Build Instructions for a Continuous Integration environment using Jenkins
 
