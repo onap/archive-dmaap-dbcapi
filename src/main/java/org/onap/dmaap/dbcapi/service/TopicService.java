@@ -80,9 +80,18 @@ public class TopicService extends BaseLoggingClass {
 	}
 		
 	public List<Topic> getAllTopics() {
+		return getAllTopics( true );
+	}
+	public List<Topic> getAllTopicsWithoutClients() {
+		return getAllTopics(false);
+	}
+	
+	private List<Topic> getAllTopics( Boolean withClients ) {
 		ArrayList<Topic> topics = new ArrayList<Topic>(mr_topics.values());
-		for( Topic topic: topics ) {
-			topic.setClients( clientService.getAllMrClients(topic.getFqtn()));
+		if ( withClients ) {
+			for( Topic topic: topics ) {
+				topic.setClients( clientService.getAllMrClients(topic.getFqtn()));
+			}
 		}
 		return topics;
 	}

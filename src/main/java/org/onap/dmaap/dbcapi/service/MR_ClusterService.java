@@ -28,11 +28,13 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.onap.dmaap.dbcapi.client.MrProvConnection;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
+import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
 import org.onap.dmaap.dbcapi.service.DcaeLocationService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
@@ -119,7 +121,7 @@ public class MR_ClusterService extends BaseLoggingClass {
 			return null;
 		}
 		cluster.setLastMod();
-		cluster.setStatus(DmaapObject_Status.VALID);
+		cluster.setStatus( addTopicsToCluster( cluster, apiError ) );
 		mr_clusters.put( cluster.getDcaeLocationName(), cluster );
 		DcaeLocationService svc = new DcaeLocationService();
 		DcaeLocation loc = svc.getDcaeLocation( cluster.getDcaeLocationName() );
@@ -145,6 +147,7 @@ public class MR_ClusterService extends BaseLoggingClass {
 			return null;
 		}
 		cluster.setLastMod();
+		cluster.setStatus( addTopicsToCluster( cluster, apiError ) );
 		mr_clusters.put( cluster.getDcaeLocationName(), cluster );
 		DcaeLocationService svc = new DcaeLocationService();
 		DcaeLocation loc = svc.getDcaeLocation( cluster.getDcaeLocationName() );
@@ -162,6 +165,7 @@ public class MR_ClusterService extends BaseLoggingClass {
 				mr_clusters.put( cluster.getDcaeLocationName(), cluster );
 			}
 		}
+		
 		apiError.setCode(200);
 		return cluster;
 	}
@@ -178,5 +182,22 @@ public class MR_ClusterService extends BaseLoggingClass {
 		return mr_clusters.remove(key);
 	}	
 	
-
+	private DmaapObject_Status addTopicsToCluster( MR_Cluster cluster, ApiError err  ){
+		
+		TopicService ts = new TopicService();
+		MrProvConnection prov = new MrProvConnection();
+		List<Topic>  topics = ts.getAllTopicsWithoutClients();
+		for( Topic topic: topics ) {
+			logger.info( "POST topic " + topic.getFqtn() + " to cluster " + cluster.getFqdn() + " in loc " + cluster.getDcaeLocationName());
+			if ( prov.makeTopicConnection(cluster)) {
+				String resp = prov.doPostTopic(topic, err);
+				logger.info( "response code: " + err.getCode() );
+				if ( ! err.is2xx() && ! (err.getCode() == 409) ) {
+					return DmaapObject_Status.INVALID;
+				} 
+			}
+		}
+		
+		return DmaapObject_Status.VALID;
+	}
 }

@@ -163,7 +163,7 @@ public class MR_ClusterResourceTest extends JerseyTest {
 
 		
 		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 201 );
+		assertTrue( resp.getStatus() == 201 || resp.getStatus() == 200 );
 	
 		// now really delete it 
 		 resp = target( "mr_clusters").
