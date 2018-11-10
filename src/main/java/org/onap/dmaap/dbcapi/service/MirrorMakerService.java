@@ -155,7 +155,7 @@ public class MirrorMakerService extends BaseLoggingClass {
 		return ret;
 	}
 	
-	public MirrorMaker getNextMM( String source, String target ) {
+	public MirrorMaker getNextMM( String source, String target, String fqtn ) {
 		int i = 0;
 		MirrorMaker mm = null;
 		while( mm == null ) {
@@ -163,6 +163,9 @@ public class MirrorMakerService extends BaseLoggingClass {
 			mm = this.getMirrorMaker( source, target, i);
 			if ( mm == null ) {
 				mm = new MirrorMaker(source, target, i);
+			}
+			if ( mm.getTopics().contains(fqtn) ) {
+				break;
 			}
 			if ( mm.getTopicCount() >= maxTopicsPerMM ) {
 				logger.info( "getNextMM: MM " + mm.getMmName() + " has " + mm.getTopicCount() + " topics.  Moving to next MM");
@@ -177,17 +180,17 @@ public class MirrorMakerService extends BaseLoggingClass {
 
 	public MirrorMaker splitMM( MirrorMaker orig ) {
 		
-		int index = 1;
 		String source = orig.getSourceCluster();
 		String target = orig.getTargetCluster();
 		
 		
 		ArrayList<String> whitelist = orig.getTopics();
 		while( whitelist.size() > maxTopicsPerMM ) {
-			MirrorMaker mm = this.getNextMM( source, target );
+			
 			int last = whitelist.size() - 1;
 			String topic = whitelist.get(last);
 			whitelist.remove(last);
+			MirrorMaker mm = this.getNextMM( source, target, topic );
 			mm.addTopic(topic);	
 			this.updateMirrorMaker(mm);
 		}

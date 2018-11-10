@@ -433,7 +433,7 @@ public class TopicService extends BaseLoggingClass {
 			if ( source != null && target != null ) {
 				try { 
 					logger.info( "Create a MM from " + source + " to " + target );
-					MirrorMaker mm = bridge.getNextMM( source, target);
+					MirrorMaker mm = bridge.getNextMM( source, target, topic.getFqtn());
 					mm.addTopic(topic.getFqtn());
 					bridge.updateMirrorMaker(mm);
 				} catch ( Exception ex ) {
