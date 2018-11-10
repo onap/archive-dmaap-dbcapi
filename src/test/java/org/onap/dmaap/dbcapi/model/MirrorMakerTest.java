@@ -92,7 +92,7 @@ public class MirrorMakerTest {
 
 		int i = t.getTopicCount();
 
-		String s = t.updateWhiteList();
+		String s = t.getWhitelistUpdateJSON();
 
 		s = t.createMirrorMaker(p1, p2);
 

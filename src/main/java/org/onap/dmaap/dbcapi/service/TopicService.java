@@ -66,10 +66,12 @@ public class TopicService extends BaseLoggingClass {
 	
 	private static String centralCname;
 
+
 	public TopicService(){
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		defaultGlobalMrHost = p.getProperty("MR.globalHost", "global.host.not.set");
 		centralCname = p.getProperty("MR.CentralCname");
+
 		
 		logger.info( "TopicService properties: CentralCname=" + centralCname + 
 				"   defaultGlobarlMrHost=" + defaultGlobalMrHost  );
@@ -431,10 +433,7 @@ public class TopicService extends BaseLoggingClass {
 			if ( source != null && target != null ) {
 				try { 
 					logger.info( "Create a MM from " + source + " to " + target );
-					MirrorMaker mm = bridge.getMirrorMaker( source, target);
-					if ( mm == null ) {
-						mm = new MirrorMaker(source, target);
-					}
+					MirrorMaker mm = bridge.getNextMM( source, target);
 					mm.addTopic(topic.getFqtn());
 					bridge.updateMirrorMaker(mm);
 				} catch ( Exception ex ) {
@@ -451,6 +450,7 @@ public class TopicService extends BaseLoggingClass {
 		return  anythingWrong;
 
 	}
+	
 	
 	/*
 	 * Prior to 1707, we only supported EDGE_TO_CENTRAL replication.

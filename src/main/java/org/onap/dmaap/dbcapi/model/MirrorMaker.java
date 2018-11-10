@@ -29,7 +29,7 @@ import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.service.MirrorMakerService;
 
 public class MirrorMaker extends DmaapObject {
-	static final Logger logger = Logger.getLogger(MirrorMaker.class);
+
 
 	private String	sourceCluster;
 	private String	targetCluster;
@@ -41,8 +41,20 @@ public class MirrorMaker extends DmaapObject {
 	public MirrorMaker(){
 		
 	}
-
+	public MirrorMaker(String source, String target, int i) {
+		initMM( source, target );
+		// original mm names did not have any index, so leave off index 0 for
+		// backwards compatibility
+		if ( i != 0 ) {
+			String n = this.getMmName() + "_" + i;
+			this.setMmName(n);
+		}
+	}
 	public MirrorMaker(String source, String target) {
+		initMM( source, target );
+	}
+	
+	private void initMM(String source, String target) {
 		sourceCluster = source;
 		targetCluster = target;
 		mmName = genKey(source, target);
@@ -72,7 +84,7 @@ public class MirrorMaker extends DmaapObject {
 			        }
 			}   
 	 */
-	public String updateWhiteList() {
+	public String getWhitelistUpdateJSON() {
 		StringBuilder str = new StringBuilder( "{ \"messageID\": \"" + MirrorMakerService.genTransactionId() + "\", \"updateWhiteList\": {"  );
 		str.append( " \"name\": \"" + this.getMmName() + "\", \"whitelist\": \"" );
 		int numTargets = 0;
@@ -109,9 +121,9 @@ public class MirrorMaker extends DmaapObject {
 		StringBuilder str = new StringBuilder( "{ \"messageID\": \"" + MirrorMakerService.genTransactionId() + "\", \"createMirrorMaker\": {"  );
 		str.append( " \"name\": \"" + this.getMmName() + "\", " );
 		str.append( " \"consumer\": \"" + this.sourceCluster + ":" + consumerPort + "\", " );
-		str.append( " \"producer\": \"" + this.targetCluster + ":" + producerPort + "\" ");
+		str.append( " \"producer\": \"" + this.targetCluster + ":" + producerPort + "\", ");
 		
-		str.append( " } }" );
+		str.append( " \"numStreams\": \"10\" } }" );
 		
 		return str.toString();
 	}

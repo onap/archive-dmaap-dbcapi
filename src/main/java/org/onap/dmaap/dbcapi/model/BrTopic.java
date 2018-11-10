@@ -30,6 +30,7 @@ public class BrTopic {
 	
 	private String brSource;
 	private String brTarget;
+	private String mmAgentName;
 	private int topicCount;
 	
 	// no-op constructor used by framework
@@ -58,6 +59,14 @@ public class BrTopic {
 
 	public void setTopicCount(int topicCount) {
 		this.topicCount = topicCount;
+	}
+
+	public String getMmAgentName() {
+		return mmAgentName;
+	}
+
+	public void setMmAgentName(String mmAgentName) {
+		this.mmAgentName = mmAgentName;
 	}
 
 

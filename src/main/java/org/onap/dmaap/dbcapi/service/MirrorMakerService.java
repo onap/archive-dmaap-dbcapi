@@ -56,6 +56,7 @@ public class MirrorMakerService extends BaseLoggingClass {
 	private static String defaultProducerPort;
 	private static String defaultConsumerPort;
 	private static String centralFqdn;
+	private int maxTopicsPerMM;
 	
 	public MirrorMakerService() {
 		super();
@@ -66,6 +67,7 @@ public class MirrorMakerService extends BaseLoggingClass {
 		defaultProducerPort = p.getProperty( "MR.SourceReplicationPort", "9092");
 		defaultConsumerPort = p.getProperty( "MR.TargetReplicationPort", "2181");	
 		centralFqdn = p.getProperty("MR.CentralCname", "notSet");
+		maxTopicsPerMM = Integer.valueOf( p.getProperty( "MaxTopicsPerMM", "5"));
 	}
 
 	// will create a MM on MMagent if needed
@@ -90,7 +92,7 @@ public class MirrorMakerService extends BaseLoggingClass {
 				mm.setStatus(DmaapObject_Status.INVALID);
 			} else {
 				prov.makeTopicConnection(central, dmaap.getBridgeAdminFqtn(), centralFqdn );
-				resp = prov.doPostMessage(mm.updateWhiteList());
+				resp = prov.doPostMessage(mm.getWhitelistUpdateJSON());
 				if ( ! resp.is2xx()) {
 					errorLogger.error( DmaapbcLogMessageEnum.MM_PUBLISH_ERROR,"MR Bridge", Integer.toString(resp.getCode()), resp.getMessage());
 					mm.setStatus(DmaapObject_Status.INVALID);
@@ -108,6 +110,19 @@ public class MirrorMakerService extends BaseLoggingClass {
 
 		mm.setLastMod();
 		return mirrors.put( mm.getMmName(), mm);
+	}
+	public MirrorMaker getMirrorMaker( String part1, String part2, int index ) {
+		String targetPart;
+
+		// original mm names did not have any index, so leave off index 0 for
+		// backwards compatibility
+		if ( index == 0 ) {
+			targetPart = part2;
+		} else {
+			targetPart = part2 + "_" + index;
+		}
+		logger.info( "getMirrorMaker using " + part1 + " and " + targetPart );
+		return mirrors.get(MirrorMaker.genKey(part1, targetPart));
 	}
 	public MirrorMaker getMirrorMaker( String part1, String part2 ) {
 		logger.info( "getMirrorMaker using " + part1 + " and " + part2 );
@@ -138,6 +153,49 @@ public class MirrorMakerService extends BaseLoggingClass {
 		}
 		
 		return ret;
+	}
+	
+	public MirrorMaker getNextMM( String source, String target ) {
+		int i = 0;
+		MirrorMaker mm = null;
+		while( mm == null ) {
+			
+			mm = this.getMirrorMaker( source, target, i);
+			if ( mm == null ) {
+				mm = new MirrorMaker(source, target, i);
+			}
+			if ( mm.getTopicCount() >= maxTopicsPerMM ) {
+				logger.info( "getNextMM: MM " + mm.getMmName() + " has " + mm.getTopicCount() + " topics.  Moving to next MM");
+				i++;
+				mm = null;
+			}
+		}
+	 
+		
+		return mm;
+	}
+
+	public MirrorMaker splitMM( MirrorMaker orig ) {
+		
+		int index = 1;
+		String source = orig.getSourceCluster();
+		String target = orig.getTargetCluster();
+		
+		
+		ArrayList<String> whitelist = orig.getTopics();
+		while( whitelist.size() > maxTopicsPerMM ) {
+			MirrorMaker mm = this.getNextMM( source, target );
+			int last = whitelist.size() - 1;
+			String topic = whitelist.get(last);
+			whitelist.remove(last);
+			mm.addTopic(topic);	
+			this.updateMirrorMaker(mm);
+		}
+		
+		orig.setTopics(whitelist);
+
+		return orig;
+		
 	}
 
 }

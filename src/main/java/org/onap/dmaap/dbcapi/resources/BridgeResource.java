@@ -56,108 +56,126 @@ public class BridgeResource extends BaseLoggingClass {
 
 	@GET
 	@ApiOperation( value = "return BrTopic details", 
-	notes = "Returns array of  `BrTopic` objects. If source and target query params are specified, only report on that bridge.  If detail param is true, list topics names, else just a count is returned", 
+	notes = "Returns array of  `BrTopic` objects. If source and target query params are specified, only report on that bridge.  "
+			+ "If detail param is true, list topics names, else just a count is returned.", 
 	response = BrTopic.class)
 @ApiResponses( value = {
     @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
     @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 })
-	public Response	getBridgedTopics(@QueryParam("source") String source,
-						   			@QueryParam("target") String target,
+	public Response	getBridgedTopics(@QueryParam("mmagent") String mmagent,
 						   			@QueryParam("detail") Boolean detailFlag ){
 		ApiService check = new ApiService();
+		
+		if ( mmagent == null ) {
+			return check.success(getMMcounts(Boolean.TRUE.equals(detailFlag)));
+
+		}
+		logger.info( "getBridgeTopics():" + " mmagent=" + mmagent);
 
 		if ( ! Boolean.TRUE.equals(detailFlag)) {
 			BrTopic brTopic = new BrTopic();
 			
-			logger.info( "getBridgeTopics():" + " source=" + source + ", target=" + target);
-	
-			if (source != null && target != null) {		// get topics between 2 bridged locations
-				brTopic.setBrSource(source);
-				brTopic.setBrTarget(target);
-				MirrorMaker mm = mmService.getMirrorMaker(source, target);
-				if ( mm != null ) {		
-						brTopic.setTopicCount( mm.getTopicCount() );
-				} 
-	
-				logger.info( "topicCount [2 locations]: " + brTopic.getTopicCount() );
-			}
-			else if (source == null && target == null ) {
-				List<String> mmList = mmService.getAllMirrorMakers();
-				brTopic.setBrSource("all");
-				brTopic.setBrTarget("all");
-				int totCnt = 0;
-				for( String key: mmList ) {
-					int mCnt = 0;
-					MirrorMaker mm = mmService.getMirrorMaker(key);
-					if ( mm != null ) {
-						mCnt = mm.getTopicCount();
-					}
-					logger.info( "Count for "+ key + ": " + mCnt);
-					totCnt += mCnt;
-				}
-				
-				logger.info( "topicCount [all locations]: " + totCnt );
-				brTopic.setTopicCount(totCnt);
-	
-			}
-			else {
-	
-				logger.error( "source or target is missing");
-				check.setCode(Status.BAD_REQUEST.getStatusCode());
-				check.setMessage("Either both source and target or neither must be provided");
-				return check.error();
-			}
-			return check.success(brTopic);
-		} else {
-			
-			
-			logger.info( "getBridgeTopics() detail:" + " source=" + source + ", target=" + target);
-	
-			if (source != null && target != null) {		// get topics between 2 bridged locations
-				
-				MirrorMaker mm = mmService.getMirrorMaker(source, target);
-				if ( mm == null ) {		
-					return check.notFound();
-				} 
-	
-				return check.success(mm);
-			}
+			// get topics between 2 bridged locations
 
-			else {
+			MirrorMaker mm = mmService.getMirrorMaker(mmagent);
+			if ( mm == null ) {		
+				return check.notFound();
+			} 
+					
+			brTopic.setTopicCount( mm.getTopicCount() );
+			brTopic.setBrSource( mm.getSourceCluster());
+			brTopic.setBrTarget( mm.getTargetCluster());
+			brTopic.setMmAgentName(mm.getMmName());
+			
+			logger.info( "topicCount [2 locations]: " + brTopic.getTopicCount() );
+		
+			return check.success(brTopic);
+		} else {	
+			logger.info( "getBridgeTopics() detail:" + " mmagent=" + mmagent);
+			// get topics between 2 bridged locations	
+			MirrorMaker mm = mmService.getMirrorMaker(mmagent);
+			if ( mm == null ) {		
+				return check.notFound();
+			} 
+
+			return check.success(mm);
+		}
+	}
 	
-				logger.error( "source and target are required when detail=true");
-				check.setCode(Status.BAD_REQUEST.getStatusCode());
-				check.setMessage("source and target are required when detail=true");
-				return check.error();
+	private BrTopic[] getMMcounts( Boolean showDetail ) {
+		
+		List<String> mmList = mmService.getAllMirrorMakers();
+		int s = 1;
+		if ( showDetail ) {
+			s = mmList.size() + 1;
+		}
+		BrTopic[] brTopic = new BrTopic[s];
+		
+		int totCnt = 0;
+		s = 0;
+		for( String key: mmList ) {
+			int mCnt = 0;
+			MirrorMaker mm = mmService.getMirrorMaker(key);
+			if ( mm != null ) {
+				mCnt = mm.getTopicCount();
+			}
+			logger.info( "Count for "+ key + ": " + mCnt);
+			totCnt += mCnt;
+			if (showDetail) {
+				brTopic[s] =  new BrTopic();
+				brTopic[s].setBrSource( mm.getSourceCluster());
+				brTopic[s].setBrTarget(mm.getTargetCluster());
+				brTopic[s].setMmAgentName(mm.getMmName());
+				brTopic[s].setTopicCount(mm.getTopicCount());
+				s++;
 			}
 		}
+		
+		logger.info( "topicCount [all locations]: " + totCnt );
+		brTopic[s] =  new BrTopic();
+		brTopic[s].setBrSource("all");
+		brTopic[s].setBrTarget("all");
+		brTopic[s].setMmAgentName("n/a");
+		brTopic[s].setTopicCount(totCnt);
+		return brTopic;
 	}
 	
 	@PUT
 	@ApiOperation( value = "update MirrorMaker details", 
-		notes = "replace the topic list for a specific Bridge.  Use JSON Body for value to replace whitelist, but if refreshFlag param is true, simply refresh using existing whitelist", 
+		notes = "replace the topic list for a specific Bridge.  Use JSON Body for value to replace whitelist, "
+				+ "but if refreshFlag param is true, simply refresh using existing whitelist."
+				+ "If split param is true, spread whitelist over smaller mmagents.", 
 		response = MirrorMaker.class)
 	@ApiResponses( value = {
 	    @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response	putBridgedTopics(@QueryParam("source") String source,
-						   			@QueryParam("target") String target,
+	public Response	putBridgedTopics(@QueryParam("mmagent") String mmagent,
 						   			@QueryParam("refresh") Boolean refreshFlag,
+						   			@QueryParam("split") Boolean splitFlag,
 						   			MirrorMaker newBridge ){
 		ApiService check = new ApiService();	
 			
-		logger.info( "putBridgeTopics() detail:" + " source=" + source + ", target=" + target);
+		logger.info( "putBridgeTopics() mmagent:" +  mmagent );
 
-		if (source != null && target != null) {		// get topics between 2 bridged locations
+		if ( mmagent != null ) {		// put topics between 2 bridged locations
 			
-			MirrorMaker mm = mmService.getMirrorMaker(source, target);
+			MirrorMaker mm = mmService.getMirrorMaker(mmagent);
 			if ( mm == null ) {		
 				return check.notFound();
 			} 
-			if ( refreshFlag != null  &&  refreshFlag == false ) {
-				logger.info( "setting whitelist from message body");
+			
+			if ( splitFlag != null && splitFlag == true ) {
+				mm = mmService.splitMM( mm );
+			} else if ( refreshFlag == null  ||  refreshFlag == false ) {
+				logger.info( "setting whitelist from message body containing mmName=" + newBridge.getMmName());
+				if ( ! mmagent.equals(newBridge.getMmName()) ){
+					logger.error( "mmagent query param does not match mmName in body");
+					check.setCode(Status.BAD_REQUEST.getStatusCode());
+					check.setMessage("mmagent query param does not match mmName in body");
+					return check.error();
+				}
 				mm.setTopics( newBridge.getTopics() );
 			} else {
 				logger.info( "refreshing whitelist from memory");
@@ -168,9 +186,9 @@ public class BridgeResource extends BaseLoggingClass {
 
 		else {
 
-			logger.error( "source and target are required when detail=true");
+			logger.error( "mmagent is required for PUT");
 			check.setCode(Status.BAD_REQUEST.getStatusCode());
-			check.setMessage("source and target are required when detail=true");
+			check.setMessage("mmagent is required for PUT");
 			return check.error();
 		}
 

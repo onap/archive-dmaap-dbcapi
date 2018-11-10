@@ -24,6 +24,8 @@ import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
 
+import org.onap.dmaap.dbcapi.model.*;
+
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
@@ -47,7 +49,7 @@ public class DBFieldHandler	{
 		try {
 			objget = c.getMethod("is" + camelcase);
 		} catch (Exception e) {
-			errorLogger.error("Error", e);
+			errorLogger.warn("No 'is' method for " + c.getName() + " so trying 'get' method");
 			objget = c.getMethod("get" + camelcase);
 		}
 		objset = c.getMethod("set" + camelcase, objget.getReturnType());
