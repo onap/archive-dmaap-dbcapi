@@ -190,7 +190,7 @@ public class MirrorMakerService extends BaseLoggingClass {
 			int last = whitelist.size() - 1;
 			String topic = whitelist.get(last);
 			whitelist.remove(last);
-			MirrorMaker mm = this.getNextMM( source, target, topic );
+			MirrorMaker mm = this.getNextMM( source, target, "aValueThatShouldNotMatchAnything" );
 			mm.addTopic(topic);	
 			this.updateMirrorMaker(mm);
 		}
