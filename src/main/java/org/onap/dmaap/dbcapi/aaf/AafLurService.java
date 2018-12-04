@@ -3,13 +3,14 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2018 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,15 +43,15 @@ import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
  * this service uses the AAF Lur object to lookup identities and perms
  */
 public class AafLurService extends BaseLoggingClass {
-	
-	static Logger logger = Logger.getLogger(AafLurService.class.getName());
 
-	
-	 private static AAFConHttp aafcon;
-	 private static AAFLurPerm aafLur;
-	 private static AAFAuthn<?> aafAuthn;
+	static Logger log = Logger.getLogger(AafLurService.class.getName());
 
-	
+
+	private static AAFConHttp aafcon;
+	private static AAFLurPerm aafLur;
+	private static AAFAuthn<?> aafAuthn;
+
+
 	/*
 	 * singleton pattern suggested by AAF
 	 */
@@ -58,7 +59,7 @@ public class AafLurService extends BaseLoggingClass {
 	private AafLurService() {}
 
 
-	
+
 	private static void init( Access myAccess ) throws APIException, CadiException, LocatorException {
 		appLogger.info( "myAccess=" + myAccess );
 		try {
@@ -66,54 +67,53 @@ public class AafLurService extends BaseLoggingClass {
 		} catch ( CadiException | LocatorException e) {
 			appLogger.error( "Failure of AAFConHttp: " + e.getMessage() );
 			errorLogger.error( "Failure of AAFConHttp: " + e.getMessage() );
-			logger.error(e);
-			e.printStackTrace();
+			log.error(e);
+
 			throw e;
-		} 
+		}
 		try {
 			aafLur = aafcon.newLur();
 		} catch ( CadiException  e) {
 			appLogger.error( "Failure of newLur(): " + e.getMessage() );
 			errorLogger.error( "Failure of newLur(): " + e.getMessage() );
-			logger.error(e);
-			e.printStackTrace();
+			log.error(e);
+
 			throw e;
-		} 
-		aafAuthn = aafcon.newAuthn( aafLur ); 
+		}
+		aafAuthn = aafcon.newAuthn( aafLur );
 	}
-	
+
 	public static synchronized AafLurService getInstance( Access myAccess ) throws APIException, CadiException, LocatorException{
 		if ( singleton == null ) {
 			singleton = new AafLurService();
 			try {
 				init( myAccess );
 			} catch (APIException | CadiException | LocatorException e) {
-				// TODO Auto-generated catch block
-				logger.error(e);
-				e.printStackTrace();
+
+				log.error(e);
 				throw e;
-			} 
-			
+			}
+
 		}
 		return singleton;
 	}
-	
+
 
 	public boolean checkPerm(String ns, String fqi, String pwd, DmaapPerm p) throws IOException, CadiException {
 
 		boolean rc = false;
-		
+
 		if ( aafAuthn == null ) {
 			appLogger.error( "AafLurService: aafAuthn not set as expected.");
 			return rc;
 		}
-		
+
 		String ok = aafAuthn.validate( fqi,  pwd );
 		if ( ok != null ) {
 			appLogger.info( "FAILED validation of fqi=" + fqi + "with response:" + ok );
 			return rc;
-		}	
-		
+		}
+
 		Principal principal = new UnAuthPrincipal( fqi );
 		// if we pass ns as first arg to AAFPermission constructor it gets prpended to the instance...
 		// as in ns|instance|type|action.   we don't want that.
@@ -127,7 +127,7 @@ public class AafLurService extends BaseLoggingClass {
 		if (rc == flag ) {
 			return rc;
 		}
-		
+
 		List<Permission> perms = new ArrayList<Permission>();
 		aafLur.fishAll( principal,  perms);
 		String key = aafPerm.getKey();
@@ -138,10 +138,8 @@ public class AafLurService extends BaseLoggingClass {
 				appLogger.info( principal + " has non-matching perm " + prm.getKey() );
 			}
 		}
-		
-		
+
 		return rc;
-	
-		
+
 	}
 }
