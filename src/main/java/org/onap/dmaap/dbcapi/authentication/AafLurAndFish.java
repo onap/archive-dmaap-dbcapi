@@ -3,6 +3,7 @@
   * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2018 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +39,14 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 	private AafLurService svc;
-	private static String api_namespace;
+	private static String apiNamespace;
+	private static final String ERROR="Error";
 	static final Logger logger = Logger.getLogger(AafLurAndFish.class);
 	
 	AafLurAndFish()  throws AuthenticationErrorException  {
 	
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		api_namespace = p.getProperty( "ApiNamespace", "org.onap.dmaap-bc.api");
+		apiNamespace = p.getProperty( "ApiNamespace", "org.onap.dmaap-bc.api");
 
 		String cadiprop = p.getProperty( "cadi.properties", "/opt/app/osaaf/local/org.onap.dmaap-bc.props");
 		logger.info( "cadiprops in " + cadiprop );
@@ -58,7 +60,7 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 			}
 		} catch ( IOException e ) {
 			logger.error( "Unable to load " + cadiprop );
-			logger.error("Error", e);
+			logger.error(ERROR, e);
 			throw new AuthenticationErrorException( );
 		}
 		try {
@@ -66,7 +68,7 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 		
 			svc =  AafLurService.getInstance(myAccess);
 		} catch (APIException | CadiException | LocatorException e ) {
-			logger.error("Error", e);
+			logger.error(ERROR, e);
 			logger.error( e.toString() );
 			throw new AuthenticationErrorException();
 		}
@@ -76,13 +78,13 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 	public void check( String mechid, String pwd, DmaapPerm p ) throws AuthenticationErrorException {
 	
 		try {
-			boolean resp = svc.checkPerm( api_namespace, mechid, pwd, p );
+			boolean resp = svc.checkPerm( apiNamespace, mechid, pwd, p );
 			boolean flag = false;
 			if ( resp == flag ) {
 				throw new AuthenticationErrorException();
 			}
 		} catch ( IOException | CadiException  e ) { 
-			logger.error("Error", e);
+			logger.error(ERROR, e);
 			logger.error( e.toString() );
 			throw new AuthenticationErrorException();
 		}
@@ -97,7 +99,7 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 	        	alaf.check("mmanager@people.osaaf.org", "demo123456!", p);
 	        } catch (AuthenticationErrorException aee ) {
 	        	logger.error( "Check failed for: " + p.toJSON());
-	        	System.exit(-1);
+	               	System.exit(-1);
 	        }
 	        logger.info( "Check succeeded for: " + p.toJSON() );
 	        
