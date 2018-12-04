@@ -37,9 +37,6 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.aaf.AafDecrypt;
-import org.onap.dmaap.dbcapi.aaf.AafService;
-import org.onap.dmaap.dbcapi.aaf.DecryptionInterface;
-import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;
@@ -58,7 +55,8 @@ public class MrProvConnection extends BaseLoggingClass{
 	private boolean useAAF;
 	private	String	user;
 	private	String	encPwd;
-	
+	private Logger logger = LoggerFactory.getLogger(MrProvConnection.class);
+
 	public MrProvConnection() {
 		String mechIdProperty = "aaf.TopicMgrUser";
 		String pwdProperty = "aaf.TopicMgrPassword";
@@ -227,13 +225,15 @@ public class MrProvConnection extends BaseLoggingClass{
             } 
             
 		} catch (Exception e) {
-            System.err.println("Unable to read response  " );
+			errorLogger.error("Unable to read response  " );
             e.printStackTrace();
         }
 		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
+			} catch ( Exception e ) {
+				errorLogger.error(e);
+			}
 		}
 		return new String( rc +": " + responsemessage );
 
