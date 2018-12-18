@@ -3,6 +3,7 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2018 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +38,6 @@ import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.aaf.AafDecrypt;
-import org.onap.dmaap.dbcapi.aaf.AafService;
-import org.onap.dmaap.dbcapi.aaf.DecryptionInterface;
-import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;
@@ -227,13 +225,15 @@ public class MrProvConnection extends BaseLoggingClass{
             } 
             
 		} catch (Exception e) {
-            System.err.println("Unable to read response  " );
-            e.printStackTrace();
+			errorLogger.error("Unable to read response  " );
+           
         }
 		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
+			} catch ( Exception e ) {
+				errorLogger.error("Unable to disconnect");
+			}
 		}
 		return new String( rc +": " + responsemessage );
 
