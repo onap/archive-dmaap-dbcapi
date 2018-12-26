@@ -38,7 +38,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
-import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.DR_Sub;
 import org.onap.dmaap.dbcapi.model.Feed;
 import org.onap.dmaap.dbcapi.service.ApiService;
@@ -63,7 +62,7 @@ public class DR_SubResource extends BaseLoggingClass {
 	notes = "Returns array of  `DR_Sub` objects.  Add filter for feedId.", 
 	response = DR_Sub.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = DR_Sub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getDr_Subs() {
@@ -83,7 +82,7 @@ public class DR_SubResource extends BaseLoggingClass {
 	notes = "Create a  `DR_Sub` object.  ", 
 	response = DR_Sub.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = DR_Sub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response addDr_Sub( 
@@ -132,7 +131,7 @@ public class DR_SubResource extends BaseLoggingClass {
 	notes = "Update a  `DR_Sub` object, selected by subId", 
 	response = DR_Sub.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = DR_Sub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
@@ -173,7 +172,7 @@ public class DR_SubResource extends BaseLoggingClass {
 	notes = "Delete a  `DR_Sub` object, selected by subId", 
 	response = DR_Sub.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = DR_Sub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
@@ -202,7 +201,7 @@ public class DR_SubResource extends BaseLoggingClass {
 	notes = "Retrieve a  `DR_Sub` object, selected by subId", 
 	response = DR_Sub.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = DR_Sub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
