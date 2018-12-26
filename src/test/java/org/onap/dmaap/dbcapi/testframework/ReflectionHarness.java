@@ -21,14 +21,9 @@ package org.onap.dmaap.dbcapi.testframework;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import static java.lang.System.out;
 import static java.lang.System.err;

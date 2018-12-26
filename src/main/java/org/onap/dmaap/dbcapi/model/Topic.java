@@ -31,6 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 import org.onap.dmaap.dbcapi.service.DmaapService;
+import org.onap.dmaap.dbcapi.service.TopicService;
 
 
 @XmlRootElement
@@ -45,14 +46,20 @@ public class Topic extends DmaapObject  {
 	private ReplicationType	replicationCase;  
 	private String	globalMrURL;		// optional: URL of global MR to replicate to/from
 	private FqtnType  fqtnStyle;
-	private String	version;
+	private String	version;	
+	private String	partitionCount;
+	private	String	replicationCount;
+
 
 	private	ArrayList<MR_Client> clients;
 
 
 	
 	private static Dmaap dmaap = new DmaapService().getDmaap();
-
+	
+	private static String defaultPartitionCount;
+	private static String defaultReplicationCount;
+	
 	// during unit testing, discovered that presence of dots in some values
 	// creates an unplanned topic namespace as we compose the FQTN.
 	// this may create sensitivity (i.e. 403) for subsequent creation of AAF perms, so best to not allow it 
@@ -118,11 +125,24 @@ public class Topic extends DmaapObject  {
 		//this.dcaeLocationName = dcaeLocationName;
 		this.tnxEnabled = tnxEnabled;
 		this.owner = owner;
+		this.init();
 		this.setLastMod();
+		logger.debug( "Topic constructor w args " + this.getLastMod() );
+	}
+	
+	public Topic init() {
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+ 		
+		defaultPartitionCount = p.getProperty( "MR.partitionCount", "2");
+		defaultReplicationCount = p.getProperty( "MR.replicationCount", "1");
+		
 		this.setStatus( DmaapObject_Status.NEW );
 		this.replicationCase = ReplicationType.Validator("none");
 		this.fqtnStyle = FqtnType.Validator("none");
-		logger.debug( "Topic constructor " + this.getLastMod() );
+		this.setPartitionCount( defaultPartitionCount );
+		this.setReplicationCount( defaultReplicationCount );
+		
+		return this;
 	}
 
 	// expects a String in JSON format, with known fields to populate Topic object
@@ -144,6 +164,7 @@ public class Topic extends DmaapObject  {
 		this.setStatus( (String) jsonObj.get( "status" ) );
 		this.setReplicationCase( ReplicationType.Validator( (String) jsonObj.get( "replicationCase" ) ));
 		this.setFqtnStyle( FqtnType.Validator( (String) jsonObj.get( "fqtnStyle" ) ) );
+		this.setPartitionCount( (String) jsonObj.get("partitionCount"));
 
 	}
 	public String getFqtn() {
@@ -176,6 +197,18 @@ public class Topic extends DmaapObject  {
 	}
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+	public String getPartitionCount() {
+		return partitionCount;
+	}
+	public void setPartitionCount(String partitions) {
+		this.partitionCount = partitions;
+	}
+	public String getReplicationCount() {
+		return replicationCount;
+	}
+	public void setReplicationCount(String replicationCount) {
+		this.replicationCount = replicationCount;
 	}
 
 
@@ -212,13 +245,6 @@ public class Topic extends DmaapObject  {
 		return replicationCase;
 	}
 
-
-
-	/*
-	public void setReplicationCase(String val) {
-		this.replicationCase = ReplicationType.Validator(val);
-	}
-	*/
 	
 	public void setReplicationCase(ReplicationType t) {
 		this.replicationCase = t;
@@ -262,7 +288,12 @@ public class Topic extends DmaapObject  {
 		str.append( this.getFqtn() );
 		str.append( "\", \"topicDescription\": \"");
 		str.append( this.getTopicDescription());
-		str.append( "\", \"partitionCount\": \"2\", \"replicationCount\": \"1\" } ");
+		str.append( "\", \"partitionCount\": \"");
+		str.append( this.getPartitionCount());
+		str.append( "\", \"replicationCount\": \"");
+		str.append( this.getReplicationCount());
+		str.append( "\" } ");
+		
 		logger.info( str.toString() );
 		return str.toString();
 	}

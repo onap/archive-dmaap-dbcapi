@@ -251,10 +251,11 @@ public class TopicService extends BaseLoggingClass {
 		String mmAgentRole = p.getProperty("MM.AgentRole");
 		String[] Roles = { mmProvRole, mmAgentRole };
 		String[] actions = { "view", "pub", "sub" };
-		Topic bridgeAdminTopic = new Topic();
+		Topic bridgeAdminTopic = new Topic().init();
 		bridgeAdminTopic.setTopicName( dmaapSvc.getBridgeAdminFqtn() );
 		bridgeAdminTopic.setTopicDescription( "RESERVED topic for MirroMaker Provisioning");
 		bridgeAdminTopic.setOwner( "DBC" );
+		
 		ArrayList<MR_Client> clients = new ArrayList<MR_Client>();
 		for( String role: Roles ) {
 			MR_Client client = new MR_Client();

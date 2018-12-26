@@ -58,11 +58,16 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 @Authorization
 public class TopicResource extends BaseLoggingClass {
 	private static FqtnType defaultTopicStyle;
+	private static String defaultPartitionCount;
+	private static String defaultReplicationCount;
 	TopicService mr_topicService = new TopicService();
 	
 	public TopicResource() {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		defaultTopicStyle = FqtnType.Validator( p.getProperty("MR.topicStyle", "FQTN_LEGACY_FORMAT"));
+ 		defaultTopicStyle = FqtnType.Validator( p.getProperty("MR.topicStyle", "FQTN_LEGACY_FORMAT"));
+		defaultPartitionCount = p.getProperty( "MR.partitionCount", "2");
+		defaultReplicationCount = p.getProperty( "MR.replicationCount", "1");
+		
 		logger.info( "Setting defaultTopicStyle=" + defaultTopicStyle );
 	}
 		
@@ -118,6 +123,14 @@ public class TopicResource extends BaseLoggingClass {
 		if ( ft == null || ft == FqtnType.FQTN_NOT_SPECIFIED ) {
 			logger.info( "setting defaultTopicStyle=" + defaultTopicStyle + " for topic " + topic.getTopicName() );
 			topic.setFqtnStyle( defaultTopicStyle );
+		}
+		String pc = topic.getPartitionCount();
+		if ( pc == null ) {
+			topic.setPartitionCount(defaultPartitionCount);
+		}
+		String rc = topic.getReplicationCount();
+		if ( rc == null ) {
+			topic.setReplicationCount(defaultReplicationCount);
 		}
 		topic.setLastMod();
 		Boolean flag = false;
