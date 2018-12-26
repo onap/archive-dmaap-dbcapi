@@ -45,7 +45,6 @@ import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
-import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.DcaeLocationService;
 
@@ -64,7 +63,7 @@ public class DcaeLocationResource extends BaseLoggingClass {
 		notes = "Returns array of  `dcaeLocation` objects.  All objects managed by DMaaP are deployed in some `dcaeLocation` which is a unique identifier for an *OpenStack* tenant purposed for a *dcaeLayer*  (ecomp or edge).", 
 		response = DcaeLocation.class)
     @ApiResponses( value = {
-        @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
+        @ApiResponse( code = 200, message = "Success", response = DcaeLocation.class),
         @ApiResponse( code = 400, message = "Error", response = ApiError.class )
     })
 	public Response getDcaeLocations() {
@@ -82,7 +81,7 @@ public class DcaeLocationResource extends BaseLoggingClass {
 		notes = "Create some `dcaeLocation` which is a unique identifier for an *OpenStack* tenant purposed for a *dcaeLayer*  (ecomp or edge).", 
 		response = DcaeLocation.class)
     @ApiResponses( value = {
-        @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
+        @ApiResponse( code = 200, message = "Success", response = DcaeLocation.class),
         @ApiResponse( code = 400, message = "Error", response = ApiError.class )
     })
 	public Response addDcaeLocation( 
@@ -108,7 +107,7 @@ public class DcaeLocationResource extends BaseLoggingClass {
 		notes = "update the openStackAvailabilityZone of a dcaeLocation", 
 		response = DcaeLocation.class)
     @ApiResponses( value = {
-        @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
+        @ApiResponse( code = 200, message = "Success", response = DcaeLocation.class),
         @ApiResponse( code = 400, message = "Error", response = ApiError.class )
     })
 	@Path("/{locationName}")
@@ -135,9 +134,9 @@ public class DcaeLocationResource extends BaseLoggingClass {
 	}
 	
 	@DELETE
-	@ApiOperation( value = "return dcaeLocation details", notes = "delete a dcaeLocation", response = Dmaap.class)
+	@ApiOperation( value = "return dcaeLocation details", notes = "delete a dcaeLocation", response = DcaeLocation.class)
     @ApiResponses( value = {
-        @ApiResponse( code = 204, message = "Success", response = Dmaap.class),
+        @ApiResponse( code = 204, message = "Success", response = DcaeLocation.class),
         @ApiResponse( code = 400, message = "Error", response = ApiError.class )
     })
 	@Path("/{locationName}")
@@ -151,9 +150,9 @@ public class DcaeLocationResource extends BaseLoggingClass {
 	}
 
 	@GET
-	@ApiOperation( value = "return dcaeLocation details", notes = "Returns a specific `dcaeLocation` object with specified tag", response = Dmaap.class)
+	@ApiOperation( value = "return dcaeLocation details", notes = "Returns a specific `dcaeLocation` object with specified tag", response = DcaeLocation.class)
     @ApiResponses( value = {
-        @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
+        @ApiResponse( code = 200, message = "Success", response = DcaeLocation.class),
         @ApiResponse( code = 400, message = "Error", response = ApiError.class )
     })
 	@Path("/{locationName}")

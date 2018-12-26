@@ -42,7 +42,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
-import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.MR_Client;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.model.Topic;
@@ -66,7 +65,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	notes = "Returns array of  `MR_Client` objects.", 
 	response = MR_Client.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Client.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getMr_Clients() {
@@ -84,7 +83,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	notes = "Create a  `MR_Client` object.", 
 	response = MR_Client.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Client.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response addMr_Client( 
@@ -144,7 +143,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	notes = "Update a  `MR_Client` object, specified by clientId", 
 	response = MR_Client.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Client.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clientId}")
@@ -180,7 +179,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	notes = "Delete a  `MR_Client` object, specified by clientId", 
 	response = MR_Client.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 204, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 204, message = "Success", response = MR_Client.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
@@ -208,7 +207,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	notes = "Retrieve a  `MR_Client` object, specified by clientId", 
 	response = MR_Client.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Client.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")

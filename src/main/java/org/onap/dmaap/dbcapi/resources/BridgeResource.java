@@ -35,7 +35,6 @@ import javax.ws.rs.core.Response.Status;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.BrTopic;
-import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.model.MirrorMaker;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.MirrorMakerService;
@@ -60,7 +59,7 @@ public class BridgeResource extends BaseLoggingClass {
 			+ "If detail param is true, list topics names, else just a count is returned.", 
 	response = BrTopic.class)
 @ApiResponses( value = {
-    @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
+    @ApiResponse( code = 200, message = "Success", response = BrTopic.class),
     @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 })
 	public Response	getBridgedTopics(@QueryParam("mmagent") String mmagent,
@@ -148,7 +147,7 @@ public class BridgeResource extends BaseLoggingClass {
 				+ "If split param is true, spread whitelist over smaller mmagents.", 
 		response = MirrorMaker.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = Dmaap.class),
+	    @ApiResponse( code = 200, message = "Success", response = BrTopic.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response	putBridgedTopics(@QueryParam("mmagent") String mmagent,

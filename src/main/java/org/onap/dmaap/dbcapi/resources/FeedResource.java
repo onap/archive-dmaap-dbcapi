@@ -31,29 +31,20 @@ import javax.jws.WebParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
-
-import org.apache.log4j.Logger;
-import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Pub;
-import org.onap.dmaap.dbcapi.model.DR_Sub;
 import org.onap.dmaap.dbcapi.model.Feed;
-import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.FeedService;
@@ -71,7 +62,7 @@ public class FeedResource extends BaseLoggingClass {
 	notes = "Returns array of  `Feed` objects.", 
 	response = Feed.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = Feed.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getFeeds(
@@ -96,7 +87,7 @@ public class FeedResource extends BaseLoggingClass {
 	notes = "Create a of  `Feed` object.", 
 	response = Feed.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = Feed.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response addFeed( 
@@ -151,7 +142,7 @@ public class FeedResource extends BaseLoggingClass {
 	notes = "Update a  `Feed` object, specified by id.", 
 	response = Feed.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = Feed.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{id}")
@@ -196,7 +187,7 @@ public class FeedResource extends BaseLoggingClass {
 	notes = "Delete a  `Feed` object, specified by id.", 
 	response = Feed.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 204, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 204, message = "Success", response = Feed.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{id}")

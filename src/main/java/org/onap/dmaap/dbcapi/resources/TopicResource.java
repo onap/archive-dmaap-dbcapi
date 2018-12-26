@@ -43,7 +43,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
-import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.ReplicationType;
 import org.onap.dmaap.dbcapi.model.FqtnType;
 import org.onap.dmaap.dbcapi.model.Topic;
@@ -76,7 +75,7 @@ public class TopicResource extends BaseLoggingClass {
 	notes = "Returns array of  `Topic` objects.", 
 	response = Topic.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = Topic.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getTopics() {
@@ -96,7 +95,7 @@ public class TopicResource extends BaseLoggingClass {
 	notes = "Create  `Topic` object.", 
 	response = Topic.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = Topic.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response  addTopic( 
@@ -150,7 +149,7 @@ public class TopicResource extends BaseLoggingClass {
 	notes = "Update a  `Topic` object, identified by topicId", 
 	response = Topic.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = Topic.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{topicId}")
@@ -170,7 +169,7 @@ public class TopicResource extends BaseLoggingClass {
 	notes = "Delete a  `Topic` object, identified by topicId", 
 	response = Topic.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 204, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 204, message = "Success", response = Topic.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{topicId}")
@@ -199,7 +198,7 @@ public class TopicResource extends BaseLoggingClass {
 	notes = "Retrieve a  `Topic` object, identified by topicId", 
 	response = Topic.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = Topic.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{topicId}")

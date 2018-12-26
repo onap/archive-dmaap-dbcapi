@@ -121,24 +121,17 @@ Responses
 Success
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`BrTopic <d_d71baea9d8e4e59bc395ef51f45dff1b>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
-        "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
-        "status": "EMPTY", 
-        "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "brSource": "somestring", 
+        "brTarget": "somestring", 
+        "mmAgentName": "somestring", 
+        "topicCount": 1
     }
 
 **400**
@@ -206,24 +199,17 @@ Responses
 Success
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`BrTopic <d_d71baea9d8e4e59bc395ef51f45dff1b>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
-        "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
-        "status": "EMPTY", 
-        "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "brSource": "somestring", 
+        "brTarget": "somestring", 
+        "mmAgentName": "somestring", 
+        "topicCount": 1
     }
 
 **400**
@@ -288,24 +274,23 @@ Responses
 Success
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
+        "central": true, 
+        "clli": "somestring", 
+        "dcaeLayer": "somestring", 
+        "dcaeLocationName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
+        "local": true, 
+        "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "subnet": "somestring"
     }
 
 **400**
@@ -371,24 +356,23 @@ Responses
 successful operation
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
+        "central": true, 
+        "clli": "somestring", 
+        "dcaeLayer": "somestring", 
+        "dcaeLocationName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
+        "local": true, 
+        "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "subnet": "somestring"
     }
 
 **204**
@@ -397,24 +381,23 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
 Success
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
+        "central": true, 
+        "clli": "somestring", 
+        "dcaeLayer": "somestring", 
+        "dcaeLocationName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
+        "local": true, 
+        "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "subnet": "somestring"
     }
 
 **400**
@@ -480,24 +463,23 @@ Responses
 Success
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
+        "central": true, 
+        "clli": "somestring", 
+        "dcaeLayer": "somestring", 
+        "dcaeLocationName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
+        "local": true, 
+        "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "subnet": "somestring"
     }
 
 **400**
@@ -553,24 +535,23 @@ Responses
 Success
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
+        "central": true, 
+        "clli": "somestring", 
+        "dcaeLayer": "somestring", 
+        "dcaeLocationName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
+        "local": true, 
+        "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "subnet": "somestring"
     }
 
 **400**
@@ -636,24 +617,23 @@ Responses
 Success
 
 
-Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "accessKeyOwner": "somestring", 
-        "bridgeAdminTopic": "somestring", 
-        "dmaapName": "somestring", 
-        "drProvUrl": "somestring", 
+        "central": true, 
+        "clli": "somestring", 
+        "dcaeLayer": "somestring", 
+        "dcaeLocationName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "loggingUrl": "somestring", 
-        "nodeKey": "somestring", 
+        "local": true, 
+        "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "topicNsRoot": "somestring", 
-        "version": "somestring"
+        "subnet": "somestring"
     }
 
 **400**
@@ -682,7 +662,7 @@ DMAAP
 ~~~~~
 
 
-V2 Endpoint for this instance of DMaaP object containing values for this OpenDCAE deployment
+Endpoint for this instance of DMaaP object containing values for this OpenDCAE deployment
 
 
 
@@ -2427,21 +2407,93 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
+        "asprClassification": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "feedDescription": "somestring", 
         "feedId": "somestring", 
+        "feedName": "somestring", 
+        "feedVersion": "somestring", 
+        "formatUuid": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
+        "publishURL": "somestring", 
+        "pubs": [
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "subs": [
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
+        "subscribeURL": "somestring", 
+        "suspended": true
     }
 
 **400**
@@ -2602,21 +2654,93 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
+        "asprClassification": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "feedDescription": "somestring", 
         "feedId": "somestring", 
+        "feedName": "somestring", 
+        "feedVersion": "somestring", 
+        "formatUuid": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
+        "publishURL": "somestring", 
+        "pubs": [
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "subs": [
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
+        "subscribeURL": "somestring", 
+        "suspended": true
     }
 
 **400**
@@ -2764,21 +2888,93 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
+        "asprClassification": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "feedDescription": "somestring", 
         "feedId": "somestring", 
+        "feedName": "somestring", 
+        "feedVersion": "somestring", 
+        "formatUuid": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
+        "publishURL": "somestring", 
+        "pubs": [
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "subs": [
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
+        "subscribeURL": "somestring", 
+        "suspended": true
     }
 
 **400**
@@ -2844,21 +3040,93 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
+        "asprClassification": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "feedDescription": "somestring", 
         "feedId": "somestring", 
+        "feedName": "somestring", 
+        "feedVersion": "somestring", 
+        "formatUuid": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
+        "publishURL": "somestring", 
+        "pubs": [
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "dcaeLocationName": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "pubId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "subs": [
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }, 
+            {
+                "bytes": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "dcaeLocationName": "somestring", 
+                "deliveryURL": "somestring", 
+                "feedId": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "logURL": "somestring", 
+                "owner": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "subId": "somestring", 
+                "suspended": true, 
+                "use100": true, 
+                "username": "somestring", 
+                "userpwd": "somestring"
+            }
+        ], 
+        "subscribeURL": "somestring", 
+        "suspended": true
     }
 
 **400**
@@ -3005,21 +3273,25 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "action": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "mrClientId": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "topicURL": "somestring"
     }
 
 **400**
@@ -3112,21 +3384,25 @@ Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "action": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "mrClientId": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "topicURL": "somestring"
     }
 
 **400**
@@ -3182,21 +3458,25 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "action": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "mrClientId": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "topicURL": "somestring"
     }
 
 **400**
@@ -3262,21 +3542,25 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "action": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "mrClientId": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "topicURL": "somestring"
     }
 
 **400**
@@ -3342,21 +3626,25 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "action": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "mrClientId": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "topicURL": "somestring"
     }
 
 **400**
@@ -3421,7 +3709,7 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
 
 **Example:**
 
@@ -3429,13 +3717,15 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
 
     {
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqdn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "replicationGroup": "somestring", 
+        "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "targetReplicationPort": "somestring", 
+        "topicPort": "somestring", 
+        "topicProtocol": "somestring"
     }
 
 **400**
@@ -3526,7 +3816,7 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
 
 **Example:**
 
@@ -3534,13 +3824,15 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
 
     {
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqdn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "replicationGroup": "somestring", 
+        "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "targetReplicationPort": "somestring", 
+        "topicPort": "somestring", 
+        "topicProtocol": "somestring"
     }
 
 **400**
@@ -3606,7 +3898,7 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
 
 **Example:**
 
@@ -3614,13 +3906,15 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
 
     {
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqdn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "replicationGroup": "somestring", 
+        "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "targetReplicationPort": "somestring", 
+        "topicPort": "somestring", 
+        "topicProtocol": "somestring"
     }
 
 **400**
@@ -3676,7 +3970,7 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
 
 **Example:**
 
@@ -3684,13 +3978,15 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
 
     {
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqdn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "replicationGroup": "somestring", 
+        "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "targetReplicationPort": "somestring", 
+        "topicPort": "somestring", 
+        "topicProtocol": "somestring"
     }
 
 **400**
@@ -3756,7 +4052,7 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
 
 **Example:**
 
@@ -3764,13 +4060,15 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
 
     {
         "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "fqdn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "replicationGroup": "somestring", 
+        "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "targetReplicationPort": "somestring", 
+        "topicPort": "somestring", 
+        "topicProtocol": "somestring"
     }
 
 **400**
@@ -3845,21 +4143,63 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clients": [
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }, 
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }
+        ], 
+        "formatUuid": "somestring", 
+        "fqtn": "somestring", 
+        "fqtnStyle": "FQTN_NOT_SPECIFIED", 
+        "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "numClients": 1, 
+        "owner": "somestring", 
+        "partitionCount": "somestring", 
+        "replicationCase": "REPLICATION_NOT_SPECIFIED", 
+        "replicationCount": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "tnxEnabled": "somestring", 
+        "topicDescription": "somestring", 
+        "topicName": "somestring", 
+        "version": "somestring"
     }
 
 **400**
@@ -3990,21 +4330,63 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clients": [
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }, 
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }
+        ], 
+        "formatUuid": "somestring", 
+        "fqtn": "somestring", 
+        "fqtnStyle": "FQTN_NOT_SPECIFIED", 
+        "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "numClients": 1, 
+        "owner": "somestring", 
+        "partitionCount": "somestring", 
+        "replicationCase": "REPLICATION_NOT_SPECIFIED", 
+        "replicationCount": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "tnxEnabled": "somestring", 
+        "topicDescription": "somestring", 
+        "topicName": "somestring", 
+        "version": "somestring"
     }
 
 **400**
@@ -4070,21 +4452,63 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clients": [
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }, 
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }
+        ], 
+        "formatUuid": "somestring", 
+        "fqtn": "somestring", 
+        "fqtnStyle": "FQTN_NOT_SPECIFIED", 
+        "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "numClients": 1, 
+        "owner": "somestring", 
+        "partitionCount": "somestring", 
+        "replicationCase": "REPLICATION_NOT_SPECIFIED", 
+        "replicationCount": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "tnxEnabled": "somestring", 
+        "topicDescription": "somestring", 
+        "topicName": "somestring", 
+        "version": "somestring"
     }
 
 **400**
@@ -4140,21 +4564,63 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clients": [
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }, 
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }
+        ], 
+        "formatUuid": "somestring", 
+        "fqtn": "somestring", 
+        "fqtnStyle": "FQTN_NOT_SPECIFIED", 
+        "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "numClients": 1, 
+        "owner": "somestring", 
+        "partitionCount": "somestring", 
+        "replicationCase": "REPLICATION_NOT_SPECIFIED", 
+        "replicationCount": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "tnxEnabled": "somestring", 
+        "topicDescription": "somestring", 
+        "topicName": "somestring", 
+        "version": "somestring"
     }
 
 **400**
@@ -4220,21 +4686,63 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
-        "dcaeLocationName": "somestring", 
-        "feedId": "somestring", 
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
+        "clients": [
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }, 
+            {
+                "action": [
+                    "somestring", 
+                    "somestring"
+                ], 
+                "clientRole": "somestring", 
+                "dcaeLocationName": "somestring", 
+                "fqtn": "somestring", 
+                "lastMod": "2015-01-01T15:00:00.000Z", 
+                "mrClientId": "somestring", 
+                "status": "EMPTY", 
+                "statusValid": true, 
+                "topicURL": "somestring"
+            }
+        ], 
+        "formatUuid": "somestring", 
+        "fqtn": "somestring", 
+        "fqtnStyle": "FQTN_NOT_SPECIFIED", 
+        "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "numClients": 1, 
+        "owner": "somestring", 
+        "partitionCount": "somestring", 
+        "replicationCase": "REPLICATION_NOT_SPECIFIED", 
+        "replicationCount": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
-        "username": "somestring", 
-        "userpwd": "somestring"
+        "tnxEnabled": "somestring", 
+        "topicDescription": "somestring", 
+        "topicName": "somestring", 
+        "version": "somestring"
     }
 
 **400**

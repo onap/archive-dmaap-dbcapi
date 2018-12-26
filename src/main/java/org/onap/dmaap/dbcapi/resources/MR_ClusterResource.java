@@ -42,7 +42,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
-import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.MR_ClientService;
@@ -64,7 +63,7 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	notes = "Returns array of  `MR_Cluster` objects.", 
 	response = MR_Cluster.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Cluster.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getMr_Clusters() {
@@ -82,7 +81,7 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	notes = "Create an  `MR_Cluster` object.", 
 	response = MR_Cluster.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Cluster.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response  addMr_Cluster( 
@@ -109,7 +108,7 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	notes = "Update an  `MR_Cluster` object, specified by clusterId.", 
 	response = MR_Cluster.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Cluster.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clusterId}")
@@ -138,7 +137,7 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	notes = "Delete an  `MR_Cluster` object, specified by clusterId.", 
 	response = MR_Cluster.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 204, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 204, message = "Success", response = MR_Cluster.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clusterId}")
@@ -164,7 +163,7 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	notes = "Retrieve an  `MR_Cluster` object, specified by clusterId.", 
 	response = MR_Cluster.class)
 	@ApiResponses( value = {
-	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
+	    @ApiResponse( code = 200, message = "Success", response = MR_Cluster.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clusterId}")
