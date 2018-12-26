@@ -8,17 +8,39 @@ DMaaP Bus Controller REST API 1.1.0
 Description
 ~~~~~~~~~~~
 
-provides an API for OpenDCAE components which need to provision underlying DMaaP technologies (Data Router and Message Router). Primary clients for this API are anticipated to be the OpenDCAE Controller, OpenDCAE Orchestrator, OpenDCAE Inventory and the ECOMP Portal.
+provides an API for OpenDCAE components which need to provision
+									underlying DMaaP technologies (Data Router and Message Router).
+									Primary clients for this API are anticipated to be the OpenDCAE
+									Controller, OpenDCAE Orchestrator, OpenDCAE Inventory and the
+									ECOMP Portal.
 
-Objects managed by DMaaP are deployed in a dcaeLocation which is a unique identifier for an OpenStack tenant for a dcaeLayer, opendcae-central (aka ecomp) or opendcae-local-ntc (aka edge).
+									Objects managed by DMaaP are deployed in a dcaeLocation which is a
+									unique identifier for an OpenStack tenant for a dcaeLayer,
+									opendcae-central (aka ecomp) or opendcae-local-ntc (aka edge).
 
-A dcaeEnvironment (e.g. FTL or prod) has a single DMaaP. A DMaaP is managed by a one or more stateless DMaaP Bus Controller(s), though Bus Controller relies on PGaaS for persistence. Each DMaaP has a single instance of Data Router, which has 1 or more DR_Nodes deployed at each dcaeLocation. DR Clients of type DR_Pub generally publish to a DR_Node that is local to its dcaeLocation. Routing for a Feed is determined by the dcaelocation of its DR_Sub clients.
+									A dcaeEnvironment (e.g. FTL or prod) has a single DMaaP. A
+									DMaaP is managed by a one or more stateless DMaaP Bus
+									Controller(s), though Bus Controller relies on PGaaS for
+									persistence. Each DMaaP has a single instance of Data Router,
+									which has 1 or more DR_Nodes deployed at each dcaeLocation. DR
+									Clients of type DR_Pub generally publish to a DR_Node that is
+									local to its dcaeLocation. Routing for a Feed is determined by
+									the dcaelocation of its DR_Sub clients.
 
-A DMaaP may have many Message Router instances. Each instance is deployed as an MR_Cluster. One MR_Cluster is deployed at each dcaeLocation. MR_Clients generally communicate to the MR_Cluster at the same dcaeLocation. Replication of messages between MR_Clusters is accomplished by MR Bridge, which is provioned by DMaaP Bus Controller based on Topic attributes.
+									A DMaaP may have many Message Router instances. Each instance is
+									deployed as an MR_Cluster. One MR_Cluster is deployed at each
+									dcaeLocation. MR_Clients generally communicate to the
+									MR_Cluster at the same dcaeLocation. Replication of messages
+									between MR_Clusters is accomplished by MR Bridge, which is
+									provioned by DMaaP Bus Controller based on Topic attributes.
 
-Therefore, the role of DMaaP Bus Controller is to support other DCAE infrastructure components to dynamically provision DMaaP services on behalf of DMaaP clients, and to assist in any management or discovery activity of its clients.
+									Therefore, the role of DMaaP Bus Controller is to support other
+									DCAE infrastructure components to dynamically provision DMaaP
+									services on behalf of DMaaP clients, and to assist in any
+									management or discovery activity of its clients.
 
-A convention of this API is to return JSON responses per OpenStack style.
+									A convention of this API is to return JSON responses per
+									OpenStack style.
 
 
 
@@ -72,7 +94,7 @@ Description
 
 .. raw:: html
 
-    Returns array of  `BrTopic` objects. If source and target query params are specified, only report on that bridge.  If detail param is true, list topics names, else just a count is returned
+    Returns array of  `BrTopic` objects. If source and target query params are specified, only report on that bridge.  If detail param is true, list topics names, else just a count is returned.
 
 Parameters
 ++++++++++
@@ -82,8 +104,7 @@ Parameters
     :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
     :widths: 20, 15, 10, 10, 10, 20, 30
 
-        source | query | No | string |  |  | 
-        target | query | No | string |  |  | 
+        mmagent | query | No | string |  |  | 
         detail | query | No | boolean |  |  | 
 
 
@@ -157,7 +178,7 @@ Description
 
 .. raw:: html
 
-    replace the topic list for a specific Bridge.  Use JSON Body for value to replace whitelist, but if refreshFlag param is true, simply refresh using existing whitelist
+    replace the topic list for a specific Bridge.  Use JSON Body for value to replace whitelist, but if refreshFlag param is true, simply refresh using existing whitelist.If split param is true, spread whitelist over smaller mmagents.
 
 Parameters
 ++++++++++
@@ -167,9 +188,9 @@ Parameters
     :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
     :widths: 20, 15, 10, 10, 10, 20, 30
 
-        source | query | No | string |  |  | 
-        target | query | No | string |  |  | 
+        mmagent | query | No | string |  |  | 
         refresh | query | No | boolean |  |  | 
+        split | query | No | boolean |  |  | 
 
 
 Request
@@ -661,7 +682,80 @@ DMAAP
 ~~~~~
 
 
-Endpoint for this instance of DMaaP object containing values for this OpenDCAE deployment
+V2 Endpoint for this instance of DMaaP object containing values for this OpenDCAE deployment
+
+
+
+
+
+POST ``/dmaap_v2``
+------------------
+
+
+Summary
++++++++
+
+return dmaap details
+
+Description
++++++++++++
+
+.. raw:: html
+
+    Create a new DMaaP set system wide configuration settings for the *dcaeEnvironment*.  Deprecated with introduction of persistence in 1610.
+
+
+Request
++++++++
+
+
+Responses
++++++++++
+
+**200**
+^^^^^^^
+
+Success
+
+
+Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+
+**Example:**
+
+.. code-block:: javascript
+
+    {
+        "accessKeyOwner": "somestring", 
+        "bridgeAdminTopic": "somestring", 
+        "dmaapName": "somestring", 
+        "drProvUrl": "somestring", 
+        "lastMod": "2015-01-01T15:00:00.000Z", 
+        "loggingUrl": "somestring", 
+        "nodeKey": "somestring", 
+        "status": "EMPTY", 
+        "statusValid": true, 
+        "topicNsRoot": "somestring", 
+        "version": "somestring"
+    }
+
+**400**
+^^^^^^^
+
+Error
+
+
+Type: :ref:`ApiError <d_a3a7580ce9d87225d7f62e6b67b4d036>`
+
+**Example:**
+
+.. code-block:: javascript
+
+    {
+        "code": 1, 
+        "fields": "somestring", 
+        "is2xx": true, 
+        "message": "somestring"
+    }
 
 
 
@@ -740,6 +834,79 @@ Type: :ref:`ApiError <d_a3a7580ce9d87225d7f62e6b67b4d036>`
 
 
 
+GET ``/dmaap_v2``
+-----------------
+
+
+Summary
++++++++
+
+return dmaap details
+
+Description
++++++++++++
+
+.. raw:: html
+
+    returns the `dmaap` object, which contains system wide configuration settings
+
+
+Request
++++++++
+
+
+Responses
++++++++++
+
+**200**
+^^^^^^^
+
+Success
+
+
+Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+
+**Example:**
+
+.. code-block:: javascript
+
+    {
+        "accessKeyOwner": "somestring", 
+        "bridgeAdminTopic": "somestring", 
+        "dmaapName": "somestring", 
+        "drProvUrl": "somestring", 
+        "lastMod": "2015-01-01T15:00:00.000Z", 
+        "loggingUrl": "somestring", 
+        "nodeKey": "somestring", 
+        "status": "EMPTY", 
+        "statusValid": true, 
+        "topicNsRoot": "somestring", 
+        "version": "somestring"
+    }
+
+**400**
+^^^^^^^
+
+Error
+
+
+Type: :ref:`ApiError <d_a3a7580ce9d87225d7f62e6b67b4d036>`
+
+**Example:**
+
+.. code-block:: javascript
+
+    {
+        "code": 1, 
+        "fields": "somestring", 
+        "is2xx": true, 
+        "message": "somestring"
+    }
+
+
+
+
+
 GET ``/dmaap``
 --------------
 
@@ -755,6 +922,79 @@ Description
 .. raw:: html
 
     returns the `dmaap` object, which contains system wide configuration settings
+
+
+Request
++++++++
+
+
+Responses
++++++++++
+
+**200**
+^^^^^^^
+
+Success
+
+
+Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
+
+**Example:**
+
+.. code-block:: javascript
+
+    {
+        "accessKeyOwner": "somestring", 
+        "bridgeAdminTopic": "somestring", 
+        "dmaapName": "somestring", 
+        "drProvUrl": "somestring", 
+        "lastMod": "2015-01-01T15:00:00.000Z", 
+        "loggingUrl": "somestring", 
+        "nodeKey": "somestring", 
+        "status": "EMPTY", 
+        "statusValid": true, 
+        "topicNsRoot": "somestring", 
+        "version": "somestring"
+    }
+
+**400**
+^^^^^^^
+
+Error
+
+
+Type: :ref:`ApiError <d_a3a7580ce9d87225d7f62e6b67b4d036>`
+
+**Example:**
+
+.. code-block:: javascript
+
+    {
+        "code": 1, 
+        "fields": "somestring", 
+        "is2xx": true, 
+        "message": "somestring"
+    }
+
+
+
+
+
+PUT ``/dmaap_v2``
+-----------------
+
+
+Summary
++++++++
+
+return dmaap details
+
+Description
++++++++++++
+
+.. raw:: html
+
+    Update system settings for *dcaeEnvironment*.
 
 
 Request
@@ -1743,19 +1983,28 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
         "dcaeLocationName": "somestring", 
+        "deliveryURL": "somestring", 
         "feedId": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
+        "subId": "somestring", 
+        "suspended": true, 
+        "use100": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1823,19 +2072,28 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
         "dcaeLocationName": "somestring", 
+        "deliveryURL": "somestring", 
         "feedId": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
+        "subId": "somestring", 
+        "suspended": true, 
+        "use100": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1903,19 +2161,28 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
         "dcaeLocationName": "somestring", 
+        "deliveryURL": "somestring", 
         "feedId": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
+        "subId": "somestring", 
+        "suspended": true, 
+        "use100": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1973,19 +2240,28 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
         "dcaeLocationName": "somestring", 
+        "deliveryURL": "somestring", 
         "feedId": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
+        "subId": "somestring", 
+        "suspended": true, 
+        "use100": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -2053,19 +2329,28 @@ Responses
 Success
 
 
-Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
+Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
 
 **Example:**
 
 .. code-block:: javascript
 
     {
+        "bytes": [
+            "somestring", 
+            "somestring"
+        ], 
         "dcaeLocationName": "somestring", 
+        "deliveryURL": "somestring", 
         "feedId": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "pubId": "somestring", 
+        "logURL": "somestring", 
+        "owner": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
+        "subId": "somestring", 
+        "suspended": true, 
+        "use100": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -2117,6 +2402,16 @@ Description
 .. raw:: html
 
     Create a of  `Feed` object.
+
+Parameters
+++++++++++
+
+.. csv-table::
+    :delim: |
+    :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
+    :widths: 20, 15, 10, 10, 10, 20, 30
+
+        useExisting | query | No | string |  |  | 
 
 
 Request
@@ -3215,13 +3510,12 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
     {
         "dcaeLocationName": "somestring", 
         "fqdn": "somestring", 
-        "hosts": [
-            "somestring", 
-            "somestring"
-        ], 
         "lastMod": "2015-01-01T15:00:00.000Z", 
+        "replicationGroup": "somestring", 
+        "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
+        "targetReplicationPort": "somestring", 
         "topicPort": "somestring", 
         "topicProtocol": "somestring"
     }
@@ -3527,6 +3821,16 @@ Description
 
     Create  `Topic` object.
 
+Parameters
+++++++++++
+
+.. csv-table::
+    :delim: |
+    :header: "Name", "Located in", "Required", "Type", "Format", "Properties", "Description"
+    :widths: 20, 15, 10, 10, 10, 20, 30
+
+        useExisting | query | No | string |  |  | 
+
 
 Request
 +++++++
@@ -3669,7 +3973,9 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "numClients": 1, 
         "owner": "somestring", 
+        "partitionCount": "somestring", 
         "replicationCase": "REPLICATION_NOT_SPECIFIED", 
+        "replicationCount": "somestring", 
         "status": "EMPTY", 
         "statusValid": true, 
         "tnxEnabled": "somestring", 
@@ -3983,6 +4289,7 @@ BrTopic Model Structure
 
         brSource | No | string |  |  | 
         brTarget | No | string |  |  | 
+        mmAgentName | No | string |  |  | 
         topicCount | No | integer | int32 |  | 
 
 .. _d_d15e2cee407536866c875375e3f705e0:
@@ -4150,10 +4457,12 @@ MR_Cluster Model Structure
 
         dcaeLocationName | No | string |  |  | 
         fqdn | No | string |  |  | 
-        hosts | No | array of string |  |  | 
         lastMod | No | string | date-time |  | 
+        replicationGroup | No | string |  |  | 
+        sourceReplicationPort | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
         statusValid | No | boolean |  |  | 
+        targetReplicationPort | No | string |  |  | 
         topicPort | No | string |  |  | 
         topicProtocol | No | string |  |  | 
 
@@ -4175,21 +4484,7 @@ MirrorMaker Model Structure
         targetCluster | No | string |  |  | 
         topicCount | No | integer | int32 |  | 
         topics | No | array of string |  |  | 
-        vectors | No | array of :ref:`ReplicationVector <d_56f2d64ab7d8ae64594cda45cf85f918>` |  |  | 
-
-.. _d_56f2d64ab7d8ae64594cda45cf85f918:
-
-ReplicationVector Model Structure
----------------------------------
-
-.. csv-table::
-    :delim: |
-    :header: "Name", "Required", "Type", "Format", "Properties", "Description"
-    :widths: 20, 10, 15, 15, 30, 25
-
-        fqtn | No | string |  |  | 
-        sourceCluster | No | string |  |  | 
-        targetCluster | No | string |  |  | 
+        whitelistUpdateJSON | No | string |  |  | 
 
 .. _d_2e99841971da81b9d240071b86bf168d:
 
@@ -4210,7 +4505,9 @@ Topic Model Structure
         lastMod | No | string | date-time |  | 
         numClients | No | integer | int32 |  | 
         owner | No | string |  |  | 
-        replicationCase | No | string |  | {'enum': ['REPLICATION_NOT_SPECIFIED', 'REPLICATION_NONE', 'REPLICATION_EDGE_TO_CENTRAL', 'REPLICATION_EDGE_TO_CENTRAL_TO_GLOBAL', 'REPLICATION_CENTRAL_TO_EDGE', 'REPLICATION_CENTRAL_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_CENTRAL', 'REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE']} | 
+        partitionCount | No | string |  |  | 
+        replicationCase | No | string |  | {'enum': ['REPLICATION_NOT_SPECIFIED', 'REPLICATION_NONE', 'REPLICATION_EDGE_TO_CENTRAL', 'REPLICATION_EDGE_TO_CENTRAL_TO_GLOBAL', 'REPLICATION_CENTRAL_TO_EDGE', 'REPLICATION_CENTRAL_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_CENTRAL', 'REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE', 'REPLICATION_EDGE_TO_FQDN', 'REPLICATION_FQDN_TO_EDGE', 'REPLICATION_FQDN_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_FQDN', 'REPLICATION_EDGE_TO_FQDN_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_FQDN_TO_EDGE']} | 
+        replicationCount | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
         statusValid | No | boolean |  |  | 
         tnxEnabled | No | string |  |  | 
