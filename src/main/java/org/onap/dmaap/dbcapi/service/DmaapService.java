@@ -168,6 +168,8 @@ public class DmaapService  extends BaseLoggingClass  {
 	public String getTopicPerm( String val ) {
 		Dmaap dmaap = dmaapholder.get();
 		String nsRoot = dmaap.getTopicNsRoot();
+		if ( nsRoot == null ) { return null; }
+		
 		String t;
 		// in ONAP Casablanca, we assume no distinction of environments reflected in topic namespace
 		if ( nsRoot.startsWith(noEnvironmentPrefix) ) {

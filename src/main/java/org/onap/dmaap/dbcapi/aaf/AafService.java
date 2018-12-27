@@ -36,9 +36,21 @@ public class AafService extends BaseLoggingClass {
 	private AafConnection aaf;
 	private ServiceType ctype;
 	private String aafURL ;
+	private	String identity;
 	private boolean useAAF = false;
 	
 	
+	
+	public String getIdentity() {
+		return identity;
+	}
+
+
+	public void setIdentity(String identity) {
+		this.identity = identity;
+	}
+
+
 	private String getCred( boolean wPwd ) {
 		String mechIdProperty = null;
 		String pwdProperty = null;
@@ -55,7 +67,7 @@ public class AafService extends BaseLoggingClass {
 			logger.error( "Unexpected case for AAF credential type: " + ctype );
 			return null;
 		}
-		String user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
+		identity = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
 
 		String pwd = "";
 		String encPwd = p.getProperty( pwdProperty, "notSet" );
@@ -64,13 +76,14 @@ public class AafService extends BaseLoggingClass {
 		pwd = decryptor.decrypt(encPwd);
 		
 		if ( wPwd ) {
-			return user + ":" + pwd;
+			return identity + ":" + pwd;
 		} else {
-			return user;
+			return identity;
 		}
 		
 		
 	}
+	
 	
 	public AafService(ServiceType t ) {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
@@ -92,70 +105,12 @@ public class AafService extends BaseLoggingClass {
 	}
 	
 	public int addPerm(DmaapPerm perm) {
-
-		int rc = -1;
 		logger.info( "entry: addPerm() "  );
-		String pURL = aafURL + "authz/perm";
-		logger.info( "addPerm=" + useAAF );
-		if ( useAAF ) {
-			logger.info( "addPerm: " + perm.toJSON());
-			rc = aaf.postAaf( perm, pURL );
-		} else {
-			rc = 201;
-		}
-        switch( rc ) {
-    	case 401:
-    	case 403:
-       		errorLogger.error(DmaapbcLogMessageEnum.AAF_CREDENTIAL_ERROR,  getCred( false ) );
-    		System.exit(1);
-    	case 409:
-    		logger.warn( "Perm already exists. Possible conflict.");
-    		break;
- 		
-    	case 201:
-    		logger.info( "expected response: " + rc);
-    		break;
-       	default :
-    		logger.error( "Unexpected response: " + rc );
-    		break;
-        }
-		
-		return rc;
+		return doPost( perm, "authz/perm", 201);
 	}
 	public int addGrant(DmaapGrant grant ) {
-
-		int rc = -1;
 		logger.info( "entry: addGrant() "  );
-
-		String pURL = aafURL + "authz/role/perm";
-		logger.info( "addGrant: useAAF=" + useAAF );
-		if ( useAAF ) {
-			logger.info( "addGrant: " + grant.toJSON() );
-			rc = aaf.postAaf( grant, pURL );
-		} else {
-			rc = 201;
-		}
-		
-        switch( rc ) {
-    	case 401:
-    	case 403:
-       		errorLogger.error(DmaapbcLogMessageEnum.AAF_CREDENTIAL_ERROR,  getCred( false ) );
-    		System.exit(1);
-    		break;
-
-    	case 409:
-    		logger.warn( "Perm already exists. Possible conflict.");
-    		break;
- 		
-    	case 201:
-    		logger.info( "expected response" );
-    		break;
-       	default :
-    		logger.error( "Unexpected response: " + rc );
-    		break;
-        }
-		
-		return rc;
+		return doPost( grant, "authz/role/perm", 201 );
 	}
 
 	public int delGrant( DmaapGrant grant ) {
@@ -191,5 +146,49 @@ public class AafService extends BaseLoggingClass {
 		return rc;
 	}
 
+	public int addRole(AafRole role) {
+		logger.info( "entry: addRole() "  );
+		return doPost( role, "authz/role", 201 );
+	}
 
+	
+	
+	public int addNamespace(AafNamespace ns) {
+		logger.info( "entry: addNamespace() "  );
+		return doPost( ns, "authz/ns", 201 );
+	}
+
+	
+	private int doPost( AafObject obj, String uri, int expect ) {
+		int rc = -1;
+		logger.info( "entry: doPost() "  );
+		String pURL = aafURL + uri;
+		logger.info( "doPost: useAAF=" + useAAF );
+		if ( useAAF ) {
+			logger.info( "doPost: " + obj.toJSON());
+			rc = aaf.postAaf( obj, pURL );
+		} else {
+			rc = expect;
+		}
+        switch( rc ) {
+    	case 401:
+    	case 403:
+       		errorLogger.error(DmaapbcLogMessageEnum.AAF_CREDENTIAL_ERROR,  getCred( false ) );
+    		System.exit(1);
+    	case 409:
+    		logger.warn( "Object for " + uri + " already exists. Possible conflict.");
+    		break;
+ 		
+
+       	default :
+       		if ( rc == expect ) {
+       			logger.info( "expected response: " + rc);
+       		} else {
+       			logger.error( "Unexpected response: " + rc );
+       		}
+    		break;
+        }
+        
+        return rc;
+	}
 }

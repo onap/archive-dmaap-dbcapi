@@ -49,6 +49,8 @@ public class Topic extends DmaapObject  {
 	private String	version;	
 	private String	partitionCount;
 	private	String	replicationCount;
+	private	String	publisherRole;
+	private	String	subscriberRole;
 
 
 	private	ArrayList<MR_Client> clients;
@@ -282,6 +284,18 @@ public class Topic extends DmaapObject  {
 
 
 
+	public String getPublisherRole() {
+		return publisherRole;
+	}
+	public void setPublisherRole(String publisherRole) {
+		this.publisherRole = publisherRole;
+	}
+	public String getSubscriberRole() {
+		return subscriberRole;
+	}
+	public void setSubscriberRole(String subscriberRole) {
+		this.subscriberRole = subscriberRole;
+	}
 	public String toProvJSON() {
 		StringBuilder str = new StringBuilder();
 		str.append("{ \"topicName\": \"");
