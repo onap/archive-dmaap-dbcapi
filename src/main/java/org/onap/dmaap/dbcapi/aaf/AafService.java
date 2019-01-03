@@ -3,6 +3,8 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,15 +30,26 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
  * this service uses the AAF REST API endpoints to provision values in AAF
  */
 public class AafService extends BaseLoggingClass {
-	public enum ServiceType {
-		AAF_Admin,
-		AAF_TopicMgr
-	}
-	
+
 	private AafConnection aaf;
 	private ServiceType ctype;
 	private String aafURL ;
 	private boolean useAAF = false;
+
+	public AafService(ServiceType t ) {
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		aafURL = p.getProperty( "aaf.URL", "https://authentication.domain.netset.com:8095/proxy/");
+		initAafService( t );
+	}
+	public AafService( ServiceType t, String url ) {
+		aafURL = url;
+		initAafService( t );
+	}
+
+	public enum ServiceType {
+		AAF_Admin,
+		AAF_TopicMgr
+	}
 	
 	
 	private String getCred( boolean wPwd ) {
@@ -70,16 +83,6 @@ public class AafService extends BaseLoggingClass {
 		}
 		
 		
-	}
-	
-	public AafService(ServiceType t ) {
-		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		aafURL = p.getProperty( "aaf.URL", "https://authentication.domain.netset.com:8095/proxy/");
-		initAafService( t );
-	}
-	public AafService( ServiceType t, String url ) {
-		aafURL = url;
-		initAafService( t );
 	}
 		
 	private void initAafService( ServiceType t ) {
