@@ -61,7 +61,6 @@ public class TopicService extends BaseLoggingClass {
 	private Map<String, Topic> mr_topics = DatabaseClass.getTopics();
 	
 	private static DmaapService dmaapSvc = new DmaapService();
-	private static Dmaap dmaap = new DmaapService().getDmaap();
 	private MR_ClientService clientService = new MR_ClientService();
 	private MR_ClusterService clusters = new MR_ClusterService();
 	private DcaeLocationService locations = new DcaeLocationService();
@@ -258,6 +257,7 @@ public class TopicService extends BaseLoggingClass {
 				logger.info( "c fqtn=" + c.getFqtn() + " ID=" + c.getMrClientId() + " url=" + c.getTopicURL());
 				MR_Client nc = new MR_Client( c.getDcaeLocationName(), topic.getFqtn(), c.getClientRole(), c.getAction());
 				nc.setFqtn(topic.getFqtn());
+				nc.setClientIdentity( c.getClientIdentity());
 				logger.info( "nc fqtn=" + nc.getFqtn() + " ID=" + nc.getMrClientId() + " url=" + nc.getTopicURL());
 				clients2.add( clientService.addMr_Client(nc, topic, err));
 				if ( ! err.is2xx()) {

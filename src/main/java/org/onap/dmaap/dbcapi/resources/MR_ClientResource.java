@@ -79,8 +79,11 @@ public class MR_ClientResource extends BaseLoggingClass {
 	}
 		
 	@POST
-	@ApiOperation( value = "return MR_Client details", 
-	notes = "Create a  `MR_Client` object.", 
+	@ApiOperation( value = "Associate an MR_Client object to a Topic", 
+	notes = "Create a  `MR_Client` object."
+			+ "The `dcaeLocation` attribute is used to match an `MR_Cluster` object with the same value, with the intent of localizing message traffic."
+			+ "  In legacy implementation, the `clientRole` is granted appropriate permission in AAF."
+			+ "  Newer implementions may instead specify an AAF Identity, which will be added to the appropriate `Topic` role.", 
 	response = MR_Client.class)
 	@ApiResponses( value = {
 	    @ApiResponse( code = 200, message = "Success", response = MR_Client.class),
@@ -94,7 +97,11 @@ public class MR_ClientResource extends BaseLoggingClass {
 		try {
 			resp.required( "fqtn", client.getFqtn(), "");
 			resp.required( "dcaeLocationName", client.getDcaeLocationName(), "");
-			resp.required( "clientRole", client.getClientRole(), "" );
+			String s = client.getClientRole();
+			if ( s == null ) {
+				s = client.getClientIdentity();
+			}
+			resp.required( "clientRole or clientIdentity", s, "" );
 			resp.required( "action", client.getAction(), "");
 
 		} catch ( RequiredFieldException rfe ) {
@@ -139,7 +146,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	}
 		
 	@PUT
-	@ApiOperation( value = "return MR_Client details", 
+	@ApiOperation( value = "Update an MR_Client object", 
 	notes = "Update a  `MR_Client` object, specified by clientId", 
 	response = MR_Client.class)
 	@ApiResponses( value = {
@@ -175,7 +182,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	}
 		
 	@DELETE
-	@ApiOperation( value = "return MR_Client details", 
+	@ApiOperation( value = "Delete an MR_Client object", 
 	notes = "Delete a  `MR_Client` object, specified by clientId", 
 	response = MR_Client.class)
 	@ApiResponses( value = {

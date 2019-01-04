@@ -112,6 +112,10 @@ public class AafService extends BaseLoggingClass {
 		logger.info( "entry: addGrant() "  );
 		return doPost( grant, "authz/role/perm", 201 );
 	}
+	public int addUserRole( AafUserRole ur ) {
+		logger.info( "entry: addUserRole() "  );
+		return doPost( ur, "authz/userRole", 201 );
+	}
 
 	public int delGrant( DmaapGrant grant ) {
 		int rc = -1;

@@ -91,8 +91,11 @@ public class TopicResource extends BaseLoggingClass {
 	}
 		
 	@POST
-	@ApiOperation( value = "return Topic details", 
-	notes = "Create  `Topic` object.", 
+	@ApiOperation( value = "Create a Topic object", 
+	notes = "Create  `Topic` object."
+			+ "For convenience, the message body may populate the `clients` array, in which case each entry will be added as an `MR_Client`."
+			+ "  Beginning in ONAP Dublin Release, dbcapi will create two AAF Roles by default, one each for the publisher and subscriber per topic."
+			+ "  MR_Clients can then specify an AAF Identity to be added to the appropriate default Role, avoiding the need to create Role(s) in advance.", 
 	response = Topic.class)
 	@ApiResponses( value = {
 	    @ApiResponse( code = 200, message = "Success", response = Topic.class),

@@ -289,7 +289,6 @@ Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
         "local": true, 
         "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subnet": "somestring"
     }
 
@@ -371,7 +370,6 @@ Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
         "local": true, 
         "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subnet": "somestring"
     }
 
@@ -396,7 +394,6 @@ Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
         "local": true, 
         "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subnet": "somestring"
     }
 
@@ -478,7 +475,6 @@ Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
         "local": true, 
         "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subnet": "somestring"
     }
 
@@ -550,7 +546,6 @@ Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
         "local": true, 
         "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subnet": "somestring"
     }
 
@@ -632,7 +627,6 @@ Type: :ref:`DcaeLocation <d_47d80e451933beb623fcf5257867cbcb>`
         "local": true, 
         "openStackAvailabilityZone": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subnet": "somestring"
     }
 
@@ -662,7 +656,7 @@ DMAAP
 ~~~~~
 
 
-Endpoint for this instance of DMaaP object containing values for this OpenDCAE deployment
+V2 Endpoint for this instance of DMaaP object containing values for this OpenDCAE deployment
 
 
 
@@ -713,7 +707,6 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
         "loggingUrl": "somestring", 
         "nodeKey": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicNsRoot": "somestring", 
         "version": "somestring"
     }
@@ -786,7 +779,6 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
         "loggingUrl": "somestring", 
         "nodeKey": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicNsRoot": "somestring", 
         "version": "somestring"
     }
@@ -859,7 +851,6 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
         "loggingUrl": "somestring", 
         "nodeKey": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicNsRoot": "somestring", 
         "version": "somestring"
     }
@@ -932,7 +923,6 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
         "loggingUrl": "somestring", 
         "nodeKey": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicNsRoot": "somestring", 
         "version": "somestring"
     }
@@ -1005,7 +995,6 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
         "loggingUrl": "somestring", 
         "nodeKey": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicNsRoot": "somestring", 
         "version": "somestring"
     }
@@ -1078,7 +1067,6 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
         "loggingUrl": "somestring", 
         "nodeKey": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicNsRoot": "somestring", 
         "version": "somestring"
     }
@@ -1157,7 +1145,6 @@ Type: :ref:`DR_Node <d_d15e2cee407536866c875375e3f705e0>`
         "hostName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "version": "somestring"
     }
 
@@ -1236,7 +1223,6 @@ Type: :ref:`DR_Node <d_d15e2cee407536866c875375e3f705e0>`
         "hostName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "version": "somestring"
     }
 
@@ -1258,7 +1244,6 @@ Type: :ref:`DR_Node <d_d15e2cee407536866c875375e3f705e0>`
         "hostName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "version": "somestring"
     }
 
@@ -1337,7 +1322,6 @@ Type: :ref:`DR_Node <d_d15e2cee407536866c875375e3f705e0>`
         "hostName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "version": "somestring"
     }
 
@@ -1406,7 +1390,6 @@ Type: :ref:`DR_Node <d_d15e2cee407536866c875375e3f705e0>`
         "hostName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "version": "somestring"
     }
 
@@ -1485,7 +1468,6 @@ Type: :ref:`DR_Node <d_d15e2cee407536866c875375e3f705e0>`
         "hostName": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "version": "somestring"
     }
 
@@ -1563,7 +1545,6 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "pubId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1643,7 +1624,6 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "pubId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1666,7 +1646,6 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "pubId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1746,7 +1725,6 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "pubId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1816,7 +1794,6 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "pubId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1896,7 +1873,6 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "pubId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -1981,7 +1957,6 @@ Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
         "logURL": "somestring", 
         "owner": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subId": "somestring", 
         "suspended": true, 
         "use100": true, 
@@ -2070,7 +2045,6 @@ Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
         "logURL": "somestring", 
         "owner": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subId": "somestring", 
         "suspended": true, 
         "use100": true, 
@@ -2159,7 +2133,6 @@ Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
         "logURL": "somestring", 
         "owner": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subId": "somestring", 
         "suspended": true, 
         "use100": true, 
@@ -2238,7 +2211,6 @@ Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
         "logURL": "somestring", 
         "owner": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subId": "somestring", 
         "suspended": true, 
         "use100": true, 
@@ -2327,7 +2299,6 @@ Type: :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>`
         "logURL": "somestring", 
         "owner": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subId": "somestring", 
         "suspended": true, 
         "use100": true, 
@@ -2435,7 +2406,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }, 
@@ -2445,13 +2415,11 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }
         ], 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subs": [
             {
                 "bytes": [
@@ -2465,7 +2433,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -2484,7 +2451,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -2587,7 +2553,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }, 
@@ -2597,13 +2562,11 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }
         ], 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subs": [
             {
                 "bytes": [
@@ -2617,7 +2580,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -2636,7 +2598,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -2682,7 +2643,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }, 
@@ -2692,13 +2652,11 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }
         ], 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subs": [
             {
                 "bytes": [
@@ -2712,7 +2670,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -2731,7 +2688,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -2818,7 +2774,6 @@ Type: :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>`
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "pubId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "username": "somestring", 
         "userpwd": "somestring"
     }
@@ -2916,7 +2871,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }, 
@@ -2926,13 +2880,11 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }
         ], 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subs": [
             {
                 "bytes": [
@@ -2946,7 +2898,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -2965,7 +2916,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -3068,7 +3018,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }, 
@@ -3078,13 +3027,11 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "pubId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "username": "somestring", 
                 "userpwd": "somestring"
             }
         ], 
         "status": "EMPTY", 
-        "statusValid": true, 
         "subs": [
             {
                 "bytes": [
@@ -3098,7 +3045,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -3117,7 +3063,6 @@ Type: :ref:`Feed <d_289ad39619725df26c9ff382d4c97c75>`
                 "logURL": "somestring", 
                 "owner": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "subId": "somestring", 
                 "suspended": true, 
                 "use100": true, 
@@ -3206,7 +3151,6 @@ Type: :ref:`Dmaap <d_4ea0e7758a1f8502222793e4a13b04f7>`
         "loggingUrl": "somestring", 
         "nodeKey": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicNsRoot": "somestring", 
         "version": "somestring"
     }
@@ -3250,14 +3194,14 @@ POST ``/mr_clients``
 Summary
 +++++++
 
-return MR_Client details
+Associate an MR_Client object to a Topic
 
 Description
 +++++++++++
 
 .. raw:: html
 
-    Create a  `MR_Client` object.
+    Create a  `MR_Client` object.The `dcaeLocation` attribute is used to match an `MR_Cluster` object with the same value, with the intent of localizing message traffic.  In legacy implementation, the `clientRole` is granted appropriate permission in AAF.  Newer implementions may instead specify an AAF Identity, which will be added to the appropriate `Topic` role.
 
 
 Request
@@ -3284,13 +3228,13 @@ Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
             "somestring", 
             "somestring"
         ], 
+        "clientIdentity": "somestring", 
         "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
         "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "mrClientId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicURL": "somestring"
     }
 
@@ -3324,7 +3268,7 @@ DELETE ``/mr_clients/{subId}``
 Summary
 +++++++
 
-return MR_Client details
+Delete an MR_Client object
 
 Description
 +++++++++++
@@ -3368,13 +3312,13 @@ Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
             "somestring", 
             "somestring"
         ], 
+        "clientIdentity": "somestring", 
         "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
         "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "mrClientId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicURL": "somestring"
     }
 
@@ -3395,13 +3339,13 @@ Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
             "somestring", 
             "somestring"
         ], 
+        "clientIdentity": "somestring", 
         "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
         "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "mrClientId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicURL": "somestring"
     }
 
@@ -3469,13 +3413,13 @@ Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
             "somestring", 
             "somestring"
         ], 
+        "clientIdentity": "somestring", 
         "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
         "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "mrClientId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicURL": "somestring"
     }
 
@@ -3553,13 +3497,13 @@ Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
             "somestring", 
             "somestring"
         ], 
+        "clientIdentity": "somestring", 
         "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
         "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "mrClientId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicURL": "somestring"
     }
 
@@ -3593,7 +3537,7 @@ PUT ``/mr_clients/{clientId}``
 Summary
 +++++++
 
-return MR_Client details
+Update an MR_Client object
 
 Description
 +++++++++++
@@ -3637,13 +3581,13 @@ Type: :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>`
             "somestring", 
             "somestring"
         ], 
+        "clientIdentity": "somestring", 
         "clientRole": "somestring", 
         "dcaeLocationName": "somestring", 
         "fqtn": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
         "mrClientId": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "topicURL": "somestring"
     }
 
@@ -3722,7 +3666,6 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
         "replicationGroup": "somestring", 
         "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "targetReplicationPort": "somestring", 
         "topicPort": "somestring", 
         "topicProtocol": "somestring"
@@ -3804,7 +3747,6 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
         "replicationGroup": "somestring", 
         "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "targetReplicationPort": "somestring", 
         "topicPort": "somestring", 
         "topicProtocol": "somestring"
@@ -3829,7 +3771,6 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
         "replicationGroup": "somestring", 
         "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "targetReplicationPort": "somestring", 
         "topicPort": "somestring", 
         "topicProtocol": "somestring"
@@ -3911,7 +3852,6 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
         "replicationGroup": "somestring", 
         "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "targetReplicationPort": "somestring", 
         "topicPort": "somestring", 
         "topicProtocol": "somestring"
@@ -3983,7 +3923,6 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
         "replicationGroup": "somestring", 
         "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "targetReplicationPort": "somestring", 
         "topicPort": "somestring", 
         "topicProtocol": "somestring"
@@ -4065,7 +4004,6 @@ Type: :ref:`MR_Cluster <d_eec7176a0080debe1b19c2dad2e97c24>`
         "replicationGroup": "somestring", 
         "sourceReplicationPort": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
         "targetReplicationPort": "somestring", 
         "topicPort": "somestring", 
         "topicProtocol": "somestring"
@@ -4110,14 +4048,14 @@ POST ``/topics``
 Summary
 +++++++
 
-return Topic details
+Create a Topic object
 
 Description
 +++++++++++
 
 .. raw:: html
 
-    Create  `Topic` object.
+    Create  `Topic` object.For convenience, the message body may populate the `clients` array, in which case each entry will be added as an `MR_Client`.  Beginning in ONAP Dublin Release, dbcapi will create two AAF Roles by default, one each for the publisher and subscriber per topic.  MR_Clients can then specify an AAF Identity to be added to the appropriate default Role, avoiding the need to create Role(s) in advance.
 
 Parameters
 ++++++++++
@@ -4150,23 +4088,19 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 .. code-block:: javascript
 
     {
-        "bytes": [
-            "somestring", 
-            "somestring"
-        ], 
         "clients": [
             {
                 "action": [
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }, 
             {
@@ -4174,13 +4108,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }
         ], 
@@ -4189,13 +4123,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
         "fqtnStyle": "FQTN_NOT_SPECIFIED", 
         "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "numClients": 1, 
         "owner": "somestring", 
         "partitionCount": "somestring", 
+        "publisherRole": "somestring", 
         "replicationCase": "REPLICATION_NOT_SPECIFIED", 
         "replicationCount": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
+        "subscriberRole": "somestring", 
         "tnxEnabled": "somestring", 
         "topicDescription": "somestring", 
         "topicName": "somestring", 
@@ -4272,23 +4206,19 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 .. code-block:: javascript
 
     {
-        "bytes": [
-            "somestring", 
-            "somestring"
-        ], 
         "clients": [
             {
                 "action": [
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }, 
             {
@@ -4296,13 +4226,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }
         ], 
@@ -4311,13 +4241,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
         "fqtnStyle": "FQTN_NOT_SPECIFIED", 
         "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "numClients": 1, 
         "owner": "somestring", 
         "partitionCount": "somestring", 
+        "publisherRole": "somestring", 
         "replicationCase": "REPLICATION_NOT_SPECIFIED", 
         "replicationCount": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
+        "subscriberRole": "somestring", 
         "tnxEnabled": "somestring", 
         "topicDescription": "somestring", 
         "topicName": "somestring", 
@@ -4337,23 +4267,19 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 .. code-block:: javascript
 
     {
-        "bytes": [
-            "somestring", 
-            "somestring"
-        ], 
         "clients": [
             {
                 "action": [
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }, 
             {
@@ -4361,13 +4287,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }
         ], 
@@ -4376,13 +4302,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
         "fqtnStyle": "FQTN_NOT_SPECIFIED", 
         "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "numClients": 1, 
         "owner": "somestring", 
         "partitionCount": "somestring", 
+        "publisherRole": "somestring", 
         "replicationCase": "REPLICATION_NOT_SPECIFIED", 
         "replicationCount": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
+        "subscriberRole": "somestring", 
         "tnxEnabled": "somestring", 
         "topicDescription": "somestring", 
         "topicName": "somestring", 
@@ -4459,23 +4385,19 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 .. code-block:: javascript
 
     {
-        "bytes": [
-            "somestring", 
-            "somestring"
-        ], 
         "clients": [
             {
                 "action": [
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }, 
             {
@@ -4483,13 +4405,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }
         ], 
@@ -4498,13 +4420,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
         "fqtnStyle": "FQTN_NOT_SPECIFIED", 
         "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "numClients": 1, 
         "owner": "somestring", 
         "partitionCount": "somestring", 
+        "publisherRole": "somestring", 
         "replicationCase": "REPLICATION_NOT_SPECIFIED", 
         "replicationCount": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
+        "subscriberRole": "somestring", 
         "tnxEnabled": "somestring", 
         "topicDescription": "somestring", 
         "topicName": "somestring", 
@@ -4571,23 +4493,19 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 .. code-block:: javascript
 
     {
-        "bytes": [
-            "somestring", 
-            "somestring"
-        ], 
         "clients": [
             {
                 "action": [
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }, 
             {
@@ -4595,13 +4513,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }
         ], 
@@ -4610,13 +4528,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
         "fqtnStyle": "FQTN_NOT_SPECIFIED", 
         "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "numClients": 1, 
         "owner": "somestring", 
         "partitionCount": "somestring", 
+        "publisherRole": "somestring", 
         "replicationCase": "REPLICATION_NOT_SPECIFIED", 
         "replicationCount": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
+        "subscriberRole": "somestring", 
         "tnxEnabled": "somestring", 
         "topicDescription": "somestring", 
         "topicName": "somestring", 
@@ -4693,23 +4611,19 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
 .. code-block:: javascript
 
     {
-        "bytes": [
-            "somestring", 
-            "somestring"
-        ], 
         "clients": [
             {
                 "action": [
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }, 
             {
@@ -4717,13 +4631,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
                     "somestring", 
                     "somestring"
                 ], 
+                "clientIdentity": "somestring", 
                 "clientRole": "somestring", 
                 "dcaeLocationName": "somestring", 
                 "fqtn": "somestring", 
                 "lastMod": "2015-01-01T15:00:00.000Z", 
                 "mrClientId": "somestring", 
                 "status": "EMPTY", 
-                "statusValid": true, 
                 "topicURL": "somestring"
             }
         ], 
@@ -4732,13 +4646,13 @@ Type: :ref:`Topic <d_2e99841971da81b9d240071b86bf168d>`
         "fqtnStyle": "FQTN_NOT_SPECIFIED", 
         "globalMrURL": "somestring", 
         "lastMod": "2015-01-01T15:00:00.000Z", 
-        "numClients": 1, 
         "owner": "somestring", 
         "partitionCount": "somestring", 
+        "publisherRole": "somestring", 
         "replicationCase": "REPLICATION_NOT_SPECIFIED", 
         "replicationCount": "somestring", 
         "status": "EMPTY", 
-        "statusValid": true, 
+        "subscriberRole": "somestring", 
         "tnxEnabled": "somestring", 
         "topicDescription": "somestring", 
         "topicName": "somestring", 
@@ -4813,9 +4727,8 @@ DR_Node Model Structure
         dcaeLocationName | No | string |  |  | 
         fqdn | No | string |  |  | 
         hostName | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
+        lastMod | No | string | date-time |  | datestamp for last update to this object
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         version | No | string |  |  | 
 
 .. _d_e926d3fa8701e0cc9c8ed1761b3255cd:
@@ -4830,10 +4743,9 @@ DR_Pub Model Structure
 
         dcaeLocationName | No | string |  |  | 
         feedId | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
+        lastMod | No | string | date-time |  | datestamp for last update to this object
         pubId | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         username | No | string |  |  | 
         userpwd | No | string |  |  | 
 
@@ -4851,11 +4763,10 @@ DR_Sub Model Structure
         dcaeLocationName | No | string |  |  | 
         deliveryURL | No | string |  |  | 
         feedId | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
+        lastMod | No | string | date-time |  | datestamp for last update to this object
         logURL | No | string |  |  | 
         owner | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         subId | No | string |  |  | 
         suspended | No | boolean |  |  | 
         use100 | No | boolean |  |  | 
@@ -4876,11 +4787,10 @@ DcaeLocation Model Structure
         clli | No | string |  |  | 
         dcaeLayer | No | string |  |  | 
         dcaeLocationName | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
+        lastMod | No | string | date-time |  | datestamp for last update to this object
         local | No | boolean |  |  | 
         openStackAvailabilityZone | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         subnet | No | string |  |  | 
 
 .. _d_4ea0e7758a1f8502222793e4a13b04f7:
@@ -4897,11 +4807,10 @@ Dmaap Model Structure
         bridgeAdminTopic | No | string |  |  | 
         dmaapName | No | string |  |  | 
         drProvUrl | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
+        lastMod | No | string | date-time |  | datestamp for last update to this object
         loggingUrl | No | string |  |  | 
         nodeKey | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         topicNsRoot | No | string |  |  | 
         version | No | string |  |  | 
 
@@ -4922,13 +4831,12 @@ Feed Model Structure
         feedName | No | string |  |  | 
         feedVersion | No | string |  |  | 
         formatUuid | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
+        lastMod | No | string | date-time |  | datestamp for last update to this object
         logURL | No | string |  |  | 
         owner | No | string |  |  | 
         publishURL | No | string |  |  | 
         pubs | No | array of :ref:`DR_Pub <d_e926d3fa8701e0cc9c8ed1761b3255cd>` |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         subs | No | array of :ref:`DR_Sub <d_48cf328d246f41e1d11a09251b042f02>` |  |  | 
         subscribeURL | No | string |  |  | 
         suspended | No | boolean |  |  | 
@@ -4943,15 +4851,15 @@ MR_Client Model Structure
     :header: "Name", "Required", "Type", "Format", "Properties", "Description"
     :widths: 20, 10, 15, 15, 30, 25
 
-        action | No | array of string |  |  | 
-        clientRole | No | string |  |  | 
-        dcaeLocationName | No | string |  |  | 
-        fqtn | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
-        mrClientId | No | string |  |  | 
+        action | No | array of string |  |  | one or more actions from the set ('pub', 'sub', 'view') for which this client needs Permission
+        clientIdentity | No | string |  |  | an AAF identity to be associated to an appropriate topic Role
+        clientRole | No | string |  |  | an AAF Role to be granted an appropriate Permission.  If specified, takes precedence over clientIdentity, for backwards compatibility.
+        dcaeLocationName | No | string |  |  | a tag indicating a logical deployment site
+        fqtn | No | string |  |  | Fully Qualified Topic Name constructed by dbcapi
+        lastMod | No | string | date-time |  | datestamp for last update to this object
+        mrClientId | No | string |  |  | a unique identifier generated by dbcapi for this client
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
-        topicURL | No | string |  |  | 
+        topicURL | No | string |  |  | the URL for a MR instance - typically in the same dcaeLocation - that this client should use to access the topic
 
 .. _d_eec7176a0080debe1b19c2dad2e97c24:
 
@@ -4969,7 +4877,6 @@ MR_Cluster Model Structure
         replicationGroup | No | string |  |  | 
         sourceReplicationPort | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         targetReplicationPort | No | string |  |  | 
         topicPort | No | string |  |  | 
         topicProtocol | No | string |  |  | 
@@ -4984,11 +4891,10 @@ MirrorMaker Model Structure
     :header: "Name", "Required", "Type", "Format", "Properties", "Description"
     :widths: 20, 10, 15, 15, 30, 25
 
-        lastMod | No | string | date-time |  | 
+        lastMod | No | string | date-time |  | datestamp for last update to this object
         mmName | No | string |  |  | 
         sourceCluster | No | string |  |  | 
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
         targetCluster | No | string |  |  | 
         topicCount | No | integer | int32 |  | 
         topics | No | array of string |  |  | 
@@ -5004,22 +4910,21 @@ Topic Model Structure
     :header: "Name", "Required", "Type", "Format", "Properties", "Description"
     :widths: 20, 10, 15, 15, 30, 25
 
-        bytes | No | array of string |  |  | 
-        clients | No | array of :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>` |  |  | 
-        formatUuid | No | string |  |  | 
-        fqtn | No | string |  |  | 
-        fqtnStyle | No | string |  | {'enum': ['FQTN_NOT_SPECIFIED', 'FQTN_LEGACY_FORMAT', 'FQTN_PROJECTID_FORMAT', 'FQTN_PROJECTID_VERSION_FORMAT']} | 
-        globalMrURL | No | string |  |  | 
-        lastMod | No | string | date-time |  | 
-        numClients | No | integer | int32 |  | 
-        owner | No | string |  |  | 
-        partitionCount | No | string |  |  | 
-        replicationCase | No | string |  | {'enum': ['REPLICATION_NOT_SPECIFIED', 'REPLICATION_NONE', 'REPLICATION_EDGE_TO_CENTRAL', 'REPLICATION_EDGE_TO_CENTRAL_TO_GLOBAL', 'REPLICATION_CENTRAL_TO_EDGE', 'REPLICATION_CENTRAL_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_CENTRAL', 'REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE', 'REPLICATION_EDGE_TO_FQDN', 'REPLICATION_FQDN_TO_EDGE', 'REPLICATION_FQDN_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_FQDN', 'REPLICATION_EDGE_TO_FQDN_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_FQDN_TO_EDGE']} | 
-        replicationCount | No | string |  |  | 
+        clients | No | array of :ref:`MR_Client <d_56ff81dc98986e27074d9be2731e3f4c>` |  |  | an array of `MR_Client` objects associated to this `Topic`
+        formatUuid | No | string |  |  | a reference to an identifier that describes a data format used for this `Topic`
+        fqtn | No | string |  |  | Fully Qualified Topic Name constructed by dbcapi, following the rules for `fqtnStyle`
+        fqtnStyle | No | string |  | {'enum': ['FQTN_NOT_SPECIFIED', 'FQTN_LEGACY_FORMAT', 'FQTN_PROJECTID_FORMAT', 'FQTN_PROJECTID_VERSION_FORMAT']} | the construction rule for the `fqtn` field
+        globalMrURL | No | string |  |  | the URL of an outside MR instance
+        lastMod | No | string | date-time |  | datestamp for last update to this object
+        owner | No | string |  |  | a label used to identify who requested this `Topic` to be provisioned.  In the future this may be an AAF Identity.
+        partitionCount | No | string |  |  | the kafka attribute for specifying the number of partitions
+        publisherRole | No | string |  |  | a value generated by dbcapi, this AAF Role has permission to publish to this `Topic`
+        replicationCase | No | string |  | {'enum': ['REPLICATION_NOT_SPECIFIED', 'REPLICATION_NONE', 'REPLICATION_EDGE_TO_CENTRAL', 'REPLICATION_EDGE_TO_CENTRAL_TO_GLOBAL', 'REPLICATION_CENTRAL_TO_EDGE', 'REPLICATION_CENTRAL_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_CENTRAL', 'REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE', 'REPLICATION_EDGE_TO_FQDN', 'REPLICATION_FQDN_TO_EDGE', 'REPLICATION_FQDN_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_FQDN', 'REPLICATION_EDGE_TO_FQDN_TO_GLOBAL', 'REPLICATION_GLOBAL_TO_FQDN_TO_EDGE']} | An indicator for how this `Topic` should be replicated when there are more than one `MR_Cluster` instances
+        replicationCount | No | string |  |  | the kafka attribute for specifying replication within an `MR_Cluster` instance
         status | No | string |  | {'enum': ['EMPTY', 'NEW', 'STAGED', 'VALID', 'INVALID', 'DELETED']} | 
-        statusValid | No | boolean |  |  | 
+        subscriberRole | No | string |  |  | a value generated by dbcapi, this AAF Role has permission to subscribe to this `Topic`
         tnxEnabled | No | string |  |  | 
-        topicDescription | No | string |  |  | 
-        topicName | No | string |  |  | 
-        version | No | string |  |  | 
+        topicDescription | No | string |  |  | a description of what this Topic is used for
+        topicName | No | string |  |  | the short name used by humans, and utilized to construct the `FQTN`
+        version | No | string |  |  | a hook for any versioning needed for managing a `Topic` over time
 

@@ -23,5 +23,8 @@
 	add column 	publisher_role	varchar(100),
 	add column	subscriber_role varchar(100)
 ;
+@alter table mr_client
+	add column 	client_identity	varchar(100)
+;
 
 update dmaapbc_sch_ver set version = 11 where version = 10;

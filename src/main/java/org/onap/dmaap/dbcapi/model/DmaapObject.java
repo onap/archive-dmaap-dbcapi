@@ -30,8 +30,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 
+import io.swagger.annotations.ApiModelProperty;
+
 @XmlRootElement
 public abstract class DmaapObject extends BaseLoggingClass {
+	@ApiModelProperty( value = "datestamp for last update to this object")
 	protected Date lastMod;
 	protected	DmaapObject_Status	status;
 	
@@ -81,6 +84,7 @@ public abstract class DmaapObject extends BaseLoggingClass {
 		}
 	}
 	
+	@ApiModelProperty( hidden=true )
 	public boolean isStatusValid() {
 		if ( this.status == DmaapObject_Status.VALID ) {
 			return true;

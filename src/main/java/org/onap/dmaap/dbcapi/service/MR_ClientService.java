@@ -38,6 +38,7 @@ import org.onap.dmaap.dbcapi.aaf.AafService;
 import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
+import org.onap.dmaap.dbcapi.aaf.AafUserRole;
 import org.onap.dmaap.dbcapi.client.MrProvConnection;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
@@ -128,7 +129,22 @@ public class MR_ClientService extends BaseLoggingClass{
 			logger.info( "Client  dcaeLocation that doesn't exist or not specified" );
 			return null;
 		}
-		grantClientPerms(  client,  err);
+		// original style: clients specified Role.  This has precedence for backwards
+		//                 compatibility.
+		// ONAP style: clients specify Identity to be assigned to generated Role
+		String role = client.getClientRole();
+		if ( role != null ) {
+			grantClientRolePerms(  client,  err);
+		} else if ( client.hasClientIdentity() ){
+			if ( client.isSubscriber() ) {
+				role = topic.getSubscriberRole();
+				assignIdentityToRole( client, role, err );
+			} 
+			if (client.isPublisher() ) {
+				role = topic.getPublisherRole();
+				assignIdentityToRole( client, role, err );
+			}	
+		} 
 		if ( ! client.isStatusValid()) {
 			return null;
 		}
@@ -189,26 +205,46 @@ public class MR_ClientService extends BaseLoggingClass{
 		return DmaapObject_Status.INVALID;
 	}
 	
-	private void grantClientPerms( MR_Client client, ApiError err) {
+	private void grantClientRolePerms( MR_Client client, ApiError err) {
 		AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
 		
 		String instance = ":topic." + client.getFqtn();
 		client.setStatus( DmaapObject_Status.VALID);
+		String role = client.getClientRole();
 		for( String want : client.getAction() ) {
 			int rc;
 			DmaapPerm perm = new DmaapPerm( dmaap.getTopicPerm(), instance, want );
-			DmaapGrant g = new DmaapGrant( perm, client.getClientRole() );
-			rc = aaf.addGrant( g );
-			if ( rc != 201 && rc != 409 ) {
-				client.setStatus( DmaapObject_Status.INVALID);
-				err.setCode(rc);
-				err.setMessage( "Grant of " + dmaap.getTopicPerm() + "|" + instance + "|" + want + " failed for " + client.getClientRole() );
-				logger.warn( err.getMessage());
-				return;
-			} 
+			if ( role != null ) {
+				DmaapGrant g = new DmaapGrant( perm, role );
+				rc = aaf.addGrant( g );
+				if ( rc != 201 && rc != 409 ) {
+					client.setStatus( DmaapObject_Status.INVALID);
+					err.setCode(rc);
+					err.setMessage( "Grant of " + dmaap.getTopicPerm() + "|" + instance + "|" + want + " failed for " + role );
+					logger.warn( err.getMessage());
+					return;
+				} 
+			} else {
+				logger.warn( "No Grant of " + dmaap.getTopicPerm() + "|" + instance + "|" + want + " because role is null " );
+			}
 		}
 	}
 	
+	private void assignIdentityToRole( MR_Client client, String role, ApiError err ) {
+		AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
+
+		AafUserRole ur = new AafUserRole( client.getClientIdentity(), role );
+		int rc = aaf.addUserRole( ur );
+		if ( rc != 201 && rc != 409 ) {
+			client.setStatus( DmaapObject_Status.INVALID);
+			err.setCode(rc);
+			err.setMessage( "Failed to add user " + client.getClientIdentity()+  "  to " + role );
+			logger.warn( err.getMessage());
+			return;
+		}
+		client.setStatus( DmaapObject_Status.VALID);
+
+	}
 	private void revokeClientPerms( MR_Client client, ApiError err) {
 		AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
 		
