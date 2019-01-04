@@ -3,7 +3,7 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2018 IBM.
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,7 @@
 
 package org.onap.dmaap.dbcapi.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.ProtocolException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-
-import javax.net.ssl.HttpsURLConnection;
-
 import org.apache.commons.codec.binary.Base64;
-import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.aaf.AafDecrypt;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
@@ -44,6 +29,11 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
+import java.net.*;
+import java.util.Arrays;
 
 public class MrProvConnection extends BaseLoggingClass{
 	    
