@@ -3,7 +3,7 @@
   * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
- * Modifications Copyright (C) 2018 IBM.
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,10 +98,10 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 	        try {
 	        	alaf.check("mmanager@people.osaaf.org", "demo123456!", p);
 	        } catch (AuthenticationErrorException aee ) {
+	        	logger.error(aee);
 	        	logger.error( "Check failed for: " + p.toJSON());
-	               	System.exit(-1);
+	        	System.exit(-1);
 	        }
-	        logger.info( "Check succeeded for: " + p.toJSON() );
-	        
+	        logger.info("Check succeeded for: " + p.toJSON());
 	    }
 }
