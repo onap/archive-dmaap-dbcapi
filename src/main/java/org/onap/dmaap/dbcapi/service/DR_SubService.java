@@ -3,6 +3,8 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +96,7 @@ public class DR_SubService extends BaseLoggingClass {
 		prov = new DrProvConnection();
 		prov.makeSubPostConnection( provURL );
 		String resp = prov.doPostDr_Sub( sub, apiError );
-		if ( unit_test.equals( "Yes" ) ) {
+		if ( "Yes".equals(unit_test) ) {
 			resp = simulateResp( sub, "POST" );
 			apiError.setCode(200);
 		}
