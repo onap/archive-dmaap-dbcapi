@@ -21,6 +21,8 @@
 package org.onap.dmaap.dbcapi.resources;
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.service.*;
+import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
+
 import static org.junit.Assert.*;
 
 import org.junit.After;
@@ -39,16 +41,44 @@ import javax.ws.rs.Path;
 import javax.ws.rs.GET;
 
 public class DR_SubResourceTest extends JerseyTest{
+	
+	static DmaapObjectFactory factory = new DmaapObjectFactory();
 
 	@Override
 	protected Application configure() {
 		return new ResourceConfig()
 				.register( DR_SubResource.class )
-				.register( FeedResource.class );
+				.register( FeedResource.class )
+				.register( DcaeLocationResource.class )
+				.register( DmaapResource.class );
 	}
 
-	private static final String  fmt = "%24s: %s%n";
 	String d, un, up, f, p;
+	
+	@Before
+	public void preTest() throws Exception {
+		try {
+
+			Dmaap dmaap = factory.genDmaap();
+			Entity<Dmaap> reqEntity = Entity.entity( dmaap, MediaType.APPLICATION_JSON );
+			Response resp = target( "dmaap").request().post( reqEntity, Response.class );
+			System.out.println( resp.getStatus() );
+			assertTrue( resp.getStatus() == 200 );
+		}catch (Exception e ) {
+		}
+		try {
+			DcaeLocation loc = factory.genDcaeLocation( "central" );
+			Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
+			Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
+			System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ));
+			if ( resp.getStatus() != 409 ) {
+				assertTrue( resp.getStatus() == 201 );
+			}
+		} catch (Exception e ) {
+		}
+	
+
+	}
 /*
 	@Before
 	public void setUp() throws Exception {

@@ -58,7 +58,7 @@ public class DmaapService  extends BaseLoggingClass  {
 	
 	String topicFactory; // = "org.openecomp.dcae.dmaap.topicFactory";
 	String topicMgrRole; // = "org.openecomp.dmaapBC.TopicMgr";
-	String dcaeTopicNs; // = "org.openecomp.dcae.dmaap";
+	
 	private boolean multiSite;
 	
 	
@@ -66,14 +66,14 @@ public class DmaapService  extends BaseLoggingClass  {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		topicFactory = p.getProperty("MR.TopicFactoryNS", "MR.topicFactoryNS.not.set");
 		topicMgrRole = p.getProperty("MR.TopicMgrRole", "MR.TopicMgrRole.not.set" );
-		dcaeTopicNs = dmaapholder.get().getTopicNsRoot();
+
 		multiSite = "true".equalsIgnoreCase(p.getProperty("MR.multisite", "true"));
 		noEnvironmentPrefix = p.getProperty( "AAF.NoEnvironmentPrefix", "org.onap");
 		
 		logger.info( "DmaapService settings: " + 
 				" topicFactory=" + topicFactory +
 				" topicMgrRole=" + topicMgrRole +
-				" dcaeTopicNs=" + dcaeTopicNs +
+				
 				" multisite=" + multiSite +
 				" noEnvironmentPrefix=" + noEnvironmentPrefix
 				);
@@ -93,7 +93,7 @@ public class DmaapService  extends BaseLoggingClass  {
 
 			nd.setLastMod();
 			dmaapholder.update(nd);
-
+			
 			AafService aaf = new AafService( ServiceType.AAF_Admin);
 			ApiPolicy apiPolicy = new ApiPolicy();
 			if ( apiPolicy.getUseAuthClass() ) {
@@ -137,7 +137,7 @@ public class DmaapService  extends BaseLoggingClass  {
 		if ( ! dmaap.isStatusValid()  || ! nd.getDmaapName().equals(dmaap.getDmaapName()) || dmaap.getVersion().equals( "0") ) {
 			nd.setLastMod();
 			dmaapholder.update(nd);  //need to set this so the following perms will pick up any new vals.
-			dcaeTopicNs = dmaapholder.get().getTopicNsRoot();
+			//dcaeTopicNs = dmaapholder.get().getTopicNsRoot();
 			ApiPolicy apiPolicy = new ApiPolicy();
 			if ( apiPolicy.getUseAuthClass()) {
 				ApiPerms p = new ApiPerms();
@@ -194,7 +194,7 @@ public class DmaapService  extends BaseLoggingClass  {
 
 	private boolean setTopicMgtPerms( Dmaap nd, AafService aaf ){
 		String[] actions = { "create", "destroy" };
-		String instance = ":" + dcaeTopicNs + "." + nd.getDmaapName() + ".mr.topic:" + dcaeTopicNs + "." + nd.getDmaapName();
+		String instance = ":" + nd.getTopicNsRoot() + "." + nd.getDmaapName() + ".mr.topic:" + nd.getTopicNsRoot() + "." + nd.getDmaapName();
 		
 		for( String action : actions ) {
 
@@ -214,7 +214,7 @@ public class DmaapService  extends BaseLoggingClass  {
 			}
 		}
 		
-		String t = dcaeTopicNs +"." + nd.getDmaapName() + ".mr.topic";
+		String t = nd.getTopicNsRoot() +"." + nd.getDmaapName() + ".mr.topic";
 		String[] s = { "view", "pub", "sub" };
 		actions = s;
 		instance = "*";
