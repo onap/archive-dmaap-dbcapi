@@ -200,22 +200,18 @@ public class DatabaseClass extends BaseLoggingClass {
 			mirrors = new HashMap<>();
 		}
 		dmaap.init(new Dmaap("0", "", "", "", "", "", "", ""));
-		// check for, and set up initial data, if it isn't already there
+		// force initial read from DB, if it exists
+		@SuppressWarnings("unused")
 		Dmaap dmx = dmaap.get();
-		if ("0".equals(dmx.getVersion())) {
+		
+		// old code in this spot would read from properties file as part of init.
+		// but all those properties are now set via /dmaap API
 
-			dmx = new Dmaap("0", "", "", "", "", "", "", "");
-			dmx.setDmaapName(p.getProperty("DmaapName"));
-			dmx.setDrProvUrl("https://" + p.getProperty("DR.provhost", "notSet"));
-			dmx.setTopicNsRoot(p.getProperty("topicNsRoot"));
-			dmx.setBridgeAdminTopic("DCAE_MM_AGENT");
-
-			dmaap.update(dmx);
-		}
 		} catch (Exception e) {
 			errorLogger.error("Error", e);
 			errorLogger.error(DmaapbcLogMessageEnum.DB_UPDATE_ERROR, e.getMessage());
 		}
+
 	}
 	
 	public static synchronized String getNextClientId() {
