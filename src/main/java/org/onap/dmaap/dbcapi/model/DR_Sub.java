@@ -184,23 +184,19 @@ public class DR_Sub extends DmaapObject {
 
 
 
-	public byte[] getBytes() {
+	public byte[] getBytes(String provApi) {
+		if ( "AT&T".equals(provApi)) {
+			return toProvJSONforATT().getBytes(StandardCharsets.UTF_8);
+		}
 		return toProvJSON().getBytes(StandardCharsets.UTF_8);
 	}
-	// returns the DR_Sub object in JSON that conforms to DR Prov Server expectations
-	public String toProvJSON() {
-		
-		// in DR 3.0, API v2.1 a new groupid field is added.  We are not using this required field so just set it to 0.
-		// we send this regardless of DR Release because older versions of DR seem to safely ignore it
-		// and soon those versions won't be around anyway...
-		// Similarly, in the 1704 Release, a new subscriber attribute "follow_redirect" was introduced.
-		// We are setting it to "true" because that is the general behavior desired in OpenDCAE.
-		// But it is really a no-op for OpenDCAE because we've deployed DR with the SYSTEM-level parameter for FOLLOW_REDIRECTS set to true.
-		// In the event we abandon that, then setting the sub attribute to true will be a good thing.
-		// TODO:
-		//   - introduce Bus Controller API support for these attributes
-		//   - store the default values in the DB
-		String postJSON = String.format("{\"suspend\": \"%s\", \"delivery\": {\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}, \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s }", 
+	// returns the DR_Sub object in JSON that conforms to ONAP DR Prov Server expectations
+	public String toProvJSON() {	
+		// this is the original DR API that was contributed to ONAP
+		String postJSON = String.format("{\"suspend\": \"%s\", \"delivery\": "
+				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}"
+				+ ", \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s "
+				+ "}", 
 				this.suspended,
 				this.getDeliveryURL(), 
 				this.getUsername(),
@@ -209,6 +205,41 @@ public class DR_Sub extends DmaapObject {
 				"false",
 				"0",
 				"true");	
+		
+		logger.info( postJSON );
+		return postJSON;
+	}
+	// returns the DR_Sub object in JSON that conforms to AT&T DR Prov Server expectations
+	// In Jan, 2019, the DR API used internally at AT&T diverged, so this function can be used in
+	// that runtime environment
+	public String toProvJSONforATT() {	
+		// in DR 3.0, API v2.1 a new groupid field is added.  We are not using this required field so just set it to 0.
+		// we send this regardless of DR Release because older versions of DR seem to safely ignore it
+		// and soon those versions won't be around anyway...
+		// Similarly, in the 1704 Release, a new subscriber attribute "follow_redirect" was introduced.
+		// We are setting it to "true" because that is the general behavior desired in OpenDCAE.
+		// But it is really a no-op for OpenDCAE because we've deployed DR with the SYSTEM-level parameter for FOLLOW_REDIRECTS set to true.
+		// In the event we abandon that, then setting the sub attribute to true will be a good thing.
+		// Update Jan, 2019: added guaranteed_delivery and guaranteed_sequence with value false for
+		// backwards compatibility
+		// TODO:
+		//   - introduce Bus Controller API support for these attributes
+		//   - store the default values in the DB
+		String postJSON = String.format("{\"suspend\": \"%s\", \"delivery\": "
+				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}"
+				+ ", \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s "
+				+ ", \"guaranteed_delivery\": %s, \"guaranteed_sequence\": %s "
+				+ "}", 
+				this.suspended,
+				this.getDeliveryURL(), 
+				this.getUsername(),
+				this.getUserpwd(),
+				this.isUse100(),
+				"false",
+				"0",
+				"true",
+				"false",
+				"false");	
 		
 		logger.info( postJSON );
 		return postJSON;
