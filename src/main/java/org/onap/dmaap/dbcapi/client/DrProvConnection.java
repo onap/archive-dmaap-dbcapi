@@ -59,9 +59,9 @@ public class DrProvConnection extends BaseLoggingClass {
 		}
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		provApi = p.getProperty( "DR.provApi", "ONAP" );
-		behalfHeader = p.getProperty( "DR.onBehalfHeader", "X-DR-ON-BEHALF-OF");
-		feedContentType = p.getProperty( "DR.feedContentType", "application/vnc.dr.feed");
-		subContentType = p.getProperty( "DR.subContentType", "application/vnd.dr.subscription");
+		behalfHeader = p.getProperty( "DR.onBehalfHeader", "X-DMAAP-DR-ON-BEHALF-OF");
+		feedContentType = p.getProperty( "DR.feedContentType", "application/vnc.dmaap-dr.feed");
+		subContentType = p.getProperty( "DR.subContentType", "application/vnd.dmaap-dr.subscription");
 		logger.info( "provURL=" + provURL + " provApi=" + provApi + " behalfHeader=" + behalfHeader
 				+ " feedContentType=" + feedContentType + " subContentType=" + subContentType );
 			
