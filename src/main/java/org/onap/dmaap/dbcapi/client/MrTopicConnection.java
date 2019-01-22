@@ -3,6 +3,8 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +65,7 @@ public class MrTopicConnection extends BaseLoggingClass  {
 
 		topicURL = cluster.getTopicProtocol() + "://" + fqdn + ":" + cluster.getTopicPort() + "/events/" + topic ;
 
-		if ( cluster.getTopicProtocol().equals( "https")) {
+		if ( "https".equals(cluster.getTopicProtocol())) {
 			return makeSecureConnection( topicURL );
 		}
 		return makeConnection( topicURL );
