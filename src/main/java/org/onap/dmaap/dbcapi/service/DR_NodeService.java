@@ -3,6 +3,8 @@
  * org.onap.dcae
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +60,7 @@ public class DR_NodeService extends BaseLoggingClass {
 		private void setX( String X, String list, ApiError apiError ) {
 			DrProvConnection prov = new DrProvConnection();
 			prov.makeNodesConnection( X, list );	
-			String resp = prov.doPutNodes( apiError );
+			prov.doPutNodes( apiError );
 		}
 		
 		private String removeFromList( String aNode, String aList ) {
