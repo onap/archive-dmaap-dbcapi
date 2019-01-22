@@ -3,6 +3,8 @@
   * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +81,6 @@ public class AafConnection extends BaseLoggingClass {
 		} catch (Exception e) {
 			logger.error("Error", e);
 	        errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_ERROR,  pURL, e.getMessage());
-            e.printStackTrace();
             return(false);
         }
 
