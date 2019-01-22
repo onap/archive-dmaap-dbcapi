@@ -3,6 +3,8 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,7 +158,7 @@ public class MR_ClusterService extends BaseLoggingClass {
 			cluster.setLastMod();
 			cluster.setStatus(DmaapObject_Status.INVALID);
 			mr_clusters.put( cluster.getDcaeLocationName(), cluster );
-		} else if ( loc.isCentral()  & multiSite ) {
+		} else if ( loc.isCentral() && multiSite ) {
 			ApiError resp = TopicService.setBridgeClientPerms( cluster );
 			if ( ! resp.is2xx() ) {
 				logger.error( "Unable to provision Bridge to " + cluster.getDcaeLocationName() );
