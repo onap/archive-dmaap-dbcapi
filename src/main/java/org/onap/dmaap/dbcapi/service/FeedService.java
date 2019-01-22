@@ -3,6 +3,8 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +75,7 @@ public class FeedService  extends BaseLoggingClass {
 		for( Feed f:  feeds.values() ) {
 			boolean keep = true;
 			if ( name != null ) {
-				if ( match != null && match.equals("startsWith") ) {
+				if ( match != null && "startsWith".equals(match) ) {
 					if ( ! f.getFeedName().startsWith( name ) ) {
 						logger.info( "getAllFeeds: feedName=" + f.getFeedName() + " doesn't start with=" + name);
 						keep = false;
