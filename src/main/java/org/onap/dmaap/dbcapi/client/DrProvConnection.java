@@ -3,6 +3,8 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,30 +22,20 @@
 
 package org.onap.dmaap.dbcapi.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
+import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
+import org.onap.dmaap.dbcapi.model.ApiError;
+import org.onap.dmaap.dbcapi.model.DR_Sub;
+import org.onap.dmaap.dbcapi.model.Feed;
+import org.onap.dmaap.dbcapi.service.DmaapService;
+
+import javax.net.ssl.HttpsURLConnection;
+import java.io.*;
 import java.net.ConnectException;
 import java.net.ProtocolException;
 import java.net.SocketException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
-import org.onap.dmaap.dbcapi.model.ApiError;
-import org.onap.dmaap.dbcapi.model.DR_Pub;
-import org.onap.dmaap.dbcapi.model.DR_Sub;
-import org.onap.dmaap.dbcapi.model.Feed;
-import org.onap.dmaap.dbcapi.service.DmaapService;
-import org.onap.dmaap.dbcapi.util.RandomInteger;
 
 
 
