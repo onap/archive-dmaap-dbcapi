@@ -2,7 +2,9 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2017 AT&T Intellectual Property.
+ *
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,32 +23,14 @@
 package org.onap.dmaap.dbcapi.server;
 
 
-import java.util.Properties;
-
-import javax.net.ssl.SSLContext;
-
-import org.apache.log4j.Logger;
-import org.eclipse.jetty.security.SecurityHandler;
-import org.eclipse.jetty.server.Connector;
-import org.eclipse.jetty.server.HttpConfiguration;
-import org.eclipse.jetty.server.HttpConnectionFactory;
-import org.eclipse.jetty.server.SecureRequestCustomizer;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
- 
-
-
-
-import com.att.eelf.configuration.EELFLogger;
-import com.att.eelf.configuration.EELFManager;
-
-import org.onap.dmaap.dbcapi.database.LoadSchema;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
+
+import java.util.Properties;
 /**
  * A  Jetty server which supports:
  * 	- http and https (simultaneously for dev env)
