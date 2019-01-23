@@ -3,6 +3,7 @@
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Modifications Copyright (C) 2019 IBM.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,22 +28,22 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 
 public class AafNamespace extends AafObject  {
-	static final Logger logger = Logger.getLogger(AafNamespace.class);
+	private static final Logger logger = Logger.getLogger(AafNamespace.class);
 	
 	private String 	name;
-	private	ArrayList<String>	admin;
-	private	ArrayList<String>	responsible;
+	private	ArrayList<String> admin;
+	private	ArrayList<String> responsible;
 	
 	// in some environments, an AAF Namespace must be owned by a human.
 	// So, when needed, this var can be set via a property
-	static private String NsOwnerIdentity;
+	private static String NsOwnerIdentity;
 	
 	public AafNamespace(String ns, String identity ) {
 		super();
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		NsOwnerIdentity = p.getProperty( "aaf.NsOwnerIdentity", "");
-		this.admin = new ArrayList<String>();
-		this.responsible = new ArrayList<String>();
+		this.admin = new ArrayList<>();
+		this.responsible = new ArrayList<>();
 		
 		this.name = ns;
 		this.admin.add( identity );
@@ -73,7 +74,7 @@ public class AafNamespace extends AafObject  {
 	//       output  "a", "b", "c"
 	private String separatedList( ArrayList<String> list, String sep ) {
 		if (list.isEmpty()) return null;
-		String aList = new String();
+		String aList = "";
 		String delim = "";
 		for( String item: list) {
 			if( ! item.isEmpty()) {
