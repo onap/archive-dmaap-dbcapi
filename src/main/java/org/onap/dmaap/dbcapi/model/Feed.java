@@ -48,7 +48,78 @@ public class Feed extends DmaapObject {
 		private String formatUuid;
 
 		private	ArrayList<DR_Pub> pubs;
-		private ArrayList<DR_Sub> subs;	
+		private ArrayList<DR_Sub> subs;
+
+
+		public Feed() {
+			this.pubs = new ArrayList<>();
+			this.subs = new ArrayList<>();
+			this.setStatus( DmaapObject_Status.EMPTY );
+
+		}
+
+		public	Feed( String name,
+						String version,
+						String description,
+						String owner,
+						String aspr) {
+			this.feedName = name;
+			this.feedVersion = version;
+			this.feedDescription = description;
+			this.owner = owner;
+			this.asprClassification = aspr;
+			this.pubs = new ArrayList<>();
+			this.subs = new ArrayList<>();
+			this.setStatus( DmaapObject_Status.NEW );
+
+		}
+
+		// expects a String in JSON format, with known fields to populate Feed object
+		public Feed ( String json ) {
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObj;
+			try {
+				jsonObj = (JSONObject) parser.parse( json );
+			} catch ( ParseException pe ) {
+				logger.error( "Error parsing provisioning data: " + json );
+				this.setStatus( DmaapObject_Status.INVALID );
+				return;
+			}
+			this.setFeedName( (String) jsonObj.get("name"));
+
+			this.setFeedVersion( (String) jsonObj.get("version"));
+			this.setFeedDescription( (String) jsonObj.get("description"));
+			this.setOwner( (String) jsonObj.get("publisher"));
+
+			this.setSuspended( (boolean) jsonObj.get("suspend"));
+			JSONObject links = (JSONObject) jsonObj.get("links");
+			String url = (String) links.get("publish");
+			this.setPublishURL( url );
+			this.setFeedId( url.substring( url.lastIndexOf('/')+1, url.length() ));
+			logger.info( "feedid="+ this.getFeedId() );
+			this.setSubscribeURL( (String) links.get("subscribe") );
+			this.setLogURL( (String) links.get("log") );
+			JSONObject auth = (JSONObject) jsonObj.get("authorization");
+			this.setAsprClassification( (String) auth.get("classification"));
+			JSONArray pubs = (JSONArray) auth.get( "endpoint_ids");
+			int i;
+			ArrayList<DR_Pub> dr_pub = new ArrayList<>();
+			this.subs = new ArrayList<>();
+
+			for( i = 0; i < pubs.size(); i++ ) {
+				JSONObject entry = (JSONObject) pubs.get(i);
+				dr_pub.add(  new DR_Pub( "someLocation",
+						(String) entry.get("id"),
+						(String) entry.get("password"),
+						this.getFeedId(),
+						this.getFeedId() + "." +  DR_Pub.nextKey() ));
+
+			}
+			this.setPubs( dr_pub );
+
+			this.setStatus( DmaapObject_Status.VALID );
+
+		}
 
 		
 
@@ -66,79 +137,6 @@ public class Feed extends DmaapObject {
 
 		public void setSubscribeURL(String subscribeURL) {
 			this.subscribeURL = subscribeURL;
-		}
-
-
-		
-		public Feed() {
-			this.pubs = new ArrayList<DR_Pub>();
-			this.subs = new ArrayList<DR_Sub>();
-			this.setStatus( DmaapObject_Status.EMPTY );
-			
-		}
-		
-		public	Feed( String name,
-					String version,
-					String description,
-					String owner,
-					String aspr
-					 ) {
-			this.feedName = name;
-			this.feedVersion = version;
-			this.feedDescription = description;
-			this.owner = owner;
-			this.asprClassification = aspr;
-			this.pubs = new ArrayList<DR_Pub>();
-			this.subs = new ArrayList<DR_Sub>();
-			this.setStatus( DmaapObject_Status.NEW );
-			
-		}
-		
-		// expects a String in JSON format, with known fields to populate Feed object
-		public Feed ( String json ) {
-			JSONParser parser = new JSONParser();
-			JSONObject jsonObj;
-			try {
-				jsonObj = (JSONObject) parser.parse( json );
-			} catch ( ParseException pe ) {
-	            logger.error( "Error parsing provisioning data: " + json );
-	            this.setStatus( DmaapObject_Status.INVALID );
-	            return;
-	        }
-			this.setFeedName( (String) jsonObj.get("name"));
-
-			this.setFeedVersion( (String) jsonObj.get("version"));
-			this.setFeedDescription( (String) jsonObj.get("description"));
-			this.setOwner( (String) jsonObj.get("publisher"));
-
-			this.setSuspended( (boolean) jsonObj.get("suspend"));
-			JSONObject links = (JSONObject) jsonObj.get("links");
-			String url = (String) links.get("publish");
-			this.setPublishURL( url );
-			this.setFeedId( url.substring( url.lastIndexOf('/')+1, url.length() ));
-			logger.info( "feedid="+ this.getFeedId() );
-			this.setSubscribeURL( (String) links.get("subscribe") );					
-			this.setLogURL( (String) links.get("log") );
-			JSONObject auth = (JSONObject) jsonObj.get("authorization");
-			this.setAsprClassification( (String) auth.get("classification"));
-			JSONArray pubs = (JSONArray) auth.get( "endpoint_ids");
-			int i;
-			ArrayList<DR_Pub> dr_pub = new ArrayList<DR_Pub>();
-			this.subs = new ArrayList<DR_Sub>();
-
-			for( i = 0; i < pubs.size(); i++ ) {
-				JSONObject entry = (JSONObject) pubs.get(i);
-				dr_pub.add(  new DR_Pub( "someLocation", 
-									(String) entry.get("id"),
-									(String) entry.get("password"),
-									this.getFeedId(),
-									this.getFeedId() + "." +  DR_Pub.nextKey() ));
-			
-			}
-			this.setPubs( dr_pub );
-	
-			this.setStatus( DmaapObject_Status.VALID );
-
 		}
 
 		public String getFeedId() {
@@ -218,8 +216,7 @@ public class Feed extends DmaapObject {
 		// returns the Feed object in JSON that conforms to DR Prov Server expectations
 		public String toProvJSON() {
 
-			ArrayList<DR_Pub> pubs = this.getPubs();
-			String postJSON = String.format("{\"name\": \"%s\", \"version\": \"%s\", \"description\": \"%s\", \"suspend\": %s, \"authorization\": { \"classification\": \"%s\", ",  
+			String postJSON = String.format("{\"name\": \"%s\", \"version\": \"%s\", \"description\": \"%s\", \"suspend\": %s, \"authorization\": { \"classification\": \"%s\", ",
 					this.getFeedName(), 
 					this.getFeedVersion(),
 					this.getFeedDescription(),
@@ -264,8 +261,7 @@ public class Feed extends DmaapObject {
 		}
 		
 		public static String getSubProvURL( String feedId ) {
-			String ret = new DmaapService().getDmaap().getDrProvUrl() + "/subscribe/" + feedId ;
-			return ret;
+			return new DmaapService().getDmaap().getDrProvUrl() + "/subscribe/" + feedId;
 		}
 
 		@Override
