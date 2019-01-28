@@ -28,6 +28,7 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Sub;
 import org.onap.dmaap.dbcapi.model.Feed;
 import org.onap.dmaap.dbcapi.service.DmaapService;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -43,6 +44,10 @@ public class DrProvConnection extends BaseLoggingClass {
 	   
    
 	private String provURL;
+	private	String provApi;
+	private	String	behalfHeader;
+	private	String	feedContentType;
+	private	String	subContentType;
 	
 	private HttpsURLConnection uc;
 
@@ -52,6 +57,13 @@ public class DrProvConnection extends BaseLoggingClass {
 		if ( provURL.length() < 1 ) {
 			errorLogger.error( DmaapbcLogMessageEnum.PREREQ_DMAAP_OBJECT, "getDrProvUrl");
 		}
+		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		provApi = p.getProperty( "DR.provApi", "ONAP" );
+		behalfHeader = p.getProperty( "DR.onBehalfHeader", "X-DR-ON-BEHALF-OF");
+		feedContentType = p.getProperty( "DR.feedContentType", "application/vnc.dr.feed");
+		subContentType = p.getProperty( "DR.subContentType", "application/vnd.dr.subscription");
+		logger.info( "provURL=" + provURL + " provApi=" + provApi + " behalfHeader=" + behalfHeader
+				+ " feedContentType=" + feedContentType + " subContentType=" + subContentType );
 			
 	}
 	
@@ -143,9 +155,9 @@ public class DrProvConnection extends BaseLoggingClass {
 		try {
 			logger.info( "uc=" + uc );
 			uc.setRequestMethod("POST");
-			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.feed");
+			uc.setRequestProperty("Content-Type", feedContentType);
 			uc.setRequestProperty( "charset", "utf-8");
-			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", postFeed.getOwner() );
+			uc.setRequestProperty( behalfHeader, postFeed.getOwner() );
 			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
@@ -231,9 +243,9 @@ public class DrProvConnection extends BaseLoggingClass {
 
 		try {
 			uc.setRequestMethod("POST");
-//			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.feed");
+//			uc.setRequestProperty("Content-Type", feedContenType );
 //			uc.setRequestProperty( "charset", "utf-8");
-//			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", postFeed.getOwner() );
+//			uc.setRequestProperty( behalfHeader, postFeed.getOwner() );
 //			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 //			uc.setUseCaches(false);
 //			uc.setDoOutput(true);	
@@ -280,7 +292,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 	public String doPostDr_Sub( DR_Sub postSub, ApiError err ) {
 		logger.info( "entry: doPostDr_Sub() "  );
-		byte[] postData = postSub.getBytes();
+		byte[] postData = postSub.getBytes(provApi );
 		logger.info( "post fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
@@ -289,9 +301,9 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("POST");
 		
-			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.subscription");
+			uc.setRequestProperty("Content-Type", subContentType );
 			uc.setRequestProperty( "charset", "utf-8");
-			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", "DGL" );
+			uc.setRequestProperty( behalfHeader, "DGL" );
 			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
@@ -361,9 +373,9 @@ public class DrProvConnection extends BaseLoggingClass {
 		try {
 			logger.info( "uc=" + uc );
 			uc.setRequestMethod("PUT");
-			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.feed");
+			uc.setRequestProperty("Content-Type", feedContentType );
 			uc.setRequestProperty( "charset", "utf-8");
-			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", putFeed.getOwner() );
+			uc.setRequestProperty( behalfHeader, putFeed.getOwner() );
 			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
@@ -445,7 +457,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	}
 	public String doPutDr_Sub(DR_Sub postSub, ApiError err) {
 		logger.info( "entry: doPutDr_Sub() "  );
-		byte[] postData = postSub.getBytes();
+		byte[] postData = postSub.getBytes(provApi);
 		logger.info( "post fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
@@ -454,9 +466,9 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("PUT");
 		
-			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.subscription");
+			uc.setRequestProperty("Content-Type", subContentType );
 			uc.setRequestProperty( "charset", "utf-8");
-			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", "DGL" );
+			uc.setRequestProperty( behalfHeader, "DGL" );
 			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
@@ -531,9 +543,9 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("GET");
 		
-			//uc.setRequestProperty("Content-Type", "application/vnd.att-dr.subscription");
+			//uc.setRequestProperty("Content-Type", subContentType );
 			//uc.setRequestProperty( "charset", "utf-8");
-			//uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", "DGL" );
+			//uc.setRequestProperty( behalfHeader, "DGL" );
 			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			//uc.setUseCaches(false);
 			//uc.setDoOutput(true);
@@ -616,9 +628,9 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("PUT");
 		
-			//uc.setRequestProperty("Content-Type", "application/vnd.att-dr.subscription");
+			//uc.setRequestProperty("Content-Type", subContentType );
 			//uc.setRequestProperty( "charset", "utf-8");
-			//uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", "DGL" );
+			//uc.setRequestProperty( behalfHeader, "DGL" );
 			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			//uc.setDoOutput(true);
@@ -688,9 +700,9 @@ public class DrProvConnection extends BaseLoggingClass {
 		try {
 			logger.info( "uc=" + uc );
 			uc.setRequestMethod("DELETE");
-			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.feed");
+			uc.setRequestProperty("Content-Type", feedContentType );
 			uc.setRequestProperty( "charset", "utf-8");
-			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", putFeed.getOwner() );
+			uc.setRequestProperty( behalfHeader, putFeed.getOwner() );
 			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
@@ -773,7 +785,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 	public String doDeleteDr_Sub(DR_Sub delSub, ApiError err) {
 		logger.info( "entry: doDeleteDr_Sub() "  );
-		byte[] postData = delSub.getBytes();
+		byte[] postData = delSub.getBytes(provApi);
 		logger.info( "post fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
@@ -782,9 +794,9 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("DELETE");
 		
-			uc.setRequestProperty("Content-Type", "application/vnd.att-dr.subscription");
+			uc.setRequestProperty("Content-Type", subContentType);
 			uc.setRequestProperty( "charset", "utf-8");
-			uc.setRequestProperty( "X-ATT-DR-ON-BEHALF-OF", "DGL" );
+			uc.setRequestProperty( behalfHeader, "DGL" );
 			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
