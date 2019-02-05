@@ -65,11 +65,11 @@ public class DR_SubService extends BaseLoggingClass {
 		
 	public List<DR_Sub> getAllDr_Subs() {
 		logger.debug( "enter getAllDR_Subs()");
-		return new ArrayList<DR_Sub>(dr_subs.values());
+		return new ArrayList<>(dr_subs.values());
 	}
 	
 	public ArrayList<DR_Sub> getDr_SubsByFeedId( String pubId ) {
-		ArrayList<DR_Sub> someSubs = new ArrayList<DR_Sub>();
+		ArrayList<DR_Sub> someSubs = new ArrayList<>();
 		for( DR_Sub sub : dr_subs.values() ) {
 			if ( pubId.equals(  sub.getFeedId()  )) {
 				someSubs.add( sub );

@@ -128,7 +128,7 @@ public class Topic extends DmaapObject  {
 
 	public Topic() {
 		super();
-		this.clients = new ArrayList<MR_Client>();
+		this.clients = new ArrayList<>();
 		this.lastMod = new Date();
 		this.replicationCase = ReplicationType.Validator("none");
 		this.setLastMod();
@@ -140,7 +140,6 @@ public class Topic extends DmaapObject  {
 		this.fqtn = fqtn;
 		this.topicName = topicName;
 		this.topicDescription = topicDescription;
-		//this.dcaeLocationName = dcaeLocationName;
 		this.tnxEnabled = tnxEnabled;
 		this.owner = owner;
 		this.init();
@@ -178,7 +177,6 @@ public class Topic extends DmaapObject  {
 		this.setTopicName( (String) jsonObj.get( "topicName" ) );
 		this.setTopicDescription( (String) jsonObj.get( "topicDescription" ));
 		this.setOwner( (String) jsonObj.get( "owner" ) );
-		//this.setLastMod();
 		this.setStatus( (String) jsonObj.get( "status" ) );
 		this.setReplicationCase( ReplicationType.Validator( (String) jsonObj.get( "replicationCase" ) ));
 		this.setFqtnStyle( FqtnType.Validator( (String) jsonObj.get( "fqtnStyle" ) ) );
