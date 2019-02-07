@@ -69,16 +69,19 @@ public class TopicService extends BaseLoggingClass {
 	private MirrorMakerService	bridge = new MirrorMakerService();
 	
 	private static String centralCname;
+	private static boolean createTopicRoles;
 
 
 	public TopicService(){
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		defaultGlobalMrHost = p.getProperty("MR.globalHost", "global.host.not.set");
 		centralCname = p.getProperty("MR.CentralCname");
+		createTopicRoles = "true".equalsIgnoreCase(p.getProperty("aaf.CreateTopicRoles", "true"));
 
 		
 		logger.info( "TopicService properties: CentralCname=" + centralCname + 
-				"   defaultGlobarlMrHost=" + defaultGlobalMrHost  );
+				"   defaultGlobarlMrHost=" + defaultGlobalMrHost +
+				" createTopicRoles=" + createTopicRoles );
 	}
 	
 	public Map<String, Topic> getTopics() {			
@@ -118,9 +121,9 @@ public class TopicService extends BaseLoggingClass {
 	}
 	
 	private void aafTopicSetup(Topic topic, ApiError err ) {
-
-		String t = dmaapSvc.getTopicPerm();
-		if ( t == null ) {
+		
+		String nsr = dmaapSvc.getDmaap().getTopicNsRoot();
+		if ( nsr == null ) {
 			err.setCode(500);
 			err.setMessage("Unable to establish AAF namespace root: (check /dmaap object)"  );
 			err.setFields("topicNsRoot");
@@ -130,76 +133,85 @@ public class TopicService extends BaseLoggingClass {
 		// establish AAF Connection using TopicMgr identity
 		AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
 		
-
+		AafRole pubRole = null;
+		AafRole subRole = null;
 		
-		// create AAF namespace for this topic
-		AafNamespace ns = new AafNamespace( topic.getFqtn(), aaf.getIdentity());
-		{
-			int rc = aaf.addNamespace( ns );
+		// creating Topic Roles was not an original feature.
+		// For backwards compatibility, only do this if the feature is enabled.
+		// Also, if the namespace of the topic is a foreign namespace, (i.e. not the same as our root ns)
+		// then we likely don't have permission to create sub-ns and Roles so don't try.
+		if ( createTopicRoles && topic.getFqtn().startsWith(nsr)) {
+			// create AAF namespace for this topic
+			AafNamespace ns = new AafNamespace( topic.getFqtn(), aaf.getIdentity());
+			{
+				int rc = aaf.addNamespace( ns );
+				if ( rc != 201 && rc != 409 ) {
+					err.setCode(500);
+					err.setMessage("Unexpected response from AAF:" + rc );
+					err.setFields("namespace:" + topic.getFqtn() + " identity="+ aaf.getIdentity());
+					return;
+				}
+			}
+			
+			// create AAF Roles for MR clients of this topic
+			String rn = "publisher";
+			pubRole = new AafRole( topic.getFqtn(), rn );
+			int rc = aaf.addRole( pubRole );
 			if ( rc != 201 && rc != 409 ) {
 				err.setCode(500);
 				err.setMessage("Unexpected response from AAF:" + rc );
-				err.setFields("namespace:" + topic.getFqtn() + " identity="+ aaf.getIdentity());
+				err.setFields("topic:" + topic.getFqtn() + " role="+ rn);
 				return;
 			}
+			topic.setPublisherRole( pubRole.getFullyQualifiedRole() );
+			
+			rn = "subscriber";
+			subRole = new AafRole( topic.getFqtn(), rn );
+			rc = aaf.addRole( subRole );
+			if ( rc != 201 && rc != 409 ) {
+				err.setCode(500);
+				err.setMessage("Unexpected response from AAF:" + rc );
+				err.setFields("topic:" + topic.getFqtn() + " role="+ rn);
+				return;
+			}
+			topic.setSubscriberRole( subRole.getFullyQualifiedRole() );
 		}
-		
-		// create AAF Roles for MR clients of this topic
-		String rn = "publisher";
-		AafRole pubRole = new AafRole( topic.getFqtn(), rn );
-		int rc = aaf.addRole( pubRole );
-		if ( rc != 201 && rc != 409 ) {
-			err.setCode(500);
-			err.setMessage("Unexpected response from AAF:" + rc );
-			err.setFields("topic:" + topic.getFqtn() + " role="+ rn);
-			return;
-		}
-		topic.setPublisherRole( pubRole.getFullyQualifiedRole() );
-		
-		rn = "subscriber";
-		AafRole subRole = new AafRole( topic.getFqtn(), rn );
-		rc = aaf.addRole( subRole );
-		if ( rc != 201 && rc != 409 ) {
-			err.setCode(500);
-			err.setMessage("Unexpected response from AAF:" + rc );
-			err.setFields("topic:" + topic.getFqtn() + " role="+ rn);
-			return;
-		}
-		topic.setSubscriberRole( subRole.getFullyQualifiedRole() );
 	
-		
 		// create AAF perms checked by MR
 		String instance = ":topic." + topic.getFqtn();
 		String[] actions = { "pub", "sub", "view" };
+		String t = dmaapSvc.getTopicPerm();
 		for ( String action : actions ){
 			DmaapPerm perm = new DmaapPerm( t, instance, action );
-			rc = aaf.addPerm( perm );
+			int rc = aaf.addPerm( perm );
 			if ( rc != 201 && rc != 409 ) {
 				err.setCode(500);
 				err.setMessage("Unexpected response from AAF:" + rc );
 				err.setFields("t="+t + " instance="+ instance + " action="+ action);
 				return;
 			}
-			// Grant perms to our default Roles
-			if ( action.equals( "pub") || action.equals( "view") ) {
-				DmaapGrant g = new DmaapGrant( perm, pubRole.getFullyQualifiedRole() );
-				rc = aaf.addGrant( g );
-				if ( rc != 201 && rc != 409 ) {
-					err.setCode(rc);
-					err.setMessage( "Grant of " + perm.toString() + " failed for " + pubRole.getFullyQualifiedRole() );
-					logger.warn( err.getMessage());
-					return;
-				} 
-			}
-			if ( action.equals( "sub") || action.equals( "view") ) {
-				DmaapGrant g = new DmaapGrant( perm, subRole.getFullyQualifiedRole() );
-				rc = aaf.addGrant( g );
-				if ( rc != 201 && rc != 409 ) {
-					err.setCode(rc);
-					err.setMessage( "Grant of " + perm.toString() + " failed for " + subRole.getFullyQualifiedRole() );
-					logger.warn( err.getMessage());
-					return;
-				} 
+			if ( createTopicRoles )	{
+				// Grant perms to our default Roles
+				if ( action.equals( "pub") || action.equals( "view") ) {
+					DmaapGrant g = new DmaapGrant( perm, pubRole.getFullyQualifiedRole() );
+					rc = aaf.addGrant( g );
+					if ( rc != 201 && rc != 409 ) {
+						err.setCode(rc);
+						err.setMessage( "Grant of " + perm.toString() + " failed for " + pubRole.getFullyQualifiedRole() );
+						logger.warn( err.getMessage());
+						return;
+					} 
+				}
+				if ( action.equals( "sub") || action.equals( "view") ) {
+					DmaapGrant g = new DmaapGrant( perm, subRole.getFullyQualifiedRole() );
+					rc = aaf.addGrant( g );
+					if ( rc != 201 && rc != 409 ) {
+						err.setCode(rc);
+						err.setMessage( "Grant of " + perm.toString() + " failed for " + subRole.getFullyQualifiedRole() );
+						logger.warn( err.getMessage());
+						return;
+					} 
+				}
 			}
 
 		}
