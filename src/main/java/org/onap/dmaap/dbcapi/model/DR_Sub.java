@@ -42,6 +42,9 @@ public class DR_Sub extends DmaapObject {
 	private boolean use100;
 	private boolean suspended;
 	private String owner;
+	private boolean guaranteedDelivery;
+	private boolean guaranteedSequence;
+	private boolean privilegedSubscriber;
 
 	public DR_Sub() {
 
@@ -81,19 +84,40 @@ public class DR_Sub extends DmaapObject {
 		this.setOwner( (String) jsonObj.get("subscriber"));
 		this.setSuspended( (boolean) jsonObj.get("suspend"));
 		
-		JSONObject links = (JSONObject) jsonObj.get("links");
-		String url = (String) links.get("feed");
-		this.setFeedId( url.substring( url.lastIndexOf('/')+1, url.length() ));
-		url = (String) links.get("self");
-		this.setSubId( url.substring( url.lastIndexOf('/')+1, url.length() ));
-		logger.info( "feedid="+ this.getFeedId() );
-		this.setLogURL( (String) links.get("log") );
+		try {
+			JSONObject links = (JSONObject) jsonObj.get("links");
+			String url = (String) links.get("feed");
+			this.setFeedId( url.substring( url.lastIndexOf('/')+1, url.length() ));
+			url = (String) links.get("self");
+			this.setSubId( url.substring( url.lastIndexOf('/')+1, url.length() ));
+			logger.info( "feedid="+ this.getFeedId() );
+			this.setLogURL( (String) links.get("log") );
+		} catch (NullPointerException npe ) {
+			
+		}
+		try {
+			this.setGuaranteedDelivery( (boolean) jsonObj.get("guaranteed_delivery"));
+		} catch( NullPointerException npe ) {
+			this.setGuaranteedDelivery(false);
+		}
+		try {
+			this.setGuaranteedSequence( (boolean) jsonObj.get("guaranteed_sequence"));
+		} catch( NullPointerException npe ) {
+			this.setGuaranteedSequence(false);
+		}
+		try {
+			this.setPrivilegedSubscriber((boolean) jsonObj.get("privilegedSubscriber"));
+		} catch( NullPointerException npe ) {
+			this.setPrivilegedSubscriber(false);
+		}
 		
 		JSONObject del = (JSONObject) jsonObj.get("delivery");
 		this.setDeliveryURL( (String) del.get("url") );	
 		this.setUsername( (String) del.get("user"));
 		this.setUserpwd( (String) del.get( "password"));
 		this.setUse100((boolean) del.get( "use100"));
+
+		
 
 		this.setStatus( DmaapObject_Status.VALID );
 
@@ -183,6 +207,29 @@ public class DR_Sub extends DmaapObject {
 	}
 
 
+	public boolean isGuaranteedDelivery() {
+		return guaranteedDelivery;
+	}
+
+	public void setGuaranteedDelivery(boolean guaranteedDelivery) {
+		this.guaranteedDelivery = guaranteedDelivery;
+	}
+
+	public boolean isGuaranteedSequence() {
+		return guaranteedSequence;
+	}
+
+	public void setGuaranteedSequence(boolean guaranteedSequence) {
+		this.guaranteedSequence = guaranteedSequence;
+	}
+
+	public boolean isPrivilegedSubscriber() {
+		return privilegedSubscriber;
+	}
+
+	public void setPrivilegedSubscriber(boolean privilegedSubscriber) {
+		this.privilegedSubscriber = privilegedSubscriber;
+	}
 
 	public byte[] getBytes(String provApi) {
 		if ( "AT&T".equals(provApi)) {
@@ -193,18 +240,21 @@ public class DR_Sub extends DmaapObject {
 	// returns the DR_Sub object in JSON that conforms to ONAP DR Prov Server expectations
 	public String toProvJSON() {	
 		// this is the original DR API that was contributed to ONAP
-		String postJSON = String.format("{\"suspend\": \"%s\", \"delivery\": "
-				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}"
+		String postJSON = String.format("{\"suspend\": %s, \"delivery\":"
+				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  %s }"
 				+ ", \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s "
-				+ "}", 
-				this.suspended,
-				this.getDeliveryURL(), 
-				this.getUsername(),
-				this.getUserpwd(),
-				this.isUse100(),
-				"false",
-				"0",
-				"true");	
+				+ ", \"privilegedSubscriber\": %s "
+				+ "}"
+				,this.suspended
+				,this.getDeliveryURL()
+				,this.getUsername()
+				,this.getUserpwd()
+				,this.isUse100()		
+				,"false"
+				,"0"
+				,"true"
+				,this.isPrivilegedSubscriber()
+			);	
 		
 		logger.info( postJSON );
 		return postJSON;
@@ -225,21 +275,22 @@ public class DR_Sub extends DmaapObject {
 		// TODO:
 		//   - introduce Bus Controller API support for these attributes
 		//   - store the default values in the DB
-		String postJSON = String.format("{\"suspend\": \"%s\", \"delivery\": "
-				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}"
+		String postJSON = String.format("{\"suspend\": %s, \"delivery\":"
+				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  %s}"
 				+ ", \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s "
-				+ ", \"guaranteed_delivery\": %s, \"guaranteed_sequence\": %s "
-				+ "}", 
-				this.suspended,
-				this.getDeliveryURL(), 
-				this.getUsername(),
-				this.getUserpwd(),
-				this.isUse100(),
-				"false",
-				"0",
-				"true",
-				"false",
-				"false");	
+				+ ", \"guaranteed_delivery\": %s, \"guaranteed_sequence\": %s"
+				+ "}"
+				,this.suspended
+				,this.getDeliveryURL()
+				,this.getUsername()
+				,this.getUserpwd()
+				,this.isUse100()
+				,"false"
+				,"0"
+				,"true"
+				,this.isGuaranteedDelivery()
+				,this.isGuaranteedSequence()
+				);	
 		
 		logger.info( postJSON );
 		return postJSON;

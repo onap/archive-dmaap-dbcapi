@@ -66,6 +66,9 @@ public class DRSubTest {
 		assertTrue( ! t.isUse100() );
 		assertTrue( ! t.isSuspended() );
 		assertTrue( t.getOwner() == null  );
+		assertTrue( t.isGuaranteedDelivery() == false );
+		assertTrue( t.isGuaranteedSequence() == false );
+		assertTrue( t.isPrivilegedSubscriber() == false );
 	
 	}
 
@@ -103,36 +106,48 @@ public class DRSubTest {
 		assertTrue( du.equals( t.getDeliveryURL() ) );
 		t.setLogURL( lu );
 		assertTrue( lu.equals( t.getLogURL() ) );
-	
+		boolean v = true;
+		t.setGuaranteedDelivery( v );
+		assertTrue( t.isGuaranteedDelivery() == v );
+		t.setGuaranteedSequence(v);
+		assertTrue( t.isGuaranteedSequence() == v );
+		t.setPrivilegedSubscriber(v);
+		assertTrue( t.isPrivilegedSubscriber() == v );
 	}
 
 	@Test
-	public void test3() {
-		String json = String.format( "{ \"%s\": \"%s\", \"%s\": false, \"%s\": { \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": \"%s\"  },  \"%s\": { \"%s\": \"%s\",  \"%s\": \"%s\", \"%s\": \"%s\", \"%s\": true }  }",
-				"subscriber", "owner",
-				"suspend", 
-				"links",
-					"feed", "https://feed.onap.org/publish/22",
-					"self", "https://feed.onap.org/subscriber/44",
-					"log" , lu,
-					"delivery" , 
-					"url", du,
-					"user", un,
-					"password", up,
-					"use100"
-				);
+	public void testJSONfromONAP() {
+	
 
+		DR_Sub s = new DR_Sub( d, un, up, f, du, lu, u100 );
+		String j = s.toProvJSON();
 
-		DR_Sub t = new DR_Sub( json );
+		DR_Sub t = new DR_Sub( j );
 
 		assertTrue( un.equals( t.getUsername() ));
 		assertTrue( up.equals( t.getUserpwd() ));
-		assertTrue( f.equals( t.getFeedId() ));
+		//assertTrue( f.equals( t.getFeedId() ));
 		assertTrue( du.equals( t.getDeliveryURL() ) );
-		assertTrue( lu.equals( t.getLogURL() ) );
+		//assertTrue( lu.equals( t.getLogURL() ) );
 		assertTrue( ! t.isSuspended() );
 
-		String o = t.toString();
+	}
+	
+	@Test
+	public void testJSONfromATT() {
+	
+
+		DR_Sub s = new DR_Sub( d, un, up, f, du, lu, u100 );
+
+		DR_Sub t = new DR_Sub( s.toProvJSONforATT() );
+
+		assertTrue( un.equals( t.getUsername() ));
+		assertTrue( up.equals( t.getUserpwd() ));
+		//assertTrue( f.equals( t.getFeedId() ));
+		assertTrue( du.equals( t.getDeliveryURL() ) );
+	//	assertTrue( lu.equals( t.getLogURL() ) );
+		assertTrue( ! t.isSuspended() );
 
 	}
+	
 }
