@@ -42,6 +42,9 @@ public class DR_Sub extends DmaapObject {
 	private boolean use100;
 	private boolean suspended;
 	private String owner;
+	private String guaranteedDelivery;
+	private String guaranteedSequence;
+	private String privilegedSubscriber;
 
 	public DR_Sub() {
 
@@ -94,6 +97,11 @@ public class DR_Sub extends DmaapObject {
 		this.setUsername( (String) del.get("user"));
 		this.setUserpwd( (String) del.get( "password"));
 		this.setUse100((boolean) del.get( "use100"));
+		
+		this.setGuaranteedDelivery( (String) jsonObj.get("guaranteed_delivery"));
+		this.setGuaranteedSequence( (String) jsonObj.get("guaranteed_sequence"));
+		this.setPrivilegedSubscriber((String) jsonObj.get("privileged_subscriber"));
+		
 
 		this.setStatus( DmaapObject_Status.VALID );
 
@@ -182,7 +190,29 @@ public class DR_Sub extends DmaapObject {
 		this.subId = subId;
 	}
 
+	public String getGuaranteedDelivery() {
+		return guaranteedDelivery;
+	}
 
+	public void setGuaranteedDelivery(String guaranteedDelivery) {
+		this.guaranteedDelivery = guaranteedDelivery;
+	}
+
+	public String getGuaranteedSequence() {
+		return guaranteedSequence;
+	}
+
+	public void setGuaranteedSequence(String guaranteedSequence) {
+		this.guaranteedSequence = guaranteedSequence;
+	}
+
+	public String getPrivilegedSubscriber() {
+		return privilegedSubscriber;
+	}
+
+	public void setPrivilegedSubscriber(String privilegedSubscriber) {
+		this.privilegedSubscriber = privilegedSubscriber;
+	}
 
 	public byte[] getBytes(String provApi) {
 		if ( "AT&T".equals(provApi)) {
@@ -196,15 +226,18 @@ public class DR_Sub extends DmaapObject {
 		String postJSON = String.format("{\"suspend\": \"%s\", \"delivery\": "
 				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}"
 				+ ", \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s "
-				+ "}", 
-				this.suspended,
-				this.getDeliveryURL(), 
-				this.getUsername(),
-				this.getUserpwd(),
-				this.isUse100(),
-				"false",
-				"0",
-				"true");	
+				+ ", \"privilegedSubscriber\": %s "
+				+ "}"
+				,this.suspended
+				,this.getDeliveryURL()
+				,this.getUsername()
+				,this.getUserpwd()
+				,this.isUse100()		
+				,"false"
+				,"0"
+				,"true"
+				,this.getPrivilegedSubscriber()
+			);	
 		
 		logger.info( postJSON );
 		return postJSON;
@@ -229,17 +262,18 @@ public class DR_Sub extends DmaapObject {
 				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  \"%s\"}"
 				+ ", \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s "
 				+ ", \"guaranteed_delivery\": %s, \"guaranteed_sequence\": %s "
-				+ "}", 
-				this.suspended,
-				this.getDeliveryURL(), 
-				this.getUsername(),
-				this.getUserpwd(),
-				this.isUse100(),
-				"false",
-				"0",
-				"true",
-				"false",
-				"false");	
+				+ "}"
+				,this.suspended
+				,this.getDeliveryURL()
+				,this.getUsername()
+				,this.getUserpwd()
+				,this.isUse100()
+				,"false"
+				,"0"
+				,"true"
+				,this.getGuaranteedDelivery()
+				,this.getGuaranteedSequence()
+				);	
 		
 		logger.info( postJSON );
 		return postJSON;
