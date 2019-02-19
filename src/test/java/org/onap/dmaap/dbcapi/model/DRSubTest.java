@@ -66,6 +66,9 @@ public class DRSubTest {
 		assertTrue( ! t.isUse100() );
 		assertTrue( ! t.isSuspended() );
 		assertTrue( t.getOwner() == null  );
+		assertTrue( t.getGuaranteedDelivery() == null );
+		assertTrue( t.getGuaranteedSequence() == null );
+		assertTrue( t.getPrivilegedSubscriber() == null );
 	
 	}
 
@@ -103,6 +106,13 @@ public class DRSubTest {
 		assertTrue( du.equals( t.getDeliveryURL() ) );
 		t.setLogURL( lu );
 		assertTrue( lu.equals( t.getLogURL() ) );
+		String v = "true";
+		t.setGuaranteedDelivery( v );
+		assertTrue( v.equals( t.getGuaranteedDelivery()));
+		t.setGuaranteedSequence(v);
+		assertTrue( v.equals( t.getGuaranteedSequence()));
+		t.setPrivilegedSubscriber(v);
+		assertTrue( v.equals( t.getPrivilegedSubscriber()));
 	
 	}
 
