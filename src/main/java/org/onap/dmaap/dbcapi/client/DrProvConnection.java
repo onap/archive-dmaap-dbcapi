@@ -243,19 +243,10 @@ public class DrProvConnection extends BaseLoggingClass {
 
 		try {
 			uc.setRequestMethod("POST");
-//			uc.setRequestProperty("Content-Type", feedContenType );
-//			uc.setRequestProperty( "charset", "utf-8");
-//			uc.setRequestProperty( behalfHeader, postFeed.getOwner() );
-//			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
-//			uc.setUseCaches(false);
-//			uc.setDoOutput(true);	
-			OutputStream os = null;
-	
-			
+
+
 			try {
                  uc.connect();
-                 os = uc.getOutputStream();
-
 
             } catch (ProtocolException pe) {
                  // Rcvd error instead of 100-Continue
@@ -264,6 +255,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                 	logger.error(e.getMessage(), e);
                  }
             }
 			rc = uc.getResponseCode();
@@ -278,12 +270,14 @@ public class DrProvConnection extends BaseLoggingClass {
             	err.setMessage(responsemessage);
             }
 		} catch (Exception e) {
-            System.err.println("Unable to read response  " );
+            logger.error("Unable to read response  " );
             e.printStackTrace();
         }		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
+			} catch ( Exception e ) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 	
 		return rc;
@@ -521,8 +515,8 @@ public class DrProvConnection extends BaseLoggingClass {
             err.setCode( 500 );
         	err.setMessage("Backend connection refused");
 		} catch (Exception e) {
-            System.err.println("Unable to read response  " );
-            e.printStackTrace();
+            logger.error("Unable to read response  " );
+            logger.error(e.getMessage(), e);
         } finally {
         	uc.disconnect();
         }
@@ -542,22 +536,13 @@ public class DrProvConnection extends BaseLoggingClass {
 		logger.info( "templog:doGetNodes at 12.10.14.11"  );
 	
 			uc.setRequestMethod("GET");
-		
-			//uc.setRequestProperty("Content-Type", subContentType );
-			//uc.setRequestProperty( "charset", "utf-8");
-			//uc.setRequestProperty( behalfHeader, "DGL" );
-			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
-			//uc.setUseCaches(false);
-			//uc.setDoOutput(true);
-			OutputStream os = null;
 			int rc = -1;
 			
 		logger.info( "templog:doGetNodes at 12.10.14.12"  );
 			try {
-                 uc.connect();
-		logger.info( "templog:doGetNodes at 12.10.14.13"  );
-                 //os = uc.getOutputStream();
-                 //os.write( postData );
+                uc.connect();
+				logger.info( "templog:doGetNodes at 12.10.14.13"  );
+
 
             } catch (ProtocolException pe) {
 		logger.info( "templog:doGetNodes at 12.10.14.14"  );

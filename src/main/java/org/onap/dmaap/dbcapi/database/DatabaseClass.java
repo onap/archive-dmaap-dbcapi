@@ -149,7 +149,7 @@ public class DatabaseClass extends BaseLoggingClass {
 				appLogger.warn("Problem updating DB schema", e);
 			}
 			try {
-				dmaap = new DBSingleton<Dmaap>(Dmaap.class, "dmaap");
+				dmaap = new DBSingleton<>(Dmaap.class, "dmaap");
 				dcaeLocations = new DBMap<>(DcaeLocation.class, "dcae_location", "dcae_location_name");
 				dr_nodes = new DBMap<>(DR_Node.class, "dr_node", "fqdn");
 				dr_pubs = new DBMap<>(DR_Pub.class, "dr_pub", "pub_id");
