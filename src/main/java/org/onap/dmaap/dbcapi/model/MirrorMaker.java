@@ -20,13 +20,9 @@
 
 package org.onap.dmaap.dbcapi.model;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.service.MirrorMakerService;
+
+import java.util.ArrayList;
 
 public class MirrorMaker extends DmaapObject {
 
@@ -58,7 +54,7 @@ public class MirrorMaker extends DmaapObject {
 		sourceCluster = source;
 		targetCluster = target;
 		mmName = genKey(source, target);
-		topics = new ArrayList<String>();
+		topics = new ArrayList<>();
 
 	}
 	
@@ -89,12 +85,10 @@ public class MirrorMaker extends DmaapObject {
 		str.append( " \"name\": \"" + this.getMmName() + "\", \"whitelist\": \"" );
 		int numTargets = 0;
 
-		//for (ReplicationVector rv: vectors) {
 		for (String rv: topics) {
 			if ( numTargets > 0 ) {
 				str.append( ",");
 			}
-			//str.append(  rv.getFqtn() );
 			str.append( rv );
 			numTargets++;
 		}
