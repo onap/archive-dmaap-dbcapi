@@ -59,7 +59,7 @@ public class DBMap<C> extends TableHandler<C> implements Map<String, C>	{
 		return(2);
 	}
 	public Collection<C> values() {
-		Collection<C> ret = new Vector<>();
+		Collection<C> ret = new ArrayList<>();
 		for (Map.Entry<String, C> x: list()) {
 			ret.add(x.getValue());
 		}
@@ -110,7 +110,6 @@ public class DBMap<C> extends TableHandler<C> implements Map<String, C>	{
 		} catch (Exception e) {
 			throw new DBException(e);
 		}
-		PreparedStatement ps = null;
 		return((new ConnWrapper<C, C>() {
 			protected C run(C val) throws Exception {
 				ps = c.prepareStatement(insorreplstmt);
