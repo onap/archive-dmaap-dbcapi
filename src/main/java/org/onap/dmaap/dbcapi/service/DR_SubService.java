@@ -98,7 +98,7 @@ public class DR_SubService extends BaseLoggingClass {
 		String resp = prov.doPostDr_Sub( sub, apiError );
 		if ( "Yes".equals(unit_test) ) {
 			resp = simulateResp( sub, "POST" );
-			apiError.setCode(200);
+			apiError.setCode(201);
 		}
 		logger.debug( "addDr_Sub resp=" + resp );
 
@@ -110,7 +110,7 @@ public class DR_SubService extends BaseLoggingClass {
 			snew.setLastMod();
 			addEgressRoute( snew, apiError );
 			dr_subs.put( snew.getSubId(), snew );	
-			apiError.setCode(200);
+			apiError.setCode(201);
 		} else {
 			apiError.setCode(400);
 		}

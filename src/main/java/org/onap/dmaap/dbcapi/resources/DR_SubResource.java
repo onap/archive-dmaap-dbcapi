@@ -92,24 +92,41 @@ public class DR_SubResource extends BaseLoggingClass {
 			) {
 	
 		ApiService resp = new ApiService();
-
+		FeedService feeds = new FeedService();
+		Feed fnew = null;
 		try {
 			resp.required( "feedId", sub.getFeedId(), "");
+		} catch ( RequiredFieldException rfe ) {
+			try {
+				resp.required( "feedName", sub.getFeedName(), "");
+			}catch ( RequiredFieldException rfe2 ) {
+				logger.debug( resp.toString() );
+				return resp.error();
+			}
+			// if we found a FeedName instead of a FeedId then try to look it up.
+			List<Feed> nfeeds =  feeds.getAllFeeds( sub.getFeedName(), sub.getFeedVersion(), "equals");
+			if ( nfeeds.size() != 1 ) {
+				logger.debug( "Attempt to match "+ sub.getFeedName() + " ver="+sub.getFeedVersion() + " matched " + nfeeds.size() );
+				return resp.error();
+			}
+			fnew = nfeeds.get(0);
+		}
+			
+		try {
 			resp.required( "dcaeLocationName", sub.getDcaeLocationName(), "");
-	
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
 			return resp.error();	
 		}
-		
-		FeedService feeds = new FeedService();
-		Feed fnew = feeds.getFeed( sub.getFeedId(), resp.getErr() );
+		// we may have fnew already if located by FeedName
 		if ( fnew == null ) {
-			logger.warn( "Specified feed " + sub.getFeedId() + " not known to Bus Controller");
+			fnew = feeds.getFeed( sub.getFeedId(), resp.getErr() );
+		}
+		if ( fnew == null ) {
+			logger.warn( "Specified feed " + sub.getFeedId() + " or " + sub.getFeedName() + " not known to Bus Controller");
 			resp.setCode(Status.NOT_FOUND.getStatusCode());
 			return resp.error();
 		}
-
 		DR_SubService dr_subService = new DR_SubService( fnew.getSubscribeURL());
 		ArrayList<DR_Sub> subs = fnew.getSubs();
 		logger.info( "num existing subs before = " + subs.size() );
@@ -157,7 +174,7 @@ public class DR_SubResource extends BaseLoggingClass {
 			logger.warn( "Specified feed " + sub.getFeedId() + " not known to Bus Controller");
 			return resp.error();
 		}
-		
+
 		DR_SubService dr_subService = new DR_SubService();
 		sub.setSubId(name);
 		DR_Sub nsub = dr_subService.updateDr_Sub(sub, resp.getErr() );

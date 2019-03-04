@@ -129,7 +129,21 @@ public class DR_SubResourceTest extends JerseyTest{
 		
 		return dr_sub;
 	}
-	
+	private DR_Sub addSubByName( String d, String un, String up, String feedName ) {
+		DR_Sub dr_sub = new DR_Sub( d, un, up, null, 
+				"https://subscriber.onap.org/foo", "https://dr-prov/sublog", true );
+		
+		dr_sub.setFeedName(feedName);
+
+		Entity<DR_Sub> reqEntity2 = Entity.entity( dr_sub, MediaType.APPLICATION_JSON);
+		Response resp = target( "dr_subs").request().post( reqEntity2, Response.class);
+		System.out.println( "POST dr_subs resp=" + resp.getStatus() );
+		assertTrue( resp.getStatus() == 201 );
+		dr_sub = resp.readEntity( DR_Sub.class );
+		
+		return dr_sub;
+	}
+
 	@Test
 	public void GetTest() {
 		Response resp = target( "dr_subs").request().get( Response.class );
@@ -153,6 +167,20 @@ public class DR_SubResourceTest extends JerseyTest{
 	}
 
 	@Test
+	public void PostTestByName() {
+
+		Feed feed = addFeed( "subPostTest2", "post unit test" );
+		System.out.println( "subPostTest2: feedId=" + feed.getFeedId());
+		
+		String d, un, up;
+		d = "central-onap";
+		un = "user1";
+		up = "secretW0rd";
+
+		DR_Sub dr_pub = addSubByName( d, un, up, feed.getFeedName() );
+	}
+
+	@Test
 	public void PutTest() {
 
 		Feed feed = addFeed( "subPutTest", "put unit test");
@@ -172,6 +200,7 @@ public class DR_SubResourceTest extends JerseyTest{
 		System.out.println( "PUT dr_subs resp=" + resp.getStatus() );
 		assertTrue( resp.getStatus() == 200 );
 	}
+
 /*
  * TODO: figure out how to check delete() response
 	@Test

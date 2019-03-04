@@ -411,7 +411,7 @@ public class DrProvConnection extends BaseLoggingClass {
             if (rc >= 200 && rc < 300 ) {
      			responseBody = bodyToString( uc.getInputStream() );
     			logger.info( "responseBody=" + responseBody );
-
+    			err.setCode( rc );
             } else if ( rc == 404 ) {
             	err.setCode( rc );
             	err.setFields( "feedid");

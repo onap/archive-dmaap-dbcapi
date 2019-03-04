@@ -91,21 +91,42 @@ public class DR_PubResource extends BaseLoggingClass {
 			DR_Pub pub
 			) {
 		ApiService resp = new ApiService();
+		FeedService feeds = new FeedService();
+		Feed fnew = null;
 
 		logger.info( "Entry: POST /dr_pubs");
 
 		try {
 			resp.required( "feedId", pub.getFeedId(), "");
+		} catch ( RequiredFieldException rfe ) {
+			try {
+				resp.required( "feedName", pub.getFeedName(), "");
+			}catch ( RequiredFieldException rfe2 ) {
+				logger.debug( resp.toString() );
+				return resp.error();
+			}
+			// if we found a FeedName instead of a FeedId then try to look it up.
+			List<Feed> nfeeds =  feeds.getAllFeeds( pub.getFeedName(), pub.getFeedVersion(), "equals");
+			if ( nfeeds.size() != 1 ) {
+				logger.debug( "Attempt to match "+ pub.getFeedName() + " ver="+pub.getFeedVersion() + " matched " + nfeeds.size() );
+				return resp.error();
+			}
+			fnew = nfeeds.get(0);
+		}
+		try {
 			resp.required( "dcaeLocationName", pub.getDcaeLocationName(), "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.getErr().toString() );
 			return resp.error();	
 		}
 
-		FeedService feeds = new FeedService();
-		Feed fnew = feeds.getFeed( pub.getFeedId(), resp.getErr() );
+
+		// we may have fnew already if located by FeedName
 		if ( fnew == null ) {
-			logger.info( "Specified feed " + pub.getFeedId() + " not known to Bus Controller");	
+			fnew = feeds.getFeed( pub.getFeedId(), resp.getErr() );
+		}
+		if ( fnew == null ) {
+			logger.info( "Specified feed " + pub.getFeedId() + " or " + pub.getFeedName() + " not known to Bus Controller");	
 			return resp.error();	
 		}
 

@@ -45,6 +45,10 @@ public class DR_Sub extends DmaapObject {
 	private boolean guaranteedDelivery;
 	private boolean guaranteedSequence;
 	private boolean privilegedSubscriber;
+	
+	// NOTE: the following fields are optional in the API but not stored in the DB
+	private	String	feedName;
+	private String	feedVersion;
 
 	public DR_Sub() {
 
@@ -229,6 +233,24 @@ public class DR_Sub extends DmaapObject {
 
 	public void setPrivilegedSubscriber(boolean privilegedSubscriber) {
 		this.privilegedSubscriber = privilegedSubscriber;
+	}
+	
+	
+
+	public String getFeedName() {
+		return feedName;
+	}
+
+	public void setFeedName(String feedName) {
+		this.feedName = feedName;
+	}
+
+	public String getFeedVersion() {
+		return feedVersion;
+	}
+
+	public void setFeedVersion(String feedVersion) {
+		this.feedVersion = feedVersion;
 	}
 
 	public byte[] getBytes(String provApi) {

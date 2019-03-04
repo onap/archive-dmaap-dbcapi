@@ -98,6 +98,18 @@ public class DR_PubResourceTest extends JerseyTest{
 		return dr_pub;
 	}
 	
+	private DR_Pub addPubByName( String d, String un, String up, String feedName) {
+		DR_Pub dr_pub = new DR_Pub( d, un, up, null, "" );
+		dr_pub.setFeedName(feedName);
+		Entity<DR_Pub> reqEntity2 = Entity.entity( dr_pub, MediaType.APPLICATION_JSON);
+		Response resp = target( "dr_pubs").request().post( reqEntity2, Response.class);
+		System.out.println( "POST dr_pubs resp=" + resp.getStatus() );
+		assertTrue( resp.getStatus() == 201 );
+		dr_pub = resp.readEntity( DR_Pub.class );
+		
+		return dr_pub;
+	}
+	
 	@Test
 	public void GetTest() {
 		Response resp = target( "dr_pubs").request().get( Response.class );
@@ -118,6 +130,20 @@ public class DR_PubResourceTest extends JerseyTest{
 		up = "secretW0rd";
 
 		DR_Pub dr_pub = addPub( d, un, up, feed.getFeedId() );
+	}
+	
+	@Test
+	public void PostTestByName() {
+
+		Feed feed = addFeed( "pubPostTest2", "post unit test" );
+		System.out.println( "fpubPostTest: feedId=" + feed.getFeedId());
+		
+		String d, un, up;
+		d = "central-onap";
+		un = "user1";
+		up = "secretW0rd";
+
+		DR_Pub dr_pub = addPubByName( d, un, up, "pubPostTest2" );	
 	}
 
 	@Test

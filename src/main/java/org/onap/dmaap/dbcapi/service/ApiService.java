@@ -165,6 +165,7 @@ public class ApiService extends BaseLoggingClass {
 
 	// test for presence of a required field
 	public void required( String name, Object val, String expr ) throws RequiredFieldException {
+		err.setCode(0);
 		if ( val == null  ) {
 			err.setCode(Status.BAD_REQUEST.getStatusCode());
 			err.setMessage("missing required field");

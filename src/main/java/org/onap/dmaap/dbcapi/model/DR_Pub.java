@@ -32,6 +32,10 @@ public class DR_Pub extends DmaapObject {
 	private String userpwd;
 	private String feedId;
 	private String pubId;
+	
+	// NOTE: the following fields are optional in the API but not stored in the DB
+	private	String	feedName;
+	private String	feedVersion;
 
 	
 	public DR_Pub() {
@@ -113,6 +117,22 @@ public class DR_Pub extends DmaapObject {
 	
 	public void setNextPubId() {
 		this.pubId = this.feedId + "." +  DR_Pub.nextKey();
+	}
+	
+	public String getFeedName() {
+		return feedName;
+	}
+
+	public void setFeedName(String feedName) {
+		this.feedName = feedName;
+	}
+
+	public String getFeedVersion() {
+		return feedVersion;
+	}
+
+	public void setFeedVersion(String feedVersion) {
+		this.feedVersion = feedVersion;
 	}
 
 	public DR_Pub setRandomUserName() {
