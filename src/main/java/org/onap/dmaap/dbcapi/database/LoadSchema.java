@@ -25,7 +25,6 @@ import java.sql.*;
 
 import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
-;
 
 public class LoadSchema	{
 	private static final EELFLogger logger = EELFManager.getInstance().getLogger(LoadSchema.class);
@@ -44,12 +43,12 @@ public class LoadSchema	{
 	}
 	static void upgrade() throws SQLException {
 		ConnectionFactory cf = ConnectionFactory.getDefaultInstance();
-		Connection c = null;
-		Statement stmt = null;
 		InputStream is = null;
-		try { 
-			c = cf.get(true);
-			stmt = c.createStatement();
+		try(
+				Connection c = cf.get(true);
+				Statement stmt = c.createStatement();
+		) {
+
 			
 			// this sets the PG search_path to a consistent schema, otherwise sometimes
 			// we get public, and sometimes we get dmaap_admin
@@ -120,21 +119,6 @@ public class LoadSchema	{
 			}
 		} catch (IOException ioe) {
 			throw new SQLException(ioe);
-		} finally {
-			if (stmt != null) { 
-				try { 
-					stmt.close(); 
-				} catch (Exception e) {
-					logger.error("Error", e);
-				}
-			}
-			if (c != null) { 
-				try { 
-					c.close(); 
-					} catch (Exception e) {
-						logger.error("Error", e);
-					}
-				}
 		}
 	}
 	public static void main(String[] args) throws Exception {
