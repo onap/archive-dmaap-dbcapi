@@ -75,7 +75,7 @@ public class MR_ClusterResourceTest extends JerseyTest {
 		Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
 		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
 		if (resp.getStatus() != 409 ) {
-			assertTrue( resp.getStatus() == 201);
+			assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300);
 		}
 		resp = target( "mr_clusters").
 				path( cluster.getDcaeLocationName()).request().get( Response.class );
@@ -94,7 +94,7 @@ public class MR_ClusterResourceTest extends JerseyTest {
 			Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
 			System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ));
 			if ( resp.getStatus() != 409 ) {
-				assertTrue( resp.getStatus() == 201 );
+				assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300 );
 			}
 		} catch (Exception e ) {
 		}
