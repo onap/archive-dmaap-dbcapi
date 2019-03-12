@@ -99,6 +99,7 @@ public class DmaapObjectFactory {
         t.setFqtnStyle( FqtnType.Validator("none") );
         t.setTopicDescription( "a simple Topic named " + tname );
         t.setOwner( "ut");
+        t.setFqtn(t.genFqtn());
 		return t;
 	}
 

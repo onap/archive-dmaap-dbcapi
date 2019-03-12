@@ -201,8 +201,8 @@ public class DR_SubResourceTest extends JerseyTest{
 		assertTrue( resp.getStatus() == 200 );
 	}
 
-/*
- * TODO: figure out how to check delete() response
+
+// TODO: figure out how to check delete() response
 	@Test
 	public void DelTest() {
 
@@ -220,9 +220,9 @@ public class DR_SubResourceTest extends JerseyTest{
 				.request()
 				.delete();
 		System.out.println( "DEL dr_subs resp=" + resp.getStatus() );
-		assertTrue( resp.getStatus() == 200 );
+		assertTrue( resp.getStatus() == 204 );
 	}
-*/
+
 
 }
 

@@ -70,6 +70,7 @@ public class TopicService extends BaseLoggingClass {
 	
 	private static String centralCname;
 	private static boolean createTopicRoles;
+	private boolean strictGraph = true;
 
 
 	public TopicService(){
@@ -77,8 +78,10 @@ public class TopicService extends BaseLoggingClass {
 		defaultGlobalMrHost = p.getProperty("MR.globalHost", "global.host.not.set");
 		centralCname = p.getProperty("MR.CentralCname");
 		createTopicRoles = "true".equalsIgnoreCase(p.getProperty("aaf.CreateTopicRoles", "true"));
-
-		
+		String unit_test = p.getProperty( "UnitTest", "No" );
+		if ( unit_test.equals( "Yes" ) ) {
+			strictGraph = false;
+		}
 		logger.info( "TopicService properties: CentralCname=" + centralCname + 
 				"   defaultGlobarlMrHost=" + defaultGlobalMrHost +
 				" createTopicRoles=" + createTopicRoles );
@@ -299,10 +302,13 @@ public class TopicService extends BaseLoggingClass {
 	
 		
 	public Topic updateTopic( Topic topic, ApiError err ) {
-		logger.info( "Entry: updateTopic");
+		logger.info( "updateTopic: entry");
+		logger.info( "updateTopic: topic=" + topic);
+		logger.info( "updateTopic: fqtn=" + topic.getFqtn() );
 		if ( topic.getFqtn().isEmpty()) {
 			return null;
 		}
+		logger.info( "updateTopic: call checkForBridge");
 		Topic ntopic = checkForBridge( topic, err );
 		if ( ntopic == null ) {
 			topic.setStatus( DmaapObject_Status.INVALID);
@@ -311,6 +317,7 @@ public class TopicService extends BaseLoggingClass {
 			}
 		}
 		if(ntopic != null) {
+			logger.info( "updateTopic: call put");
 			mr_topics.put( ntopic.getFqtn(), ntopic );
 		}
 		err.setCode(Status.OK.getStatusCode());
@@ -374,7 +381,8 @@ public class TopicService extends BaseLoggingClass {
 	
 	
 	public Topic checkForBridge( Topic topic, ApiError err ) {
-		
+		logger.info( "checkForBridge: entry");
+		logger.info( "fqtn=" + topic.getFqtn() + "replicatonType=" + topic.getReplicationCase());
 		if ( topic.getReplicationCase() == ReplicationType.REPLICATION_NONE ) {
 			topic.setStatus( DmaapObject_Status.VALID);
 			return topic;	
@@ -384,6 +392,7 @@ public class TopicService extends BaseLoggingClass {
 		
 		Set<String> groups = clusters.getGroups();
 		for ( String g : groups ) {
+			logger.info( "buildBridge for " + topic.getFqtn() + " on group" + g);
 			anythingWrong |= buildBridge( topic, err, g );
 		}
 		if ( anythingWrong ) {
@@ -398,19 +407,24 @@ public class TopicService extends BaseLoggingClass {
 	}
 		
 	private boolean buildBridge( Topic topic, ApiError err, String group ) {
-
+		logger.info( "buildBridge: entry");
 		boolean anythingWrong = false;
 		Graph graph;
+		logger.info( "buildBridge: strictGraph=" + strictGraph );
 		if ( group == null || group.isEmpty() ) {
-			graph = new Graph( topic.getClients(), true );
+			graph = new Graph( topic.getClients(), strictGraph );
 		} else {
-			graph = new Graph( topic.getClients(), true, group );
+			graph = new Graph( topic.getClients(), strictGraph, group );
 		}
+		logger.info( "buildBridge: graph=" + graph );
 		MR_Cluster groupCentralCluster = null;
 		
+		
 		if ( graph.isEmpty() ) {
+			logger.info( "buildBridge: graph is empty.  return false" );
 			return false;
 		} else if ( group == null &&  topic.getReplicationCase().involvesFQDN() ) {
+			logger.info( "buildBridge: group is null and replicationCaseInvolvesFQDN. return false" );
 			return false;
 		} else if ( ! graph.hasCentral() ) {
 			logger.warn( "Topic " + topic.getFqtn() + " wants to be " + topic.getReplicationCase() + " but has no central clients");
