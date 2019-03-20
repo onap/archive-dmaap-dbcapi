@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "4f4630da_c8020a58",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/model/DR_Sub.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1111
+      },
+      "writtenOn": "2019-03-20T17:17:17Z",
+      "side": 1,
+      "message": "No, since this field isn\u0027t sent to AT\u0026T DR version",
+      "parentUuid": "cbeb191e_11a32786",
+      "range": {
+        "startLine": 298,
+        "startChar": 15,
+        "endLine": 298,
+        "endChar": 31
+      },
+      "revId": "7ba7f341846c78f9503a5473953f4a90d27d8ea9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "e26f4a67_9c14361e",
         "filename": "src/main/resources/schema_12.sql",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2019-03-20T16:38:22Z",
       "side": 1,
       "message": "I changed this to match the variable name in DR_Sub, not sure if it was necessary?",
+      "range": {
+        "startLine": 26,
+        "startChar": 16,
+        "endLine": 26,
+        "endChar": 36
+      },
+      "revId": "7ba7f341846c78f9503a5473953f4a90d27d8ea9",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7a5fc8d6_9632163c",
+        "filename": "src/main/resources/schema_12.sql",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1111
+      },
+      "writtenOn": "2019-03-20T17:17:17Z",
+      "side": 1,
+      "message": "needs to be here, but can\u0027t have caps",
+      "parentUuid": "e26f4a67_9c14361e",
       "range": {
         "startLine": 26,
         "startChar": 16,
