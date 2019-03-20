@@ -21,13 +21,28 @@
 package org.onap.dmaap.dbcapi.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 @XmlRootElement
 public class ApiError {
 	private int code;
 	private String message;
 	private String fields;
-	
+
+	public ApiError() {
+		this(0, null, null);
+	}
+
+	public ApiError(int code, String message) {
+		this(code, message, null);
+	}
+
+	public ApiError(int code, String message, String fields) {
+		this.code = code;
+		this.message = message;
+		this.fields = fields;
+	}
+
 	public int getCode() {
 		return code;
 	}
@@ -57,5 +72,20 @@ public class ApiError {
 		code = 0;
 		message = null;
 		fields = null;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		ApiError apiError = (ApiError) o;
+		return code == apiError.code &&
+				Objects.equals(message, apiError.message) &&
+				Objects.equals(fields, apiError.fields);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(code, message, fields);
 	}
 }

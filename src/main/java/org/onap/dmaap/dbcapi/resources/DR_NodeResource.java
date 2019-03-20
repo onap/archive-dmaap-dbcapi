@@ -38,13 +38,15 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Node;
 import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.DR_NodeService;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 @Path("/dr_nodes")
 @Api( value= "dr_nodes", description = "Endpoint for a Data Router Node server" )
@@ -53,7 +55,8 @@ import org.onap.dmaap.dbcapi.service.DR_NodeService;
 @Authorization
 public class DR_NodeResource extends BaseLoggingClass {
 
-	DR_NodeService dr_nodeService = new DR_NodeService();
+	private DR_NodeService dr_nodeService = new DR_NodeService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	
 	@GET
 	@ApiOperation( value = "return DR_Node details", 
@@ -64,13 +67,11 @@ public class DR_NodeResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getDr_Nodes() {
-		ApiService resp = new ApiService();
-
 		List<DR_Node> nodes = dr_nodeService.getAllDr_Nodes();
 
 		GenericEntity<List<DR_Node>> list = new GenericEntity<List<DR_Node>>(nodes) {
         };
-        return resp.success(list);
+        return responseBuilder.success(list);
 	}
 	
 	@POST
@@ -90,17 +91,14 @@ public class DR_NodeResource extends BaseLoggingClass {
 			resp.required( "dcaeLocation", node.getDcaeLocationName(), "");
 			resp.required( "fqdn", node.getFqdn(), "");
 		} catch ( RequiredFieldException rfe ) {
-			resp.setCode(Status.BAD_REQUEST.getStatusCode());
-			resp.setMessage("missing required field");
-			resp.setFields("dcaeLocation, fqdn");
-			
-			return resp.error();
+			return responseBuilder.error(new ApiError(BAD_REQUEST.getStatusCode(),
+					"missing required field", "dcaeLocation, fqdn"));
 		}
 		DR_Node nNode = dr_nodeService.addDr_Node(node, resp.getErr());
 		if ( resp.getErr().is2xx()) {
-			return resp.success(nNode);
+			return responseBuilder.success(nNode);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 	
 	@PUT
@@ -122,14 +120,14 @@ public class DR_NodeResource extends BaseLoggingClass {
 			resp.required( "dcaeLocation", name, "");
 			resp.required( "fqdn", node.getFqdn(), "");
 		} catch ( RequiredFieldException rfe ) {
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		node.setFqdn(name);
 		DR_Node nNode = dr_nodeService.updateDr_Node(node, resp.getErr());
 		if ( resp.getErr().is2xx()) {
-			return resp.success(nNode);
+			return responseBuilder.success(nNode);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 	
 	@DELETE
@@ -151,13 +149,13 @@ public class DR_NodeResource extends BaseLoggingClass {
 			resp.required( "fqdn", name, "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		dr_nodeService.removeDr_Node(name, resp.getErr());
 		if ( resp.getErr().is2xx() ) {
-			return resp.success(Status.NO_CONTENT.getStatusCode(), null);
+			return responseBuilder.success(NO_CONTENT.getStatusCode(), null);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 
 	@GET
@@ -176,8 +174,8 @@ public class DR_NodeResource extends BaseLoggingClass {
 
 		DR_Node nNode = dr_nodeService.getDr_Node( name, resp.getErr() );
 		if ( resp.getErr().is2xx() ) {
-			return resp.success(nNode);
+			return responseBuilder.success(nNode);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 }

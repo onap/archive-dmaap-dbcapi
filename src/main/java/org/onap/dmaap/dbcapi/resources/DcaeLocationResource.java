@@ -41,12 +41,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.DcaeLocationService;
+
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
 
 @Path("/dcaeLocations")
@@ -55,8 +56,8 @@ import org.onap.dmaap.dbcapi.service.DcaeLocationService;
 @Produces(MediaType.APPLICATION_JSON)
 @Authorization
 public class DcaeLocationResource extends BaseLoggingClass {
-	static final Logger logger = Logger.getLogger(DcaeLocationResource.class);	
-	DcaeLocationService locationService = new DcaeLocationService();
+	private DcaeLocationService locationService = new DcaeLocationService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	
 	@GET
 	@ApiOperation( value = "return dcaeLocation details", 
@@ -67,13 +68,10 @@ public class DcaeLocationResource extends BaseLoggingClass {
         @ApiResponse( code = 400, message = "Error", response = ApiError.class )
     })
 	public Response getDcaeLocations() {
-		ApiService check = new ApiService();
-
 		List<DcaeLocation> locs = locationService.getAllDcaeLocations();
 
-		GenericEntity<List<DcaeLocation>> list = new GenericEntity<List<DcaeLocation>>(locs) {
-        };
-        return check.success(list);
+		GenericEntity<List<DcaeLocation>> list = new GenericEntity<List<DcaeLocation>>(locs) {};
+        return responseBuilder.success(list);
 	}
 	
 	@POST
@@ -84,22 +82,14 @@ public class DcaeLocationResource extends BaseLoggingClass {
         @ApiResponse( code = 200, message = "Success", response = DcaeLocation.class),
         @ApiResponse( code = 400, message = "Error", response = ApiError.class )
     })
-	public Response addDcaeLocation( 
-			DcaeLocation location 
-			) {
-		ApiService check = new ApiService();
+	public Response addDcaeLocation(DcaeLocation location) {
 
 		if ( locationService.getDcaeLocation(location.getDcaeLocationName()) != null ) {
-				
-			check.setCode(Status.CONFLICT.getStatusCode());
-			check.setMessage("dcaeLocation already exists");
-			check.setFields("dcaeLocation");
-			
-			return check.error();
-
+			return responseBuilder.error(new ApiError(Status.CONFLICT.getStatusCode(),
+					"dcaeLocation already exists", "dcaeLocation"));
 		}
 		DcaeLocation loc = locationService.addDcaeLocation(location);
-		return check.success(Status.CREATED.getStatusCode(), loc);
+		return responseBuilder.success(Status.CREATED.getStatusCode(), loc);
 	}
 	
 	@PUT
@@ -112,25 +102,15 @@ public class DcaeLocationResource extends BaseLoggingClass {
     })
 	@Path("/{locationName}")
 	public Response updateDcaeLocation( 
-			@PathParam("locationName") String name, 
-			DcaeLocation location
-			 ) {
-		ApiService check = new ApiService();
+			@PathParam("locationName") String name, DcaeLocation location) {
 
 		location.setDcaeLocationName(name);
 		if ( locationService.getDcaeLocation(location.getDcaeLocationName()) == null ) {
-			ApiError err = new ApiError();
-				
-			err.setCode(Status.NOT_FOUND.getStatusCode());
-			err.setMessage("dcaeLocation does not exist");
-			err.setFields("dcaeLocation");
-			
-			return check.notFound();
-
+			return responseBuilder.notFound();
 
 		}
 		DcaeLocation loc = locationService.updateDcaeLocation(location);
-		return check.success(Status.CREATED.getStatusCode(), loc );
+		return responseBuilder.success(Status.CREATED.getStatusCode(), loc );
 	}
 	
 	@DELETE
@@ -143,10 +123,8 @@ public class DcaeLocationResource extends BaseLoggingClass {
 	public Response deleteDcaeLocation( 
 			@PathParam("locationName") String name
 			 ){
-		ApiService check = new ApiService();
-
 		locationService.removeDcaeLocation(name);
-		return check.success(Status.NO_CONTENT.getStatusCode(), null);
+		return responseBuilder.success(NO_CONTENT.getStatusCode(), null);
 	}
 
 	@GET
@@ -157,23 +135,19 @@ public class DcaeLocationResource extends BaseLoggingClass {
     })
 	@Path("/{locationName}")
 	public Response getDcaeLocation( 
-			@PathParam("locationName") String name
-			 ) {
-		ApiService check = new ApiService();
+			@PathParam("locationName") String name) {
 
 		DcaeLocation loc =  locationService.getDcaeLocation( name );
 		if ( loc == null ) {
 			ApiError err = new ApiError();
 				
-			err.setCode(Status.NOT_FOUND.getStatusCode());
+			err.setCode(NOT_FOUND.getStatusCode());
 			err.setMessage("dcaeLocation does not exist");
 			err.setFields("dcaeLocation");
 			
-			return check.error();
-
-
+			return responseBuilder.error(err);
 		}
 
-		return check.success(loc);
+		return responseBuilder.success(loc);
 	}
 }

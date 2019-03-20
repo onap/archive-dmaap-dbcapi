@@ -25,10 +25,7 @@ import static com.att.eelf.configuration.Configuration.MDC_ELAPSED_TIME;
 import static com.att.eelf.configuration.Configuration.MDC_END_TIMESTAMP;
 import static com.att.eelf.configuration.Configuration.MDC_KEY_REQUEST_ID;
 import static com.att.eelf.configuration.Configuration.MDC_PARTNER_NAME;
-import static com.att.eelf.configuration.Configuration.MDC_RESPONSE_CODE;
-import static com.att.eelf.configuration.Configuration.MDC_RESPONSE_DESC;
 import static com.att.eelf.configuration.Configuration.MDC_SERVICE_NAME;
-import static com.att.eelf.configuration.Configuration.MDC_STATUS_CODE;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,7 +33,6 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.DatatypeConverter;
 
@@ -191,7 +187,7 @@ public class ApiService extends BaseLoggingClass {
 
 
 	public void setCode(int statusCode) {
-		err.setCode(statusCode);	
+		err.setCode(statusCode);
 	}
 
 
@@ -202,63 +198,6 @@ public class ApiService extends BaseLoggingClass {
 
 	public void setFields(String string) {
 		err.setFields(string);
-	}
-
-	private Response  buildResponse( Object obj ) {
-		stopwatch.stop();
-		MDC.put( MDC_RESPONSE_CODE, String.valueOf(err.getCode()) );
-		
-		auditLogger.auditEvent( "" );
-		return Response.status( err.getCode())
-				.entity(obj)
-				.build();
-	}
-	private Response  buildSuccessResponse(Object d) {
-		MDC.put( MDC_STATUS_CODE,  "COMPLETE");
-		MDC.put( MDC_RESPONSE_DESC, "");
-		return buildResponse( d );
-	}
-	private Response  buildErrResponse() {
-	
-		MDC.put( MDC_STATUS_CODE,  "ERROR");
-		MDC.put( MDC_RESPONSE_DESC, err.getMessage());
-		
-		return buildResponse(getErr());
-	}
-	public Response success( Object d ) {
-		err.setCode(Status.OK.getStatusCode());
-		return buildSuccessResponse(d);
-				
-	}
-	public Response success( int code, Object d ) {
-		err.setCode(code);
-		return buildSuccessResponse(d);
-	}
-
-	public Response unauthorized( String msg ) {
-		err.setCode(Status.UNAUTHORIZED.getStatusCode());
-		err.setFields( "Authorization");
-		err.setMessage( msg );
-		return buildErrResponse();
-	}
-	public Response unauthorized() {
-		err.setCode(Status.UNAUTHORIZED.getStatusCode());
-		err.setFields( "Authorization");
-		err.setMessage( "User credentials in HTTP Header field Authorization are not authorized for the requested action");
-		return buildErrResponse();
-	}
-	public Response unavailable() {
-		err.setCode(Status.SERVICE_UNAVAILABLE.getStatusCode());
-		err.setMessage( "Request is unavailable due to unexpected condition");
-		return buildErrResponse();
-	}
-	public Response notFound() {
-		err.setCode(Status.NOT_FOUND.getStatusCode());
-		err.setMessage( "Requested object not found");
-		return buildErrResponse();
-	}
-	public Response error() {
-		return buildErrResponse();
 	}
 	
 	public void checkAuthorization( String auth, String uriPath, String httpMethod ) throws AuthenticationErrorException, Exception {

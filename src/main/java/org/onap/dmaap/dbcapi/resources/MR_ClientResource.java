@@ -50,6 +50,8 @@ import org.onap.dmaap.dbcapi.service.MR_ClientService;
 import org.onap.dmaap.dbcapi.service.MR_ClusterService;
 import org.onap.dmaap.dbcapi.service.TopicService;
 
+import static javax.ws.rs.core.Response.Status.NO_CONTENT;
+
 
 @Path("/mr_clients")
 @Api( value= "MR_Clients", description = "Endpoint for a Message Router Client that implements a Publisher or a Subscriber" )
@@ -59,6 +61,7 @@ import org.onap.dmaap.dbcapi.service.TopicService;
 public class MR_ClientResource extends BaseLoggingClass {
 
 	private MR_ClientService mr_clientService = new MR_ClientService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 		
 	@GET
 	@ApiOperation( value = "return MR_Client details", 
@@ -69,13 +72,11 @@ public class MR_ClientResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getMr_Clients() {
-		ApiService resp = new ApiService();
-
 		List<MR_Client> clients = mr_clientService.getAllMr_Clients();
 
 		GenericEntity<List<MR_Client>> list = new GenericEntity<List<MR_Client>>(clients) {
         };
-        return resp.success(list);		
+        return responseBuilder.success(list);
 	}
 		
 	@POST
@@ -90,8 +91,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response addMr_Client( 
-			MR_Client client
-			) {
+			MR_Client client) {
 		ApiService resp = new ApiService();
 
 		try {
@@ -106,7 +106,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		MR_ClusterService clusters = new MR_ClusterService();
 
@@ -117,7 +117,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 			resp.setMessage( "MR_Cluster alias not found for dcaeLocation: " + client.getDcaeLocationName());
 			resp.setFields("dcaeLocationName");
 			logger.warn( resp.toString() );
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		String url = cluster.getFqdn();
 		if ( url == null || url.isEmpty() ) {
@@ -126,22 +126,22 @@ public class MR_ClientResource extends BaseLoggingClass {
 			resp.setMessage("FQDN not set for dcaeLocation " + client.getDcaeLocationName() );
 			resp.setFields("fqdn");
 			logger.warn( resp.toString() );
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		TopicService topics = new TopicService();
 
 		Topic t = topics.getTopic(client.getFqtn(), resp.getErr() );
 		if ( t == null ) {
-			return resp.error();		
+			return responseBuilder.error(resp.getErr());
 		}
 		MR_Client nClient =  mr_clientService.addMr_Client(client, t, resp.getErr());
 		if ( resp.getErr().is2xx()) {
 			t = topics.getTopic(client.getFqtn(),  resp.getErr());
 			topics.checkForBridge(t, resp.getErr());
-			return resp.success(nClient);
+			return responseBuilder.success(nClient);
 		}
 		else {
-			return resp.error();			
+			return responseBuilder.error(resp.getErr());
 		}
 	}
 		
@@ -168,7 +168,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();		
+			return responseBuilder.error(resp.getErr());
 		}
 		client.setMrClientId(clientId);
 		MR_Client nClient = mr_clientService.updateMr_Client(client, resp.getErr() );
@@ -199,14 +199,14 @@ public class MR_ClientResource extends BaseLoggingClass {
 			resp.required( "clientId", id, "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		mr_clientService.removeMr_Client(id, true, resp.getErr() );
 		if ( resp.getErr().is2xx()) {
-			return resp.success(Status.NO_CONTENT.getStatusCode(), null);
+			return responseBuilder.success(NO_CONTENT.getStatusCode(), null);
 		}
 		
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 
 	@GET
@@ -227,12 +227,12 @@ public class MR_ClientResource extends BaseLoggingClass {
 			resp.required( "clientId", id, "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		MR_Client nClient =  mr_clientService.getMr_Client( id, resp.getErr() );
 		if ( resp.getErr().is2xx()) {
-			return resp.success(nClient);
+			return responseBuilder.success(nClient);
 		}
-		return resp.error();	
+		return responseBuilder.error(resp.getErr());
 	}
 }

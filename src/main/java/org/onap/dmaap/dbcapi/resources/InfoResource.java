@@ -32,8 +32,6 @@ import io.swagger.annotations.ApiResponses;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -44,8 +42,6 @@ import javax.ws.rs.core.UriInfo;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.Dmaap;
-import org.onap.dmaap.dbcapi.service.ApiService;
-import org.onap.dmaap.dbcapi.service.DmaapService;
 
 
 
@@ -57,7 +53,7 @@ import org.onap.dmaap.dbcapi.service.DmaapService;
 public class InfoResource extends BaseLoggingClass {
 
 
-	DmaapService dmaapService = new DmaapService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	
 	@GET
 	@ApiOperation( value = "return info details", notes = "returns the `info` object", response = Dmaap.class)
@@ -67,9 +63,7 @@ public class InfoResource extends BaseLoggingClass {
     })
 
 	public Response getInfo(@Context UriInfo uriInfo)  {
-		ApiService check = new ApiService();
-			
-			return check.success(204, null);
+		return responseBuilder.success(204, null);
 	}
 	
 

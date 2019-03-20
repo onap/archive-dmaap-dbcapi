@@ -50,6 +50,8 @@ import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.TopicService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
+import static javax.ws.rs.core.Response.Status.CREATED;
+
 @Path("/topics")
 @Api( value= "topics", description = "Endpoint for retreiving MR Topics" )
 @Consumes(MediaType.APPLICATION_JSON)
@@ -59,7 +61,8 @@ public class TopicResource extends BaseLoggingClass {
 	private static FqtnType defaultTopicStyle;
 	private static String defaultPartitionCount;
 	private static String defaultReplicationCount;
-	TopicService mr_topicService = new TopicService();
+	private TopicService mr_topicService = new TopicService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	
 	public TopicResource() {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
@@ -79,14 +82,11 @@ public class TopicResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getTopics() {
-
-		ApiService check = new ApiService();
-
 		List<Topic> allTopics = mr_topicService.getAllTopics();
 		
 		GenericEntity<List<Topic>> list = new GenericEntity<List<Topic>>(allTopics) {
 		        };
-		return check.success(list);
+		return responseBuilder.success(list);
 		
 	}
 		
@@ -114,7 +114,7 @@ public class TopicResource extends BaseLoggingClass {
 			check.required( "owner", topic.getOwner(), "" );
 		} catch( RequiredFieldException rfe ) {
 			logger.error("Error", rfe);
-			return check.error();
+			return responseBuilder.error(check.getErr());
 		}
 		
 		ReplicationType t = topic.getReplicationCase();
@@ -142,9 +142,9 @@ public class TopicResource extends BaseLoggingClass {
 		
 		Topic mrc =  mr_topicService.addTopic(topic, check.getErr(), flag);
 		if ( mrc != null && check.getErr().is2xx() ) {
-			return check.success(Status.CREATED.getStatusCode(), mrc);
+			return responseBuilder.success(CREATED.getStatusCode(), mrc);
 		}
-		return check.error();
+		return responseBuilder.error(check.getErr());
 	}
 	
 	@PUT
@@ -164,7 +164,7 @@ public class TopicResource extends BaseLoggingClass {
 		check.setCode(Status.BAD_REQUEST.getStatusCode());
 		check.setMessage( "Method /PUT not supported for /topics");
 		
-		return check.error();
+		return responseBuilder.error(check.getErr());
 	}
 		
 	@DELETE
@@ -185,14 +185,14 @@ public class TopicResource extends BaseLoggingClass {
 			check.required( "fqtn", id, "" );
 		} catch( RequiredFieldException rfe ) {
 			logger.error("Error", rfe);
-			return check.error();
+			return responseBuilder.error(check.getErr());
 		}
 		
 		mr_topicService.removeTopic(id, check.getErr());
 		if ( check.getErr().is2xx()) {
-			return check.success(Status.NO_CONTENT.getStatusCode(), null);
+			return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 		} 
-		return check.error();
+		return responseBuilder.error(check.getErr());
 	}
 	
 
@@ -215,12 +215,12 @@ public class TopicResource extends BaseLoggingClass {
 			check.required( "topicName", id, "^\\S+$" );  //no white space allowed in topicName
 		} catch( RequiredFieldException rfe ) {
 			logger.error("Error", rfe);
-			return check.error();
+			return responseBuilder.error(check.getErr());
 		}
 		Topic mrc =  mr_topicService.getTopic( id, check.getErr() );
 		if ( mrc == null ) {
-			return check.error();
+			return responseBuilder.error(check.getErr());
 		}
-		return check.success(mrc);
+		return responseBuilder.success(mrc);
 		}
 }

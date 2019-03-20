@@ -51,6 +51,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
+import static javax.ws.rs.core.Response.Status.CREATED;
+
 
 @Path("/dr_subs")
 @Api( value= "dr_subs", description = "Endpoint for a Data Router client that implements a Subscriber" )
@@ -58,6 +60,8 @@ import io.swagger.annotations.ApiResponses;
 @Produces(MediaType.APPLICATION_JSON)
 @Authorization
 public class DR_SubResource extends BaseLoggingClass {
+
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 		
 	@GET
 	@ApiOperation( value = "return DR_Sub details", 
@@ -68,15 +72,12 @@ public class DR_SubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getDr_Subs() {
-
-		ApiService resp = new ApiService();
-
 		DR_SubService dr_subService = new DR_SubService();
 		List<DR_Sub> subs = dr_subService.getAllDr_Subs();
 
 		GenericEntity<List<DR_Sub>> list = new GenericEntity<List<DR_Sub>>(subs) {
         };
-        return resp.success(list);
+        return responseBuilder.success(list);
 	}
 		
 	@POST
@@ -101,13 +102,13 @@ public class DR_SubResource extends BaseLoggingClass {
 				resp.required( "feedName", sub.getFeedName(), "");
 			}catch ( RequiredFieldException rfe2 ) {
 				logger.debug( resp.toString() );
-				return resp.error();
+				return responseBuilder.error(resp.getErr());
 			}
 			// if we found a FeedName instead of a FeedId then try to look it up.
 			List<Feed> nfeeds =  feeds.getAllFeeds( sub.getFeedName(), sub.getFeedVersion(), "equals");
 			if ( nfeeds.size() != 1 ) {
 				logger.debug( "Attempt to match "+ sub.getFeedName() + " ver="+sub.getFeedVersion() + " matched " + nfeeds.size() );
-				return resp.error();
+				return responseBuilder.error(resp.getErr());
 			}
 			fnew = nfeeds.get(0);
 		}
@@ -116,7 +117,7 @@ public class DR_SubResource extends BaseLoggingClass {
 			resp.required( "dcaeLocationName", sub.getDcaeLocationName(), "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		// we may have fnew already if located by FeedName
 		if ( fnew == null ) {
@@ -125,21 +126,21 @@ public class DR_SubResource extends BaseLoggingClass {
 		if ( fnew == null ) {
 			logger.warn( "Specified feed " + sub.getFeedId() + " or " + sub.getFeedName() + " not known to Bus Controller");
 			resp.setCode(Status.NOT_FOUND.getStatusCode());
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		DR_SubService dr_subService = new DR_SubService( fnew.getSubscribeURL());
 		ArrayList<DR_Sub> subs = fnew.getSubs();
 		logger.info( "num existing subs before = " + subs.size() );
 		DR_Sub snew = dr_subService.addDr_Sub(sub, resp.getErr() );
 		if ( ! resp.getErr().is2xx() ) {
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		subs.add( snew );
 		logger.info( "num existing subs after = " + subs.size() );
 		
 		fnew.setSubs(subs);
 		logger.info( "update feed");
-		return resp.success(Status.CREATED.getStatusCode(), snew);
+		return responseBuilder.success(CREATED.getStatusCode(), snew);
 
 	}
 		
@@ -166,22 +167,22 @@ public class DR_SubResource extends BaseLoggingClass {
 	
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		FeedService feeds = new FeedService();
 		Feed fnew = feeds.getFeed( sub.getFeedId(), resp.getErr() );
 		if ( fnew == null ) {
 			logger.warn( "Specified feed " + sub.getFeedId() + " not known to Bus Controller");
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 
 		DR_SubService dr_subService = new DR_SubService();
 		sub.setSubId(name);
 		DR_Sub nsub = dr_subService.updateDr_Sub(sub, resp.getErr() );
 		if ( nsub != null && nsub.isStatusValid() ) {
-			return resp.success(nsub);
+			return responseBuilder.success(nsub);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 		
 	@DELETE
@@ -203,14 +204,14 @@ public class DR_SubResource extends BaseLoggingClass {
 			resp.required( "subId", id, "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		DR_SubService dr_subService = new DR_SubService();
 		dr_subService.removeDr_Sub(id, resp.getErr() );
 		if ( ! resp.getErr().is2xx() ) {
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
-		return resp.success(Status.NO_CONTENT.getStatusCode(), null );
+		return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null );
 	}
 
 	@GET
@@ -231,13 +232,13 @@ public class DR_SubResource extends BaseLoggingClass {
 			resp.required( "subId", id, "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		DR_SubService dr_subService = new DR_SubService();
 		DR_Sub sub =  dr_subService.getDr_Sub( id, resp.getErr() );
 		if ( sub != null && sub.isStatusValid() ) {
-			return resp.success(sub);
+			return responseBuilder.success(sub);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 }

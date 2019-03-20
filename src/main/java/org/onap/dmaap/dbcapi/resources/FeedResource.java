@@ -56,7 +56,9 @@ import org.onap.dmaap.dbcapi.service.FeedService;
 @Produces(MediaType.APPLICATION_JSON)
 @Authorization
 public class FeedResource extends BaseLoggingClass {
-	
+
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
+
 	@GET
 	@ApiOperation( value = "return Feed details", 
 	notes = "Returns array of  `Feed` objects.", 
@@ -68,16 +70,13 @@ public class FeedResource extends BaseLoggingClass {
 	public Response getFeeds(
 			@QueryParam("feedName") String feedName,
 			@QueryParam("version") String version,
-			@QueryParam("match") String match
-			) {
-
-		ApiService resp = new ApiService();
+			@QueryParam("match") String match) {
 
 		FeedService feedService = new FeedService();
 		List<Feed> nfeeds =  feedService.getAllFeeds( feedName, version, match );
 		GenericEntity<List<Feed>> list = new GenericEntity<List<Feed>>(nfeeds) {
         };
-        return resp.success(list);
+        return responseBuilder.success(list);
 	}
 	
 
@@ -92,8 +91,7 @@ public class FeedResource extends BaseLoggingClass {
 	})
 	public Response addFeed( 
 			@WebParam(name = "feed") Feed feed,
-			@QueryParam("useExisting") String useExisting
-			) {
+			@QueryParam("useExisting") String useExisting) {
 
 		ApiService resp = new ApiService();
 
@@ -104,7 +102,7 @@ public class FeedResource extends BaseLoggingClass {
 			resp.required( "asprClassification", feed.getAsprClassification(), "" );
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		
 		
@@ -113,28 +111,28 @@ public class FeedResource extends BaseLoggingClass {
 		if ( nfeed == null ) {
 			nfeed =  feedService.addFeed( feed, resp.getErr() );
 			if ( nfeed != null ) {
-				return resp.success(nfeed);
+				return responseBuilder.success(nfeed);
 			} else {
 				logger.error( "Unable to create: " + feed.getFeedName() + ":" + feed.getFeedVersion());
 
-				return resp.error();			
+				return responseBuilder.error(resp.getErr());
 			}
 		} else if ( nfeed.getStatus() == DmaapObject_Status.DELETED ) {
 			feed.setFeedId( nfeed.getFeedId());
 			nfeed =  feedService.updateFeed(feed, resp.getErr());
 			if ( nfeed != null ) {
-				return resp.success(nfeed);
+				return responseBuilder.success(nfeed);
 			} else {
 				logger.info( "Unable to update: " + feed.getFeedName() + ":" + feed.getFeedVersion());
 
-				return resp.error();	
+				return responseBuilder.error(resp.getErr());
 			}
 		} else if ( (useExisting != null) && ("true".compareToIgnoreCase( useExisting ) == 0)) {
-			return resp.success(nfeed);
+			return responseBuilder.success(nfeed);
 		}
 
 		resp.setCode(Status.CONFLICT.getStatusCode());
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 	
 	@PUT
@@ -148,8 +146,7 @@ public class FeedResource extends BaseLoggingClass {
 	@Path("/{id}")
 	public Response updateFeed( 
 			@PathParam("id") String id,
-			@WebParam(name = "feed") Feed feed 
-			) {
+			@WebParam(name = "feed") Feed feed) {
 
 		FeedService feedService = new FeedService();
 		ApiService resp = new ApiService();
@@ -158,12 +155,12 @@ public class FeedResource extends BaseLoggingClass {
 			resp.required( "feedId", id, "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 
 		Feed nfeed = feedService.getFeed( id, resp.getErr() );
 		if ( nfeed == null || nfeed.getStatus() == DmaapObject_Status.DELETED ) {
-			return resp.notFound();						
+			return responseBuilder.notFound();
 		}
 	
 		//  we assume there is no updates allowed for pubs and subs objects via this api...		
@@ -174,11 +171,11 @@ public class FeedResource extends BaseLoggingClass {
 		
 		nfeed =  feedService.updateFeed(nfeed, resp.getErr());
 		if ( nfeed != null ) {
-			return resp.success(nfeed);
+			return responseBuilder.success(nfeed);
 		} else {
 			logger.info( "Unable to update: " + feed.getFeedName() + ":" + feed.getFeedVersion());
 
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 	}
 	
@@ -201,15 +198,15 @@ public class FeedResource extends BaseLoggingClass {
 		Feed nfeed =  feedService.getFeed( id, resp.getErr() );
 		if ( nfeed == null ) {
 			resp.setCode(Status.NOT_FOUND.getStatusCode());
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		nfeed = feedService.removeFeed( nfeed, resp.getErr() );
 		if ( nfeed == null || nfeed.getStatus() == DmaapObject_Status.DELETED ) {
-			return resp.success(Status.NO_CONTENT.getStatusCode(), null);
+			return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 		}
 		logger.info( "Unable to delete: " + id + ":" + nfeed.getFeedVersion());
 
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 
 	@GET
@@ -230,8 +227,8 @@ public class FeedResource extends BaseLoggingClass {
 		Feed nfeed =  feedService.getFeed( id, resp.getErr() );
 		if ( nfeed == null ) {
 			resp.setCode(Status.NOT_FOUND.getStatusCode());
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
-		return resp.success(nfeed);
+		return responseBuilder.success(nfeed);
 	}
 }

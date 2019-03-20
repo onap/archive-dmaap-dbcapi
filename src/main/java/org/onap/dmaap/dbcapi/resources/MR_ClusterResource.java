@@ -44,7 +44,6 @@ import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.service.ApiService;
-import org.onap.dmaap.dbcapi.service.MR_ClientService;
 import org.onap.dmaap.dbcapi.service.MR_ClusterService;
 
 
@@ -55,8 +54,8 @@ import org.onap.dmaap.dbcapi.service.MR_ClusterService;
 @Authorization
 public class MR_ClusterResource extends BaseLoggingClass {
 
-	MR_ClusterService mr_clusterService = new MR_ClusterService();
-	MR_ClientService mr_clients = new MR_ClientService();
+	private MR_ClusterService mr_clusterService = new MR_ClusterService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 		
 	@GET
 	@ApiOperation( value = "return MR_Cluster details", 
@@ -67,13 +66,11 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response getMr_Clusters() {
-		ApiService resp = new ApiService();
-
 		List<MR_Cluster> clusters = mr_clusterService.getAllMr_Clusters();
 
 		GenericEntity<List<MR_Cluster>> list = new GenericEntity<List<MR_Cluster>>(clusters) {
         };
-        return resp.success(list);
+        return responseBuilder.success(list);
 	}
 		
 	@POST
@@ -85,21 +82,20 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response  addMr_Cluster( 
-			MR_Cluster cluster
-			) {
+			MR_Cluster cluster) {
 		ApiService resp = new ApiService();
 
 		try {
 			resp.required( "dcaeLocationName", cluster.getDcaeLocationName(), "" );  
 			resp.required( "fqdn", cluster.getFqdn(), "" );
 		} catch( RequiredFieldException rfe ) {
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		MR_Cluster mrc =  mr_clusterService.addMr_Cluster(cluster, resp.getErr() );
 		if ( mrc != null && mrc.isStatusValid() ) {
-			return resp.success(Status.CREATED.getStatusCode(), mrc);
+			return responseBuilder.success(Status.CREATED.getStatusCode(), mrc);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 
 	}
 		
@@ -122,14 +118,14 @@ public class MR_ClusterResource extends BaseLoggingClass {
 			resp.required( "fqdn", clusterId, "" );
 			resp.required( "dcaeLocationName", cluster.getDcaeLocationName(), "" );  
 		} catch( RequiredFieldException rfe ) {
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		cluster.setDcaeLocationName(clusterId);
 		MR_Cluster mrc =  mr_clusterService.updateMr_Cluster(cluster, resp.getErr() );
 		if ( mrc != null && mrc.isStatusValid() ) {
-			return resp.success(Status.CREATED.getStatusCode(), mrc);
+			return responseBuilder.success(Status.CREATED.getStatusCode(), mrc);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 		
 	@DELETE
@@ -149,13 +145,13 @@ public class MR_ClusterResource extends BaseLoggingClass {
 		try {
 			resp.required( "fqdn", id, "" );
 		} catch( RequiredFieldException rfe ) {
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		mr_clusterService.removeMr_Cluster(id, resp.getErr() );
 		if ( resp.getErr().is2xx()) {
-			return resp.success(Status.NO_CONTENT.getStatusCode(), null);
+			return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 		} 
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 
 	@GET
@@ -175,12 +171,12 @@ public class MR_ClusterResource extends BaseLoggingClass {
 		try {
 			resp.required( "dcaeLocationName", id, "" );
 		} catch( RequiredFieldException rfe ) {
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		MR_Cluster mrc =  mr_clusterService.getMr_Cluster( id, resp.getErr() );
 		if ( mrc != null && mrc.isStatusValid() ) {
-			return resp.success(Status.CREATED.getStatusCode(), mrc);
+			return responseBuilder.success(Status.CREATED.getStatusCode(), mrc);
 		}
-		return resp.error();
+		return responseBuilder.error(resp.getErr());
 	}
 }

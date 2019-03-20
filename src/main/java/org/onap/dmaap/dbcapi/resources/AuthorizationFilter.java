@@ -20,8 +20,6 @@
 
 package org.onap.dmaap.dbcapi.resources;
 
-import java.io.IOException;
-
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 
@@ -34,29 +32,26 @@ import org.onap.dmaap.dbcapi.service.ApiService;
 public class AuthorizationFilter implements ContainerRequestFilter   {
 	
 	private Logger logger = Logger.getLogger(AuthorizationFilter.class.getName());
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	
 	@Override
-	public void filter(ContainerRequestContext requestContext)
-			throws IOException {
+	public void filter(ContainerRequestContext requestContext) {
 
 		ApiService apiResp = new ApiService()
 			.setAuth( requestContext.getHeaderString("Authorization") )
 			.setUriPath(requestContext.getUriInfo().getPath())
 			.setHttpMethod( requestContext.getMethod() )
 			.setRequestId( requestContext.getHeaderString("X-ECOMP-RequestID") );
-		
+
 		try {
 			apiResp.checkAuthorization();
 		} catch ( AuthenticationErrorException ae ) {
 			logger.error("Error", ae);
-			requestContext.abortWith( apiResp.unauthorized( apiResp.getErr().getMessage() ) );
-			return ;
+			requestContext.abortWith( responseBuilder.unauthorized( apiResp.getErr().getMessage() ) );
 		} catch ( Exception e ) {
 			logger.error("Error", e);
-			requestContext.abortWith( apiResp.unavailable() ); 
-			return;
+			requestContext.abortWith( responseBuilder.unavailable() );
 		}
-		
 
 	}
 

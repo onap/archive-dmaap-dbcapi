@@ -57,7 +57,8 @@ import org.onap.dmaap.dbcapi.service.DmaapService;
 public class DmaapResource extends BaseLoggingClass {
 
 
-	DmaapService dmaapService = new DmaapService();
+	private DmaapService dmaapService = new DmaapService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	
 	@GET
 	@ApiOperation( value = "return dmaap details", notes = "returns the `dmaap` object, which contains system wide configuration settings", response = Dmaap.class)
@@ -67,10 +68,8 @@ public class DmaapResource extends BaseLoggingClass {
     })
 
 	public Response getDmaap(@Context UriInfo uriInfo)  {
-		ApiService check = new ApiService();
-			
 		Dmaap d =  dmaapService.getDmaap();
-		return check.success(d);
+		return responseBuilder.success(d);
 	}
 	
 	@POST
@@ -88,16 +87,16 @@ public class DmaapResource extends BaseLoggingClass {
 			check.required( "topicNsRoot", obj.getTopicNsRoot(), "" );
 			check.required( "bridgeAdminTopic", obj.getBridgeAdminTopic(), "" );
 		} catch( RequiredFieldException rfe ) {
-			return check.error();
+			return responseBuilder.error(check.getErr());
 		}
 	
 		Dmaap d =  dmaapService.addDmaap(obj);
 		if ( d == null ) {
-			return check.notFound();
+			return responseBuilder.notFound();
 
 		} 
 
-		return check.success(d);
+		return responseBuilder.success(d);
 	}
 	
 	@PUT
@@ -115,13 +114,13 @@ public class DmaapResource extends BaseLoggingClass {
 			check.required( "topicNsRoot", obj.getTopicNsRoot(), "" );
 			check.required( "bridgeAdminTopic", obj.getBridgeAdminTopic(), "" );
 		} catch( RequiredFieldException rfe ) {
-			return check.error();
+			return responseBuilder.error(check.getErr());
 		}
 		Dmaap d =  dmaapService.updateDmaap(obj);
 		if ( d != null ) {
-			return check.success(d);
+			return responseBuilder.success(d);
 		} else {
-			return check.notFound();	
+			return responseBuilder.notFound();
 		}	
 	}
 	

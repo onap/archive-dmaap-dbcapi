@@ -32,19 +32,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.BrTopic;
 import org.onap.dmaap.dbcapi.model.MirrorMaker;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.MirrorMakerService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 @Path("/bridge")
 @Api( value= "bridge", description = "Endpoint for retreiving MR Bridge metrics" )
@@ -54,6 +54,7 @@ import io.swagger.annotations.ApiResponses;
 public class BridgeResource extends BaseLoggingClass {
 	
 	private MirrorMakerService mmService = new MirrorMakerService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 
 	@GET
 	@ApiOperation( value = "return BrTopic details", 
@@ -66,10 +67,9 @@ public class BridgeResource extends BaseLoggingClass {
 })
 	public Response	getBridgedTopics(@QueryParam("mmagent") String mmagent,
 						   			@QueryParam("detail") Boolean detailFlag ){
-		ApiService check = new ApiService();
-		
+
 		if ( mmagent == null ) {
-			return check.success(getMMcounts(Boolean.TRUE.equals(detailFlag)));
+			return responseBuilder.success(getMMcounts(Boolean.TRUE.equals(detailFlag)));
 
 		}
 		logger.info( "getBridgeTopics():" + " mmagent=" + mmagent);
@@ -81,7 +81,7 @@ public class BridgeResource extends BaseLoggingClass {
 
 			MirrorMaker mm = mmService.getMirrorMaker(mmagent);
 			if ( mm == null ) {		
-				return check.notFound();
+				return responseBuilder.notFound();
 			} 
 					
 			brTopic.setTopicCount( mm.getTopicCount() );
@@ -91,16 +91,16 @@ public class BridgeResource extends BaseLoggingClass {
 			
 			logger.info( "topicCount [2 locations]: " + brTopic.getTopicCount() );
 		
-			return check.success(brTopic);
+			return responseBuilder.success(brTopic);
 		} else {	
 			logger.info( "getBridgeTopics() detail:" + " mmagent=" + mmagent);
 			// get topics between 2 bridged locations	
 			MirrorMaker mm = mmService.getMirrorMaker(mmagent);
 			if ( mm == null ) {		
-				return check.notFound();
+				return responseBuilder.notFound();
 			} 
 
-			return check.success(mm);
+			return responseBuilder.success(mm);
 		}
 	}
 	
@@ -156,15 +156,13 @@ public class BridgeResource extends BaseLoggingClass {
 						   			@QueryParam("refresh") Boolean refreshFlag,
 						   			@QueryParam("split") Boolean splitFlag,
 						   			MirrorMaker newBridge ){
-		ApiService check = new ApiService();	
-			
 		logger.info( "putBridgeTopics() mmagent:" +  mmagent );
 
 		if ( mmagent != null ) {		// put topics between 2 bridged locations
 			
 			MirrorMaker mm = mmService.getMirrorMaker(mmagent);
 			if ( mm == null ) {		
-				return check.notFound();
+				return responseBuilder.notFound();
 			} 
 			
 			if ( splitFlag != null && splitFlag == true ) {
@@ -173,24 +171,20 @@ public class BridgeResource extends BaseLoggingClass {
 				logger.info( "setting whitelist from message body containing mmName=" + newBridge.getMmName());
 				if ( ! mmagent.equals(newBridge.getMmName()) ){
 					logger.error( "mmagent query param does not match mmName in body");
-					check.setCode(Status.BAD_REQUEST.getStatusCode());
-					check.setMessage("mmagent query param does not match mmName in body");
-					return check.error();
+					return responseBuilder.error(new ApiError(BAD_REQUEST.getStatusCode(),
+							"mmagent query param does not match mmName in body"));
 				}
 				mm.setTopics( newBridge.getTopics() );
 			} else {
 				logger.info( "refreshing whitelist from memory");
 			}
 			mmService.updateMirrorMaker(mm);
-			return check.success(mm);
+			return responseBuilder.success(mm);
 		}
 
 		else {
-
 			logger.error( "mmagent is required for PUT");
-			check.setCode(Status.BAD_REQUEST.getStatusCode());
-			check.setMessage("mmagent is required for PUT");
-			return check.error();
+			return responseBuilder.error(new ApiError(BAD_REQUEST.getStatusCode(), "mmagent is required for PUT"));
 		}
 
 	}

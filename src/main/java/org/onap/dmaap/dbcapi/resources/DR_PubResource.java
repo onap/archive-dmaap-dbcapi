@@ -58,7 +58,8 @@ import org.onap.dmaap.dbcapi.service.FeedService;
 @Authorization
 public class DR_PubResource extends BaseLoggingClass {
 
-	DR_PubService dr_pubService = new DR_PubService();
+	private DR_PubService dr_pubService = new DR_PubService();
+	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	
 	@GET
 	@ApiOperation( value = "return DR_Pub details", 
@@ -69,14 +70,12 @@ public class DR_PubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public  Response getDr_Pubs() {
-		ApiService resp = new ApiService();
-
 		logger.info( "Entry: GET /dr_pubs");
 		List<DR_Pub> pubs = dr_pubService.getAllDr_Pubs();
 
 		GenericEntity<List<DR_Pub>> list = new GenericEntity<List<DR_Pub>>(pubs) {
         };
-        return resp.success(list);
+        return responseBuilder.success(list);
 	}
 	
 	@POST
@@ -103,13 +102,13 @@ public class DR_PubResource extends BaseLoggingClass {
 				resp.required( "feedName", pub.getFeedName(), "");
 			}catch ( RequiredFieldException rfe2 ) {
 				logger.debug( resp.toString() );
-				return resp.error();
+				return responseBuilder.error(resp.getErr());
 			}
 			// if we found a FeedName instead of a FeedId then try to look it up.
 			List<Feed> nfeeds =  feeds.getAllFeeds( pub.getFeedName(), pub.getFeedVersion(), "equals");
 			if ( nfeeds.size() != 1 ) {
 				logger.debug( "Attempt to match "+ pub.getFeedName() + " ver="+pub.getFeedVersion() + " matched " + nfeeds.size() );
-				return resp.error();
+				return responseBuilder.error(resp.getErr());
 			}
 			fnew = nfeeds.get(0);
 		}
@@ -117,7 +116,7 @@ public class DR_PubResource extends BaseLoggingClass {
 			resp.required( "dcaeLocationName", pub.getDcaeLocationName(), "");
 		} catch ( RequiredFieldException rfe ) {
 			logger.debug( resp.getErr().toString() );
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 
 
@@ -127,7 +126,7 @@ public class DR_PubResource extends BaseLoggingClass {
 		}
 		if ( fnew == null ) {
 			logger.info( "Specified feed " + pub.getFeedId() + " or " + pub.getFeedName() + " not known to Bus Controller");	
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 
 		ArrayList<DR_Pub> pubs = fnew.getPubs();
@@ -146,13 +145,13 @@ public class DR_PubResource extends BaseLoggingClass {
 		fnew = feeds.updateFeed( fnew, resp.getErr() );	
 		
 		if ( ! resp.getErr().is2xx()) {	
-			return resp.error();			
+			return responseBuilder.error(resp.getErr());
 		}
 		pubs = fnew.getPubs();
 		logger.info( "num existing pubs after = " + pubs.size() );
 		
 		DR_Pub pnew = dr_pubService.getDr_Pub(pub.getPubId(), resp.getErr());
-		return resp.success(Status.CREATED.getStatusCode(), pnew);
+		return responseBuilder.success(Status.CREATED.getStatusCode(), pnew);
 	}
 	
 	@PUT
@@ -168,12 +167,10 @@ public class DR_PubResource extends BaseLoggingClass {
 			@PathParam("pubId") String name, 
 			DR_Pub pub
 			) {
-		ApiService resp = new ApiService();
-
 		logger.info( "Entry: PUT /dr_pubs");
 		pub.setPubId(name);
 		DR_Pub res = dr_pubService.updateDr_Pub(pub);
-		return resp.success(res);
+		return responseBuilder.success(res);
 	}
 	
 	@DELETE
@@ -194,24 +191,24 @@ public class DR_PubResource extends BaseLoggingClass {
 		try {
 			resp.required( "pubId", id, "");
 		} catch ( RequiredFieldException rfe ) {
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 
 		DR_Pub pub =  dr_pubService.getDr_Pub( id, resp.getErr() );
 		if ( ! resp.getErr().is2xx()) {	
-			return resp.error();					
+			return responseBuilder.error(resp.getErr());
 		}
 		FeedService feeds = new FeedService();
 		Feed fnew = feeds.getFeed( pub.getFeedId(), resp.getErr() );
 		if ( fnew == null ) {
 			logger.info( "Specified feed " + pub.getFeedId() + " not known to Bus Controller");	
-			return resp.error();
+			return responseBuilder.error(resp.getErr());
 		}
 		ArrayList<DR_Pub> pubs = fnew.getPubs();
 		if ( pubs.size() == 1 ) {
 			resp.setCode(Status.BAD_REQUEST.getStatusCode());
 			resp.setMessage( "Can't delete the last publisher of a feed");
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 		
 		for( Iterator<DR_Pub> i = pubs.iterator(); i.hasNext(); ) {
@@ -223,14 +220,14 @@ public class DR_PubResource extends BaseLoggingClass {
 		fnew.setPubs(pubs);
 		fnew = feeds.updateFeed( fnew, resp.getErr() );
 		if ( ! resp.getErr().is2xx()) {	
-			return resp.error();			
+			return responseBuilder.error(resp.getErr());
 		}
 		
 		dr_pubService.removeDr_Pub(id, resp.getErr() );
 		if ( ! resp.getErr().is2xx()) {	
-			return resp.error();		
+			return responseBuilder.error(resp.getErr());
 		}
-		return resp.success(Status.NO_CONTENT.getStatusCode(), null);
+		return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 	}
 
 	@GET
@@ -250,13 +247,13 @@ public class DR_PubResource extends BaseLoggingClass {
 		try {
 			resp.required( "feedId", id, "");
 		} catch ( RequiredFieldException rfe ) {
-			return resp.error();	
+			return responseBuilder.error(resp.getErr());
 		}
 
 		DR_Pub pub =  dr_pubService.getDr_Pub( id, resp.getErr() );
 		if ( ! resp.getErr().is2xx()) {	
 			resp.getErr();			
 		}
-		return resp.success(Status.OK.getStatusCode(), pub);
+		return responseBuilder.success(Status.OK.getStatusCode(), pub);
 	}
 }

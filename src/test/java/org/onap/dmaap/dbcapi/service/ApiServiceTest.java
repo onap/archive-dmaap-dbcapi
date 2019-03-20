@@ -19,19 +19,13 @@
  */
 package org.onap.dmaap.dbcapi.service;
 
-import  org.onap.dmaap.dbcapi.model.*;
-import  org.onap.dmaap.dbcapi.aaf.*;
 import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.resources.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.List;
-import javax.ws.rs.core.Response;
 
 public class ApiServiceTest {
 
@@ -55,8 +49,8 @@ public class ApiServiceTest {
 	public void test1() {
 
 
-		//rh.reflect( "org.onap.dmaap.dbcapi.service.ApiService", "get", null );	
-	
+		//rh.reflect( "org.onap.dmaap.dbcapi.service.ApiService", "get", null );
+
 	}
 
 	@Test
@@ -74,12 +68,6 @@ public class ApiServiceTest {
 			nd.required( "aName", null, "anExpr" );
 		} catch ( RequiredFieldException rfe ) {
 		}
-		String out = nd.toString();	
-		Response r = nd.unauthorized( "aMessage" );
-		r = nd.unauthorized();
-		r = nd.unavailable();
-		r = nd.notFound();
-		r = nd.error();
 		try {
 			nd.checkAuthorization( "authval", "/uri/Path", "GET" );
 			nd.checkAuthorization();
