@@ -69,7 +69,7 @@ public class DRSubTest {
 		assertTrue( t.isGuaranteedDelivery() == false );
 		assertTrue( t.isGuaranteedSequence() == false );
 		assertTrue( t.isPrivilegedSubscriber() == false );
-	
+		assertTrue( t.isDecompressData() == false );
 	}
 
 	@Test
@@ -113,6 +113,8 @@ public class DRSubTest {
 		assertTrue( t.isGuaranteedSequence() == v );
 		t.setPrivilegedSubscriber(v);
 		assertTrue( t.isPrivilegedSubscriber() == v );
+		t.setDecompressData(v);
+		assertTrue( t.isDecompressData() == v );
 	}
 
 	@Test

@@ -45,15 +45,16 @@ public class DR_Sub extends DmaapObject {
 	private boolean guaranteedDelivery;
 	private boolean guaranteedSequence;
 	private boolean privilegedSubscriber;
-	
+	private boolean decompressData;
+
 	// NOTE: the following fields are optional in the API but not stored in the DB
+
 	private	String	feedName;
 	private String	feedVersion;
-
 	public DR_Sub() {
 
 	}
-	
+
 	public DR_Sub( String dLN,
 					String uN,
 					String uP,
@@ -71,12 +72,12 @@ public class DR_Sub extends DmaapObject {
 		this.setStatus( DmaapObject_Status.NEW );
 		this.subId = "0";
 	}
-	
+
 	public DR_Sub ( String json ) {
 		logger.info( "DR_Sub:" + json );
 		JSONParser parser = new JSONParser();
 		JSONObject jsonObj;
-		
+
 		try {
 			jsonObj = (JSONObject) parser.parse( json );
 		} catch ( ParseException pe ) {
@@ -87,7 +88,7 @@ public class DR_Sub extends DmaapObject {
 
 		this.setOwner( (String) jsonObj.get("subscriber"));
 		this.setSuspended( (boolean) jsonObj.get("suspend"));
-		
+
 		try {
 			JSONObject links = (JSONObject) jsonObj.get("links");
 			String url = (String) links.get("feed");
@@ -97,7 +98,7 @@ public class DR_Sub extends DmaapObject {
 			logger.info( "feedid="+ this.getFeedId() );
 			this.setLogURL( (String) links.get("log") );
 		} catch (NullPointerException npe ) {
-			
+
 		}
 		try {
 			this.setGuaranteedDelivery( (boolean) jsonObj.get("guaranteed_delivery"));
@@ -114,20 +115,23 @@ public class DR_Sub extends DmaapObject {
 		} catch( NullPointerException npe ) {
 			this.setPrivilegedSubscriber(false);
 		}
-		
+		try {
+			this.setDecompressData((boolean) jsonObj.get("decompressData"));
+		} catch( NullPointerException npe ) {
+			this.setDecompressData(false);
+		}
+
 		JSONObject del = (JSONObject) jsonObj.get("delivery");
-		this.setDeliveryURL( (String) del.get("url") );	
+		this.setDeliveryURL( (String) del.get("url") );
 		this.setUsername( (String) del.get("user"));
 		this.setUserpwd( (String) del.get( "password"));
 		this.setUse100((boolean) del.get( "use100"));
-
-		
 
 		this.setStatus( DmaapObject_Status.VALID );
 
 		logger.info( "new DR_Sub returning");
 	}
-	
+
 	public String getOwner() {
 		return owner;
 	}
@@ -234,8 +238,14 @@ public class DR_Sub extends DmaapObject {
 	public void setPrivilegedSubscriber(boolean privilegedSubscriber) {
 		this.privilegedSubscriber = privilegedSubscriber;
 	}
-	
-	
+
+	public boolean isDecompressData() {
+		return decompressData;
+	}
+
+	public void setDecompressData(boolean decompressData) {
+		this.decompressData = decompressData;
+	}
 
 	public String getFeedName() {
 		return feedName;
@@ -260,31 +270,32 @@ public class DR_Sub extends DmaapObject {
 		return toProvJSON().getBytes(StandardCharsets.UTF_8);
 	}
 	// returns the DR_Sub object in JSON that conforms to ONAP DR Prov Server expectations
-	public String toProvJSON() {	
+	public String toProvJSON() {
 		// this is the original DR API that was contributed to ONAP
 		String postJSON = String.format("{\"suspend\": %s, \"delivery\":"
 				+ "{\"url\": \"%s\", \"user\": \"%s\", \"password\": \"%s\", \"use100\":  %s }"
 				+ ", \"metadataOnly\": %s, \"groupid\": \"%s\", \"follow_redirect\": %s "
-				+ ", \"privilegedSubscriber\": %s "
+				+ ", \"privilegedSubscriber\": %s, \"decompress\": %s "
 				+ "}"
 				,this.suspended
 				,this.getDeliveryURL()
 				,this.getUsername()
 				,this.getUserpwd()
-				,this.isUse100()		
+				,this.isUse100()
 				,"false"
 				,"0"
 				,"true"
 				,this.isPrivilegedSubscriber()
-			);	
-		
+				,this.isDecompressData()
+			);
+
 		logger.info( postJSON );
 		return postJSON;
 	}
 	// returns the DR_Sub object in JSON that conforms to AT&T DR Prov Server expectations
 	// In Jan, 2019, the DR API used internally at AT&T diverged, so this function can be used in
 	// that runtime environment
-	public String toProvJSONforATT() {	
+	public String toProvJSONforATT() {
 		// in DR 3.0, API v2.1 a new groupid field is added.  We are not using this required field so just set it to 0.
 		// we send this regardless of DR Release because older versions of DR seem to safely ignore it
 		// and soon those versions won't be around anyway...
@@ -312,12 +323,12 @@ public class DR_Sub extends DmaapObject {
 				,"true"
 				,this.isGuaranteedDelivery()
 				,this.isGuaranteedSequence()
-				);	
-		
+				);
+
 		logger.info( postJSON );
 		return postJSON;
 	}
-	
+
 	@Override
 	public String toString() {
 		String rc = String.format ( "DR_Sub: {dcaeLocationName=%s username=%s userpwd=%s feedId=%s deliveryURL=%s logURL=%s subid=%s use100=%s suspended=%s owner=%s}",
