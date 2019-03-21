@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "aaa6647e_2b72259e",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/service/StopWatch.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-21T10:30:36Z",
+      "side": 1,
+      "message": "license information is missing",
+      "revId": "75469fcdb36987ecaab92f88cc4821f39035c361",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9d1fadfb_fd2960de",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/StopWatchTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-21T10:30:36Z",
+      "side": 1,
+      "message": "please add license",
+      "revId": "75469fcdb36987ecaab92f88cc4821f39035c361",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "91d27d9f_45da2c3c",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/StopWatchTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-21T10:30:36Z",
+      "side": 1,
+      "message": "let\u0027s avoid sleep, you can check only if elapsed time is greater than 0",
+      "revId": "75469fcdb36987ecaab92f88cc4821f39035c361",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "af4e4bae_798ad570",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/StopWatchTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-21T10:30:36Z",
+      "side": 1,
+      "message": "use assertEquals",
+      "revId": "75469fcdb36987ecaab92f88cc4821f39035c361",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
