@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "73f93a12_7772ecf8",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/service/ApiService.java",
+        "patchSetId": 5
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1111
+      },
+      "writtenOn": "2019-03-21T13:53:34Z",
+      "side": 1,
+      "message": "Although you created a separate StopWatch class, we seem to have lost the instance variable for it.\nWhat\u0027s the plan?",
+      "range": {
+        "startLine": 51,
+        "startChar": 31,
+        "endLine": 51,
+        "endChar": 32
+      },
+      "revId": "44cc0755f83283b7666ad8e2da68c14758bebf08",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
