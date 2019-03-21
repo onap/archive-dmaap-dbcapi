@@ -19,17 +19,14 @@
  */
 package org.onap.dmaap.dbcapi.model;
 
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 public class DmaapTest {
-	String ver, tnr, dn, dpu, lu, bat, nk, ako; 
+	private String ver, tnr, dn, dpu, lu, bat, nk, ako;
 
 	@Before
 	public void setUp() throws Exception {

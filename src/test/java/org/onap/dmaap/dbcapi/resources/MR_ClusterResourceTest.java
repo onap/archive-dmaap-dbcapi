@@ -28,7 +28,9 @@ import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.Before;
 import org.junit.Test;
+import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
@@ -50,11 +52,12 @@ public class MR_ClusterResourceTest extends JerseyTest {
 
 
 
-/*  may conflict with test framework! 
-	@Before
-	public void preTest() throws Exception {
-	}
 
+	@Before
+	public void init() throws Exception {
+		DatabaseClass.clearDatabase();
+	}
+/*
 	@After
 	public void tearDown() throws Exception {
 	}

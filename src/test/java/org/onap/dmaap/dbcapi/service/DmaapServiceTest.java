@@ -19,16 +19,11 @@
  */
 package org.onap.dmaap.dbcapi.service;
 
-import  org.onap.dmaap.dbcapi.model.*;
-import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
-import  org.onap.dmaap.dbcapi.aaf.*;
-
-import static org.junit.Assert.*;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.List;
+import org.onap.dmaap.dbcapi.model.Dmaap;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
 public class DmaapServiceTest {
 
