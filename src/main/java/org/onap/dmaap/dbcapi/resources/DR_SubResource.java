@@ -22,7 +22,9 @@
 
 package org.onap.dmaap.dbcapi.resources;
 
+import com.google.common.collect.Iterables;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -107,11 +109,17 @@ public class DR_SubResource extends BaseLoggingClass {
 			}
 			// if we found a FeedName instead of a FeedId then try to look it up.
 			List<Feed> nfeeds =  feeds.getAllFeeds( sub.getFeedName(), sub.getFeedVersion(), "equals");
-			if ( nfeeds.size() != 1 ) {
+			if ( nfeeds.isEmpty() ) {
+				resp.setCode(Status.NOT_FOUND.getStatusCode());
+				resp.setFields("feedName");
+				return responseBuilder.error(resp.getErr());
+			} else if (nfeeds.size() > 1) {
 				logger.debug( "Attempt to match "+ sub.getFeedName() + " ver="+sub.getFeedVersion() + " matched " + nfeeds.size() );
+				resp.setCode(Status.CONFLICT.getStatusCode());
+				resp.setFields("feedName");
 				return responseBuilder.error(resp.getErr());
 			}
-			fnew = nfeeds.get(0);
+			fnew = Iterables.getOnlyElement(nfeeds);
 		}
 			
 		try {
