@@ -209,8 +209,8 @@ public class DR_SubService extends BaseLoggingClass {
 			server, subid, sub.getUsername(), sub.getUserpwd());
 		String links = String.format( "\"links\": {\"feed\": \"https://dr-prov/feedlog/%s\", \"self\": \"https://dr-prov/sub/%s\", \"log\": \"https://dr-prov/sublog/%s\" }", 
 				sub.getFeedId(),
-				sub.getSubId(),
-				sub.getSubId() );
+				subid,
+				subid );
 		ret += links + "}";
 		logger.info( "DR_SubService:simulateResp=" + ret);
 
