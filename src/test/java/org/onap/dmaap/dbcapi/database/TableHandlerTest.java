@@ -71,7 +71,7 @@ public class TableHandlerTest {
 	public void test1() {
 
 
-		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
+		rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
 	
 	}
 
@@ -84,17 +84,21 @@ public class TableHandlerTest {
 
 	@Test
 	public void test3() {
-		TableHandler.setSpecialCase("topic", "replication_case", new TopicReplicationTypeHandler());
+		DBFieldHandler.SqlOp trth = new TopicReplicationTypeHandler();
+		TableHandler.setSpecialCase("topic", "replication_case", trth);
 
 		try {
 		ConnectionFactory cf = new ConnectionFactory();
 		TableHandler th = new TableHandler( cf, TopicReplicationTypeHandler.class, "foo", "bar" );
+		DBFieldHandler.SqlOp t = th.getSpecialCase( "foo", "bar" );
+		assert( trth == t );
 		} catch (Exception e ) {
 		}
 		try {
-		ConnectionFactory cf = new ConnectionFactory();
+
 		TableHandler th = new TableHandler( TopicReplicationTypeHandler.class, "foo", "bar" );
-		th.getSpecialCase( "foo", "bar" );
+		DBFieldHandler.SqlOp t = th.getSpecialCase( "foo", "bar" );
+		assert( trth == t );
 		} catch (Exception e ) {
 		}
 
