@@ -62,6 +62,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 
 	private MR_ClientService mr_clientService = new MR_ClientService();
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private RequiredChecker checker = new RequiredChecker();
 		
 	@GET
 	@ApiOperation( value = "return MR_Client details", 
@@ -95,18 +96,18 @@ public class MR_ClientResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "fqtn", client.getFqtn(), "");
-			resp.required( "dcaeLocationName", client.getDcaeLocationName(), "");
+			checker.required( "fqtn", client.getFqtn());
+			checker.required( "dcaeLocationName", client.getDcaeLocationName());
 			String s = client.getClientRole();
 			if ( s == null ) {
 				s = client.getClientIdentity();
 			}
-			resp.required( "clientRole or clientIdentity", s, "" );
-			resp.required( "action", client.getAction(), "");
+			checker.required( "clientRole or clientIdentity", s);
+			checker.required( "action", client.getAction());
 
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		MR_ClusterService clusters = new MR_ClusterService();
 
@@ -161,14 +162,14 @@ public class MR_ClientResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "fqtn", client.getFqtn(), "");
-			resp.required( "dcaeLocationName", client.getDcaeLocationName(), "");
-			resp.required( "clientRole", client.getClientRole(), "" );
-			resp.required( "action", client.getAction(), "");
+			checker.required( "fqtn", client.getFqtn());
+			checker.required( "dcaeLocationName", client.getDcaeLocationName());
+			checker.required( "clientRole", client.getClientRole());
+			checker.required( "action", client.getAction());
 
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		client.setMrClientId(clientId);
 		MR_Client nClient = mr_clientService.updateMr_Client(client, resp.getErr() );
@@ -196,10 +197,10 @@ public class MR_ClientResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "clientId", id, "");
+			checker.required( "clientId", id);
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		mr_clientService.removeMr_Client(id, true, resp.getErr() );
 		if ( resp.getErr().is2xx()) {
@@ -224,10 +225,10 @@ public class MR_ClientResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "clientId", id, "");
+			checker.required( "clientId", id);
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		MR_Client nClient =  mr_clientService.getMr_Client( id, resp.getErr() );
 		if ( resp.getErr().is2xx()) {

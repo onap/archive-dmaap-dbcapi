@@ -63,6 +63,7 @@ public class TopicResource extends BaseLoggingClass {
 	private static String defaultReplicationCount;
 	private TopicService mr_topicService = new TopicService();
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private RequiredChecker checker = new RequiredChecker();
 	
 	public TopicResource() {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
@@ -109,12 +110,12 @@ public class TopicResource extends BaseLoggingClass {
 		ApiService check = new ApiService();
 
 		try {
-			check.required( "topicName", topic.getTopicName(), "^\\S+$" );  //no white space allowed in topicName
-			check.required( "topicDescription", topic.getTopicDescription(), "" );
-			check.required( "owner", topic.getOwner(), "" );
+			checker.required( "topicName", topic.getTopicName(), "^\\S+$" );  //no white space allowed in topicName
+			checker.required( "topicDescription", topic.getTopicDescription());
+			checker.required( "owner", topic.getOwner());
 		} catch( RequiredFieldException rfe ) {
-			logger.error("Error", rfe);
-			return responseBuilder.error(check.getErr());
+			logger.error("Error", rfe.getApiError());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		
 		ReplicationType t = topic.getReplicationCase();
@@ -182,10 +183,10 @@ public class TopicResource extends BaseLoggingClass {
 		ApiService check = new ApiService();
 
 		try {
-			check.required( "fqtn", id, "" );
+			checker.required( "fqtn", id);
 		} catch( RequiredFieldException rfe ) {
-			logger.error("Error", rfe);
-			return responseBuilder.error(check.getErr());
+			logger.error("Error", rfe.getApiError());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		
 		mr_topicService.removeTopic(id, check.getErr());
@@ -212,10 +213,10 @@ public class TopicResource extends BaseLoggingClass {
 		ApiService check = new ApiService();
 
 		try {
-			check.required( "topicName", id, "^\\S+$" );  //no white space allowed in topicName
+			checker.required( "topicName", id, "^\\S+$" );  //no white space allowed in topicName
 		} catch( RequiredFieldException rfe ) {
-			logger.error("Error", rfe);
-			return responseBuilder.error(check.getErr());
+			logger.error("Error", rfe.getApiError());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		Topic mrc =  mr_topicService.getTopic( id, check.getErr() );
 		if ( mrc == null ) {

@@ -62,6 +62,7 @@ import static javax.ws.rs.core.Response.Status.CREATED;
 public class DR_SubResource extends BaseLoggingClass {
 
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private RequiredChecker checker = new RequiredChecker();
 		
 	@GET
 	@ApiOperation( value = "return DR_Sub details", 
@@ -96,13 +97,13 @@ public class DR_SubResource extends BaseLoggingClass {
 		FeedService feeds = new FeedService();
 		Feed fnew = null;
 		try {
-			resp.required( "feedId", sub.getFeedId(), "");
+			checker.required( "feedId", sub.getFeedId());
 		} catch ( RequiredFieldException rfe ) {
 			try {
-				resp.required( "feedName", sub.getFeedName(), "");
+				checker.required( "feedName", sub.getFeedName());
 			}catch ( RequiredFieldException rfe2 ) {
-				logger.debug( resp.toString() );
-				return responseBuilder.error(resp.getErr());
+				logger.debug( rfe2.getApiError().toString() );
+				return responseBuilder.error(rfe2.getApiError());
 			}
 			// if we found a FeedName instead of a FeedId then try to look it up.
 			List<Feed> nfeeds =  feeds.getAllFeeds( sub.getFeedName(), sub.getFeedVersion(), "equals");
@@ -114,10 +115,10 @@ public class DR_SubResource extends BaseLoggingClass {
 		}
 			
 		try {
-			resp.required( "dcaeLocationName", sub.getDcaeLocationName(), "");
+			checker.required( "dcaeLocationName", sub.getDcaeLocationName());
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		// we may have fnew already if located by FeedName
 		if ( fnew == null ) {
@@ -161,13 +162,13 @@ public class DR_SubResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "subId", name, "");
-			resp.required( "feedId", sub.getFeedId(), "");
-			resp.required( "dcaeLocationName", sub.getDcaeLocationName(), "");
+			checker.required( "subId", name);
+			checker.required( "feedId", sub.getFeedId());
+			checker.required( "dcaeLocationName", sub.getDcaeLocationName());
 	
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		FeedService feeds = new FeedService();
 		Feed fnew = feeds.getFeed( sub.getFeedId(), resp.getErr() );
@@ -201,10 +202,10 @@ public class DR_SubResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "subId", id, "");
+			checker.required( "subId", id);
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		DR_SubService dr_subService = new DR_SubService();
 		dr_subService.removeDr_Sub(id, resp.getErr() );
@@ -229,10 +230,10 @@ public class DR_SubResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "subId", id, "");
+			checker.required( "subId", id);
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		DR_SubService dr_subService = new DR_SubService();
 		DR_Sub sub =  dr_subService.getDr_Sub( id, resp.getErr() );

@@ -60,6 +60,7 @@ public class DR_PubResource extends BaseLoggingClass {
 
 	private DR_PubService dr_pubService = new DR_PubService();
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private RequiredChecker checker = new RequiredChecker();
 	
 	@GET
 	@ApiOperation( value = "return DR_Pub details", 
@@ -96,13 +97,13 @@ public class DR_PubResource extends BaseLoggingClass {
 		logger.info( "Entry: POST /dr_pubs");
 
 		try {
-			resp.required( "feedId", pub.getFeedId(), "");
+			checker.required( "feedId", pub.getFeedId());
 		} catch ( RequiredFieldException rfe ) {
 			try {
-				resp.required( "feedName", pub.getFeedName(), "");
+				checker.required( "feedName", pub.getFeedName());
 			}catch ( RequiredFieldException rfe2 ) {
-				logger.debug( resp.toString() );
-				return responseBuilder.error(resp.getErr());
+				logger.debug( rfe2.getApiError().toString() );
+				return responseBuilder.error(rfe2.getApiError());
 			}
 			// if we found a FeedName instead of a FeedId then try to look it up.
 			List<Feed> nfeeds =  feeds.getAllFeeds( pub.getFeedName(), pub.getFeedVersion(), "equals");
@@ -113,10 +114,10 @@ public class DR_PubResource extends BaseLoggingClass {
 			fnew = nfeeds.get(0);
 		}
 		try {
-			resp.required( "dcaeLocationName", pub.getDcaeLocationName(), "");
+			checker.required( "dcaeLocationName", pub.getDcaeLocationName());
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.getErr().toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 
 
@@ -189,9 +190,9 @@ public class DR_PubResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "pubId", id, "");
+			checker.required( "pubId", id);
 		} catch ( RequiredFieldException rfe ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(rfe.getApiError());
 		}
 
 		DR_Pub pub =  dr_pubService.getDr_Pub( id, resp.getErr() );
@@ -245,9 +246,9 @@ public class DR_PubResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "feedId", id, "");
+			checker.required( "feedId", id);
 		} catch ( RequiredFieldException rfe ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(rfe.getApiError());
 		}
 
 		DR_Pub pub =  dr_pubService.getDr_Pub( id, resp.getErr() );

@@ -57,6 +57,7 @@ public class DR_NodeResource extends BaseLoggingClass {
 
 	private DR_NodeService dr_nodeService = new DR_NodeService();
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private RequiredChecker checker = new RequiredChecker();
 	
 	@GET
 	@ApiOperation( value = "return DR_Node details", 
@@ -88,8 +89,8 @@ public class DR_NodeResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "dcaeLocation", node.getDcaeLocationName(), "");
-			resp.required( "fqdn", node.getFqdn(), "");
+			checker.required( "dcaeLocation", node.getDcaeLocationName());
+			checker.required( "fqdn", node.getFqdn());
 		} catch ( RequiredFieldException rfe ) {
 			return responseBuilder.error(new ApiError(BAD_REQUEST.getStatusCode(),
 					"missing required field", "dcaeLocation, fqdn"));
@@ -117,10 +118,10 @@ public class DR_NodeResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "dcaeLocation", name, "");
-			resp.required( "fqdn", node.getFqdn(), "");
+			checker.required( "dcaeLocation", name);
+			checker.required( "fqdn", node.getFqdn());
 		} catch ( RequiredFieldException rfe ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		node.setFqdn(name);
 		DR_Node nNode = dr_nodeService.updateDr_Node(node, resp.getErr());
@@ -146,10 +147,10 @@ public class DR_NodeResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "fqdn", name, "");
+			checker.required( "fqdn", name);
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		dr_nodeService.removeDr_Node(name, resp.getErr());
 		if ( resp.getErr().is2xx() ) {
