@@ -56,6 +56,7 @@ public class MR_ClusterResource extends BaseLoggingClass {
 
 	private MR_ClusterService mr_clusterService = new MR_ClusterService();
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private RequiredChecker checker = new RequiredChecker();
 		
 	@GET
 	@ApiOperation( value = "return MR_Cluster details", 
@@ -86,10 +87,10 @@ public class MR_ClusterResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "dcaeLocationName", cluster.getDcaeLocationName(), "" );  
-			resp.required( "fqdn", cluster.getFqdn(), "" );
+			checker.required( "dcaeLocationName", cluster.getDcaeLocationName());
+			checker.required( "fqdn", cluster.getFqdn());
 		} catch( RequiredFieldException rfe ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		MR_Cluster mrc =  mr_clusterService.addMr_Cluster(cluster, resp.getErr() );
 		if ( mrc != null && mrc.isStatusValid() ) {
@@ -115,10 +116,10 @@ public class MR_ClusterResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "fqdn", clusterId, "" );
-			resp.required( "dcaeLocationName", cluster.getDcaeLocationName(), "" );  
+			checker.required( "fqdn", clusterId);
+			checker.required( "dcaeLocationName", cluster.getDcaeLocationName());
 		} catch( RequiredFieldException rfe ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		cluster.setDcaeLocationName(clusterId);
 		MR_Cluster mrc =  mr_clusterService.updateMr_Cluster(cluster, resp.getErr() );
@@ -143,9 +144,9 @@ public class MR_ClusterResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "fqdn", id, "" );
+			checker.required( "fqdn", id);
 		} catch( RequiredFieldException rfe ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		mr_clusterService.removeMr_Cluster(id, resp.getErr() );
 		if ( resp.getErr().is2xx()) {
@@ -169,9 +170,9 @@ public class MR_ClusterResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "dcaeLocationName", id, "" );
+			checker.required( "dcaeLocationName", id);
 		} catch( RequiredFieldException rfe ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(rfe.getApiError());
 		}
 		MR_Cluster mrc =  mr_clusterService.getMr_Cluster( id, resp.getErr() );
 		if ( mrc != null && mrc.isStatusValid() ) {

@@ -58,6 +58,7 @@ import org.onap.dmaap.dbcapi.service.FeedService;
 public class FeedResource extends BaseLoggingClass {
 
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
+	private RequiredChecker checker = new RequiredChecker();
 
 	@GET
 	@ApiOperation( value = "return Feed details", 
@@ -96,13 +97,13 @@ public class FeedResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "feedName", feed.getFeedName(), "");
-			resp.required( "feedVersion", feed.getFeedVersion(), "");
-			resp.required( "owner", feed.getOwner(), "" );
-			resp.required( "asprClassification", feed.getAsprClassification(), "" );
+			checker.required( "feedName", feed.getFeedName());
+			checker.required( "feedVersion", feed.getFeedVersion());
+			checker.required( "owner", feed.getOwner());
+			checker.required( "asprClassification", feed.getAsprClassification());
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 		
 		
@@ -152,10 +153,10 @@ public class FeedResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			resp.required( "feedId", id, "");
+			checker.required( "feedId", id);
 		} catch ( RequiredFieldException rfe ) {
-			logger.debug( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			logger.debug( rfe.getApiError().toString() );
+			return responseBuilder.error(rfe.getApiError());
 		}
 
 		Feed nfeed = feedService.getFeed( id, resp.getErr() );

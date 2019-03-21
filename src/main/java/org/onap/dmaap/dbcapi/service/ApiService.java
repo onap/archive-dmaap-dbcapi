@@ -24,9 +24,6 @@ import static com.att.eelf.configuration.Configuration.MDC_KEY_REQUEST_ID;
 import static com.att.eelf.configuration.Configuration.MDC_PARTNER_NAME;
 import static com.att.eelf.configuration.Configuration.MDC_SERVICE_NAME;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.ws.rs.core.Response.Status;
 import javax.xml.bind.DatatypeConverter;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.authentication.ApiPolicy;
@@ -34,7 +31,6 @@ import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.Dmaap;
-import org.onap.dmaap.dbcapi.resources.RequiredFieldException;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 import org.onap.dmaap.dbcapi.util.RandomString;
 import org.slf4j.MDC;
@@ -109,37 +105,9 @@ public class ApiService extends BaseLoggingClass {
         this.err = err;
     }
 
-
-    // test for presence of a required field
-    public void required(String name, Object val, String expr) throws RequiredFieldException {
-        err.setCode(0);
-        if (val == null) {
-            err.setCode(Status.BAD_REQUEST.getStatusCode());
-            err.setMessage("missing required field");
-            err.setFields(name);
-            throw new RequiredFieldException();
-        }
-        if (expr != null && !expr.isEmpty()) {
-            Pattern pattern = Pattern.compile(expr);
-            Matcher matcher = pattern.matcher((CharSequence) val);
-            if (!matcher.find()) {
-                err.setCode(Status.BAD_REQUEST.getStatusCode());
-                err.setMessage("value '" + val + "' violates regexp check '" + expr + "'");
-                err.setFields(name);
-                throw new RequiredFieldException();
-            }
-        }
-    }
-
-    // utility to serialize ApiErr object
-    public String toString() {
-        return String.format("code=%d msg=%s fields=%s", err.getCode(), err.getMessage(), err.getFields());
-    }
-
-
-    public void setCode(int statusCode) {
-        err.setCode(statusCode);
-    }
+	public void setCode(int statusCode) {
+		err.setCode(statusCode);
+	}
 
 
     public void setMessage(String string) {
@@ -147,21 +115,11 @@ public class ApiService extends BaseLoggingClass {
     }
 
 
-    public void setFields(String string) {
-        err.setFields(string);
-    }
+	public void setFields(String string) {
+		err.setFields(string);
+	}
 
-    public void checkAuthorization(String auth, String uriPath, String httpMethod)
-        throws AuthenticationErrorException, Exception {
-        authorization = auth;
-        setUriFromPath(uriPath);
-        method = httpMethod;
-
-        checkAuthorization();
-    }
-
-
-    public void checkAuthorization() throws AuthenticationErrorException, Exception {
+    public void checkAuthorization() throws Exception {
 
         MDC.put(MDC_KEY_REQUEST_ID, requestId);
 
@@ -217,12 +175,6 @@ public class ApiService extends BaseLoggingClass {
             throw ae;
 
         }
-
-
-    }
-
-    public String getRequestId() {
-        return requestId;
     }
 
     public ApiService setRequestId(String requestId) {
@@ -236,3 +188,4 @@ public class ApiService extends BaseLoggingClass {
         return this;
     }
 }
+
