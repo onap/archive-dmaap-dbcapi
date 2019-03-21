@@ -124,7 +124,6 @@ public class DrProvConnection extends BaseLoggingClass {
 			return(true);
 		} catch (Exception e) {
 			errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_ERROR,  pURL, e.getMessage() );
-            e.printStackTrace();
             return(false);
         }
 
@@ -222,7 +221,7 @@ public class DrProvConnection extends BaseLoggingClass {
     				logger.info( "artificial 200 response from doPostFeed because unit_test =" + unit_test );
            	} else {
 	            logger.warn("Unable to read response  " );
-	            e.printStackTrace();
+	            errorLogger.error("Unable to read response  ", e.getMessage());
 	            try {
 		            err.setCode( uc.getResponseCode());
 		            err.setMessage(uc.getResponseMessage());
@@ -235,7 +234,9 @@ public class DrProvConnection extends BaseLoggingClass {
 		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
+			} catch ( Exception e ) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 		return responseBody;
 
@@ -284,7 +285,7 @@ public class DrProvConnection extends BaseLoggingClass {
     				logger.info( "artificial 200 response from doXgressPost because unit_test =" + unit_test );
            	} else {
 	            logger.error("Unable to read response  " );
-	            e.printStackTrace();
+	            logger.error(e.getMessage(), e);
            	}
         }		
         finally {
@@ -331,6 +332,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error(e.getMessage(), e);
                  }
             }
 			rc = uc.getResponseCode();
@@ -366,14 +368,15 @@ public class DrProvConnection extends BaseLoggingClass {
     				err.setMessage( "simulated response");
     				logger.info( "artificial 200 response from doPostDr_Sub because unit_test =" + unit_test );
            	} else {
-	            System.err.println("Unable to read response  " );
-	            e.printStackTrace();
+	            logger.error("Unable to read response  ", e.getMessage());
            	}
         }		
 		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
+			} catch ( Exception e ) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 		return responseBody;
 
@@ -410,6 +413,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error(e.getMessage(), e);
                  }
             }
 			rc = uc.getResponseCode();
@@ -461,7 +465,7 @@ public class DrProvConnection extends BaseLoggingClass {
     				logger.info( "artificial 200 response from doPutFeed because unit_test =" + unit_test );
            	} else {
 	            logger.warn("Unable to read response  " );
-	            e.printStackTrace();
+	            logger.error(e.getMessage(), e);
            	}
             try {
 	            err.setCode( uc.getResponseCode());
@@ -469,11 +473,14 @@ public class DrProvConnection extends BaseLoggingClass {
             } catch (Exception e2) {
             	err.setCode( 500 );
             	err.setMessage("Unable to determine response message");
+            	logger.error(e2.getMessage(), e2);
             }
         } 		finally {
 			try {
 				uc.disconnect();
-			} catch ( Exception e ) {}
+			} catch ( Exception e ) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 		return responseBody;
 	}
@@ -509,6 +516,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error(e.getMessage(), e);
                  }
             }
 			rc = uc.getResponseCode();
@@ -542,6 +550,7 @@ public class DrProvConnection extends BaseLoggingClass {
             errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
             err.setCode( 500 );
         	err.setMessage("Backend connection refused");
+        	logger.error(ce.getMessage(), ce);
 		} catch (Exception e) {
           	if ( unit_test.equals( "Yes" ) ) {
     				err.setCode(200);
@@ -552,7 +561,9 @@ public class DrProvConnection extends BaseLoggingClass {
 	            logger.error(e.getMessage(), e);
            	}
         } finally {
-        	uc.disconnect();
+        	if(null != uc){
+        	    uc.disconnect();
+        	}
         }
 		return responseBody;
 
@@ -583,6 +594,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error(e.getMessage(), e);
                  }
             } 
 	
@@ -621,14 +633,14 @@ public class DrProvConnection extends BaseLoggingClass {
             errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
             err.setCode( 500 );
         	err.setMessage("Backend connection refused");
+        	logger.error(ce.getMessage(), ce);
 		} catch (Exception e) {
          	if ( unit_test.equals( "Yes" ) ) {
     				err.setCode(200);
     				err.setMessage( "simulated response");
     				logger.info( "artificial 200 response from doGetNodes because unit_test =" + unit_test );
            	} else {
-	            System.err.println("Unable to read response  " );
-	            e.printStackTrace();
+	            logger.error("Unable to read response  ", e.getMessage());
            	}
         } finally {
 
@@ -706,8 +718,7 @@ public class DrProvConnection extends BaseLoggingClass {
     				err.setMessage( "simulated response");
     				logger.info( "artificial 200 response from doPutNodes because unit_test =" + unit_test );
            	} else {
-	            System.err.println("Unable to read response  " + e.getMessage() );
-	            e.printStackTrace();
+	            logger.error("Unable to read response  ", e.getMessage());
            	}
         } finally {
 			if ( uc != null ) {
@@ -748,6 +759,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error(e.getMessage(), e);
                  }
             }
 			rc = uc.getResponseCode();
@@ -788,10 +800,12 @@ public class DrProvConnection extends BaseLoggingClass {
 			errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
             err.setCode( 500 );
         	err.setMessage("Backend connection refused");
+        	logger.error(ce.getMessage(), ce);
 		} catch (SocketException se) {
 			errorLogger.error( DmaapbcLogMessageEnum.SOCKET_EXCEPTION, se.getMessage(), "response from Prov server" );
 			err.setCode( 500 );
 			err.setMessage( "Unable to read response from DR");
+			logger.error(se.getMessage(), se);
         } catch (Exception e) {
          	if ( unit_test.equals( "Yes" ) ) {
     				err.setCode(200);
@@ -799,19 +813,24 @@ public class DrProvConnection extends BaseLoggingClass {
     				logger.info( "artificial 200 response from doDeleteFeed because unit_test =" + unit_test );
            	} else {
 	            logger.warn("Unable to read response  " );
-	            e.printStackTrace();
+	            logger.error(e.getMessage(), e);
 	            try {
 		            err.setCode( uc.getResponseCode());
 		            err.setMessage(uc.getResponseMessage());
 	            } catch (Exception e2) {
 	            	err.setCode( 500 );
 	            	err.setMessage("Unable to determine response message");
+	            	logger.error(e2.getMessage(), e2);
 	            }
            	}
         } 		finally {
 			try {
-				uc.disconnect();
-			} catch ( Exception e ) {}
+				if(uc != null) {
+				    uc.disconnect();
+				}
+			} catch ( Exception e ) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 		return responseBody;
 	}
@@ -848,6 +867,7 @@ public class DrProvConnection extends BaseLoggingClass {
                      // without this, Java will connect multiple times to the server to run the same request
                      uc.setDoOutput(false);
                  } catch (Exception e) {
+                	 logger.error(e.getMessage(), e);
                  }
             }
 			rc = uc.getResponseCode();
@@ -892,11 +912,12 @@ public class DrProvConnection extends BaseLoggingClass {
     				err.setMessage( "simulated response");
     				logger.info( "artificial 200 response from doDeleteDr_Sub because unit_test =" + unit_test );
            	} else {
-	            System.err.println("Unable to read response  " );
-	            e.printStackTrace();
+	            logger.error("Unable to read response  ", e.getMessage());
            	}
         } finally {
-        	uc.disconnect();
+        	if(uc != null){
+        	    uc.disconnect();
+        	}
         }
 		return responseBody;
 
