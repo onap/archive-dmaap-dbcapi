@@ -53,12 +53,8 @@ public class JettyServer extends BaseLoggingClass {
        	boolean allowHttp = Boolean.valueOf(params.getProperty("HttpAllowed", "false"));
     	serverLogger.info( "port params: http=" + httpPort + " https=" + sslPort );
     	serverLogger.info( "allowHttp=" + allowHttp );
-        String keystore=null;
-        String keystorePwd = null;
-        String keyPwd = null;
-        
-        // HTTP Server
 
+		// HTTP Server
     	HttpConfiguration http_config = new HttpConfiguration();
     	http_config.setSecureScheme("https");
     	http_config.setSecurePort(sslPort);
@@ -76,16 +72,9 @@ public class JettyServer extends BaseLoggingClass {
 			HttpConfiguration https_config = new HttpConfiguration(http_config);
 			https_config.addCustomizer(new SecureRequestCustomizer());
 			SslContextFactory sslContextFactory = new SslContextFactory();
-			keystore = params.getProperty("KeyStoreFile", "etc/keystore");
-			logger.info("https Server using keystore at " + keystore);
-			keystorePwd = params.getProperty("KeyStorePassword", "changeit");
-			keyPwd = params.getProperty("KeyPassword", "changeit");
 
-
-			sslContextFactory.setKeyStorePath(keystore);
-			sslContextFactory.setKeyStorePassword(keystorePwd);
-			sslContextFactory.setKeyManagerPassword(keyPwd);
-
+			setUpKeystore(params, sslContextFactory);
+			setUpTrustStore(params, sslContextFactory);
 
 			if (sslPort != 0) {
                 try(ServerConnector sslConnector = new ServerConnector(server,
@@ -110,7 +99,7 @@ public class JettyServer extends BaseLoggingClass {
 				}
 			}
 		}
- 
+
         // Set context for servlet.  This is shared for http and https
        	ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
     	context.setContextPath("/");
@@ -138,11 +127,25 @@ public class JettyServer extends BaseLoggingClass {
 			}
         } catch ( Exception e ) {
         	errorLogger.error( "Exception " + e );
-        	errorLogger.error( "possibly unable to use keystore " + keystore + " with passwords " + keystorePwd +  " and " + keyPwd );
-        	//System.exit(1);
         } finally {
         	server.destroy();
         }
         
     }
+
+	private void setUpKeystore(Properties params, SslContextFactory sslContextFactory) {
+		String keystore = params.getProperty("KeyStoreFile", "etc/keystore");
+		logger.info("https Server using keystore at " + keystore);
+		sslContextFactory.setKeyStorePath(keystore);
+		sslContextFactory.setKeyStorePassword(params.getProperty("KeyStorePassword", "changeit"));
+		sslContextFactory.setKeyManagerPassword(params.getProperty("KeyPassword", "changeit"));
+	}
+
+	private void setUpTrustStore(Properties params, SslContextFactory sslContextFactory) {
+		String truststore = params.getProperty("TrustStoreFile", "etc/org.onap.dmaap-bc.trust.jks");
+		logger.info("https Server using truststore at " + truststore);
+		sslContextFactory.setTrustStorePath(truststore);
+		sslContextFactory.setTrustStoreType(params.getProperty("TrustStoreType", "jks"));
+		sslContextFactory.setTrustStorePassword(params.getProperty("TrustStorePassword", "changeit"));
+	}
 }
