@@ -62,7 +62,7 @@ public class Main extends BaseLoggingClass {
             MDC.put(MDC_SERVER_FQDN, InetAddress.getLocalHost().getHostName());
             MDC.put(MDC_SERVER_IP_ADDRESS, InetAddress.getLocalHost().getHostAddress());
         } catch (Exception e) {
-            e.printStackTrace();
+        	errorLogger.error("Error while getting hostname or address", e);
         }
         MDC.put(MDC_INSTANCE_UUID, UUID.randomUUID().toString());
         MDC.put(MDC_ALERT_SEVERITY, "0");
