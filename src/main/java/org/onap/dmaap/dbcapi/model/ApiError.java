@@ -21,10 +21,11 @@
 package org.onap.dmaap.dbcapi.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.Objects;
 
 @XmlRootElement
-public class ApiError {
+public class ApiError implements Serializable {
 	private int code;
 	private String message;
 	private String fields;

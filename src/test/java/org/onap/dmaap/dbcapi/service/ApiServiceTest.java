@@ -59,22 +59,4 @@ public class ApiServiceTest {
 		rh.reflect( "org.onap.dmaap.dbcapi.service.ApiService", "set", v );
 
 	}
-
-	@Test
-	public void test3() {
-		ApiService nd = new ApiService();
-		nd.setAuth( "auth" );
-		try {
-			nd.required( "aName", null, "anExpr" );
-		} catch ( RequiredFieldException rfe ) {
-		}
-		try {
-			nd.checkAuthorization( "authval", "/uri/Path", "GET" );
-			nd.checkAuthorization();
-		} catch ( AuthenticationErrorException aee ) {
-		} catch ( Exception e ) {
-		}
-	}
-
-
 }
