@@ -30,6 +30,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.test.JerseyTest;
 import org.junit.Before;
 import org.junit.Test;
+import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
 import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
@@ -54,15 +55,14 @@ public class TopicResourceTest extends JerseyTest {
 	private static final String  fmt = "%24s: %s%n";
 
 
-
-
 	@Before
 	public void preTest() throws Exception {
+		DatabaseClass.clearDatabase();
 		try {
 
 			Dmaap dmaap = factory.genDmaap();
 			Entity<Dmaap> reqEntity = Entity.entity( dmaap, MediaType.APPLICATION_JSON );
-			Response resp = target( "dmaap").request().post( reqEntity, Response.class );
+			Response resp = target( "dmaap").request().put( reqEntity, Response.class );
 			System.out.println( resp.getStatus() );
 			assertTrue( resp.getStatus() == 200 );
 		}catch (Exception e ) {

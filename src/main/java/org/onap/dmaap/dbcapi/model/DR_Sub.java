@@ -331,7 +331,7 @@ public class DR_Sub extends DmaapObject {
 
 	@Override
 	public String toString() {
-		String rc = String.format ( "DR_Sub: {dcaeLocationName=%s username=%s userpwd=%s feedId=%s deliveryURL=%s logURL=%s subid=%s use100=%s suspended=%s owner=%s}",
+		return String.format ( "DR_Sub: {dcaeLocationName=%s username=%s userpwd=%s feedId=%s deliveryURL=%s logURL=%s subid=%s use100=%s suspended=%s owner=%s}",
 				dcaeLocationName,
 				username,
 				userpwd,
@@ -343,6 +343,49 @@ public class DR_Sub extends DmaapObject {
 				suspended,
 				owner
 				);
-		return rc;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		DR_Sub drSub = (DR_Sub) o;
+
+		if (use100 != drSub.use100) {
+			return false;
+		}
+		if (suspended != drSub.suspended) {
+			return false;
+		}
+		if (!dcaeLocationName.equals(drSub.dcaeLocationName)) {
+			return false;
+		}
+		if (!username.equals(drSub.username)) {
+			return false;
+		}
+		if (!userpwd.equals(drSub.userpwd)) {
+			return false;
+		}
+		if (!feedId.equals(drSub.feedId)) {
+			return false;
+		}
+		return subId.equals(drSub.subId);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = dcaeLocationName.hashCode();
+		result = 31 * result + username.hashCode();
+		result = 31 * result + userpwd.hashCode();
+		result = 31 * result + feedId.hashCode();
+		result = 31 * result + subId.hashCode();
+		result = 31 * result + (use100 ? 1 : 0);
+		result = 31 * result + (suspended ? 1 : 0);
+		return result;
 	}
 }
