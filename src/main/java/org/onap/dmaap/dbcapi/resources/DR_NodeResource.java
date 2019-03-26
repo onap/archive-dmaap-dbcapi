@@ -42,7 +42,6 @@ import javax.ws.rs.core.Response;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Node;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.DR_NodeService;
 
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
@@ -83,10 +82,9 @@ public class DR_NodeResource extends BaseLoggingClass {
 	    @ApiResponse( code = 200, message = "Success", response = DR_Node.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response addDr_Node( 
-			DR_Node node
-			) {
-		ApiService resp = new ApiService();
+	public Response addDr_Node(DR_Node node) {
+
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "dcaeLocation", node.getDcaeLocationName());
@@ -95,11 +93,11 @@ public class DR_NodeResource extends BaseLoggingClass {
 			return responseBuilder.error(new ApiError(BAD_REQUEST.getStatusCode(),
 					"missing required field", "dcaeLocation, fqdn"));
 		}
-		DR_Node nNode = dr_nodeService.addDr_Node(node, resp.getErr());
-		if ( resp.getErr().is2xx()) {
+		DR_Node nNode = dr_nodeService.addDr_Node(node, apiError);
+		if (apiError.is2xx()) {
 			return responseBuilder.success(nNode);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 	
 	@PUT
@@ -111,11 +109,9 @@ public class DR_NodeResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{fqdn}")
-	public Response updateDr_Node( 
-			@PathParam("fqdn") String name, 
-			DR_Node node
-			) {
-		ApiService resp = new ApiService();
+	public Response updateDr_Node(@PathParam("fqdn") String name, DR_Node node) {
+
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "dcaeLocation", name);
@@ -124,11 +120,11 @@ public class DR_NodeResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 		node.setFqdn(name);
-		DR_Node nNode = dr_nodeService.updateDr_Node(node, resp.getErr());
-		if ( resp.getErr().is2xx()) {
+		DR_Node nNode = dr_nodeService.updateDr_Node(node, apiError);
+		if (apiError.is2xx()) {
 			return responseBuilder.success(nNode);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 	
 	@DELETE
@@ -140,11 +136,9 @@ public class DR_NodeResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{fqdn}")
-	public Response deleteDr_Node( 
-			@PathParam("fqdn") String name
-			){
+	public Response deleteDr_Node(@PathParam("fqdn") String name){
 
-		ApiService resp = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "fqdn", name);
@@ -152,11 +146,11 @@ public class DR_NodeResource extends BaseLoggingClass {
 			logger.debug( rfe.getApiError().toString() );
 			return responseBuilder.error(rfe.getApiError());
 		}
-		dr_nodeService.removeDr_Node(name, resp.getErr());
-		if ( resp.getErr().is2xx() ) {
+		dr_nodeService.removeDr_Node(name, apiError);
+		if (apiError.is2xx()) {
 			return responseBuilder.success(NO_CONTENT.getStatusCode(), null);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 
 	@GET
@@ -168,15 +162,14 @@ public class DR_NodeResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{fqdn}")
-	public Response get( 
-			@PathParam("fqdn") String name
-			) {
-		ApiService resp = new ApiService();
+	public Response get(@PathParam("fqdn") String name) {
 
-		DR_Node nNode = dr_nodeService.getDr_Node( name, resp.getErr() );
-		if ( resp.getErr().is2xx() ) {
+		ApiError apiError = new ApiError();
+
+		DR_Node nNode = dr_nodeService.getDr_Node( name, apiError );
+		if (apiError.is2xx()) {
 			return responseBuilder.success(nNode);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 }

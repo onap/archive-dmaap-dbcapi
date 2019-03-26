@@ -45,7 +45,6 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.MR_Client;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.model.Topic;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.MR_ClientService;
 import org.onap.dmaap.dbcapi.service.MR_ClusterService;
 import org.onap.dmaap.dbcapi.service.TopicService;
@@ -91,9 +90,8 @@ public class MR_ClientResource extends BaseLoggingClass {
 	    @ApiResponse( code = 200, message = "Success", response = MR_Client.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response addMr_Client( 
-			MR_Client client) {
-		ApiService resp = new ApiService();
+	public Response addMr_Client(MR_Client client) {
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "fqtn", client.getFqtn());
@@ -111,38 +109,38 @@ public class MR_ClientResource extends BaseLoggingClass {
 		}
 		MR_ClusterService clusters = new MR_ClusterService();
 
-		MR_Cluster cluster = clusters.getMr_Cluster(client.getDcaeLocationName(), resp.getErr());
+		MR_Cluster cluster = clusters.getMr_Cluster(client.getDcaeLocationName(), apiError);
 		if ( cluster == null ) {
 
-			resp.setCode(Status.BAD_REQUEST.getStatusCode());
-			resp.setMessage( "MR_Cluster alias not found for dcaeLocation: " + client.getDcaeLocationName());
-			resp.setFields("dcaeLocationName");
-			logger.warn( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			apiError.setCode(Status.BAD_REQUEST.getStatusCode());
+			apiError.setMessage( "MR_Cluster alias not found for dcaeLocation: " + client.getDcaeLocationName());
+			apiError.setFields("dcaeLocationName");
+			logger.warn(apiError.toString());
+			return responseBuilder.error(apiError);
 		}
 		String url = cluster.getFqdn();
 		if ( url == null || url.isEmpty() ) {
 
-			resp.setCode(Status.BAD_REQUEST.getStatusCode());
-			resp.setMessage("FQDN not set for dcaeLocation " + client.getDcaeLocationName() );
-			resp.setFields("fqdn");
-			logger.warn( resp.toString() );
-			return responseBuilder.error(resp.getErr());
+			apiError.setCode(Status.BAD_REQUEST.getStatusCode());
+			apiError.setMessage("FQDN not set for dcaeLocation " + client.getDcaeLocationName() );
+			apiError.setFields("fqdn");
+			logger.warn(apiError.toString());
+			return responseBuilder.error(apiError);
 		}
 		TopicService topics = new TopicService();
 
-		Topic t = topics.getTopic(client.getFqtn(), resp.getErr() );
+		Topic t = topics.getTopic(client.getFqtn(), apiError);
 		if ( t == null ) {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(apiError);
 		}
-		MR_Client nClient =  mr_clientService.addMr_Client(client, t, resp.getErr());
-		if ( resp.getErr().is2xx()) {
-			t = topics.getTopic(client.getFqtn(),  resp.getErr());
-			topics.checkForBridge(t, resp.getErr());
+		MR_Client nClient =  mr_clientService.addMr_Client(client, t, apiError);
+		if (apiError.is2xx()) {
+			t = topics.getTopic(client.getFqtn(), apiError);
+			topics.checkForBridge(t, apiError);
 			return responseBuilder.success(nClient);
 		}
 		else {
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(apiError);
 		}
 	}
 		
@@ -155,11 +153,8 @@ public class MR_ClientResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clientId}")
-	public Response updateMr_Client( 
-			@PathParam("clientId") String clientId, 
-			MR_Client client
-			) {
-		ApiService resp = new ApiService();
+	public Response updateMr_Client(@PathParam("clientId") String clientId, MR_Client client) {
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "fqtn", client.getFqtn());
@@ -172,13 +167,13 @@ public class MR_ClientResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 		client.setMrClientId(clientId);
-		MR_Client nClient = mr_clientService.updateMr_Client(client, resp.getErr() );
-		if ( resp.getErr().is2xx()) {
+		MR_Client nClient = mr_clientService.updateMr_Client(client, apiError);
+		if (apiError.is2xx()) {
 			return Response.ok(nClient)
 				.build();
 		}
-		return Response.status(resp.getErr().getCode())
-				.entity( resp.getErr() )
+		return Response.status(apiError.getCode())
+				.entity(apiError)
 				.build();
 	}
 		
@@ -191,10 +186,8 @@ public class MR_ClientResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
-	public Response deleteMr_Client( 
-			@PathParam("subId") String id
-			){
-		ApiService resp = new ApiService();
+	public Response deleteMr_Client(@PathParam("subId") String id){
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "clientId", id);
@@ -202,12 +195,12 @@ public class MR_ClientResource extends BaseLoggingClass {
 			logger.debug( rfe.getApiError().toString() );
 			return responseBuilder.error(rfe.getApiError());
 		}
-		mr_clientService.removeMr_Client(id, true, resp.getErr() );
-		if ( resp.getErr().is2xx()) {
+		mr_clientService.removeMr_Client(id, true, apiError);
+		if (apiError.is2xx()) {
 			return responseBuilder.success(NO_CONTENT.getStatusCode(), null);
 		}
 		
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 
 	@GET
@@ -219,10 +212,8 @@ public class MR_ClientResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
-	public Response test( 
-			@PathParam("subId") String id
-			) {
-		ApiService resp = new ApiService();
+	public Response test(@PathParam("subId") String id) {
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "clientId", id);
@@ -230,10 +221,10 @@ public class MR_ClientResource extends BaseLoggingClass {
 			logger.debug( rfe.getApiError().toString() );
 			return responseBuilder.error(rfe.getApiError());
 		}
-		MR_Client nClient =  mr_clientService.getMr_Client( id, resp.getErr() );
-		if ( resp.getErr().is2xx()) {
+		MR_Client nClient =  mr_clientService.getMr_Client(id, apiError);
+		if (apiError.is2xx()) {
 			return responseBuilder.success(nClient);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 }

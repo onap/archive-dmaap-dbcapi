@@ -43,7 +43,6 @@ import javax.ws.rs.core.Response.Status;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.MR_ClusterService;
 
 
@@ -82,9 +81,8 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	    @ApiResponse( code = 200, message = "Success", response = MR_Cluster.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response  addMr_Cluster( 
-			MR_Cluster cluster) {
-		ApiService resp = new ApiService();
+	public Response  addMr_Cluster(MR_Cluster cluster) {
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "dcaeLocationName", cluster.getDcaeLocationName());
@@ -92,11 +90,11 @@ public class MR_ClusterResource extends BaseLoggingClass {
 		} catch( RequiredFieldException rfe ) {
 			return responseBuilder.error(rfe.getApiError());
 		}
-		MR_Cluster mrc =  mr_clusterService.addMr_Cluster(cluster, resp.getErr() );
+		MR_Cluster mrc =  mr_clusterService.addMr_Cluster(cluster, apiError);
 		if ( mrc != null && mrc.isStatusValid() ) {
 			return responseBuilder.success(Status.CREATED.getStatusCode(), mrc);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 
 	}
 		
@@ -109,11 +107,8 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clusterId}")
-	public Response updateMr_Cluster( 
-			@PathParam("clusterId") String clusterId, 
-			MR_Cluster cluster
-			) {
-		ApiService resp = new ApiService();
+	public Response updateMr_Cluster(@PathParam("clusterId") String clusterId, MR_Cluster cluster) {
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "fqdn", clusterId);
@@ -122,11 +117,11 @@ public class MR_ClusterResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 		cluster.setDcaeLocationName(clusterId);
-		MR_Cluster mrc =  mr_clusterService.updateMr_Cluster(cluster, resp.getErr() );
+		MR_Cluster mrc =  mr_clusterService.updateMr_Cluster(cluster, apiError);
 		if ( mrc != null && mrc.isStatusValid() ) {
 			return responseBuilder.success(Status.CREATED.getStatusCode(), mrc);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 		
 	@DELETE
@@ -138,21 +133,19 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clusterId}")
-	public Response deleteMr_Cluster( 
-			@PathParam("clusterId") String id
-			){
-		ApiService resp = new ApiService();
+	public Response deleteMr_Cluster(@PathParam("clusterId") String id){
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "fqdn", id);
 		} catch( RequiredFieldException rfe ) {
 			return responseBuilder.error(rfe.getApiError());
 		}
-		mr_clusterService.removeMr_Cluster(id, resp.getErr() );
-		if ( resp.getErr().is2xx()) {
+		mr_clusterService.removeMr_Cluster(id, apiError);
+		if (apiError.is2xx()) {
 			return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 		} 
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 
 	@GET
@@ -164,20 +157,18 @@ public class MR_ClusterResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{clusterId}")
-	public Response getMR_Cluster( 
-			@PathParam("clusterId") String id
-			) {
-		ApiService resp = new ApiService();
+	public Response getMR_Cluster(@PathParam("clusterId") String id) {
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "dcaeLocationName", id);
 		} catch( RequiredFieldException rfe ) {
 			return responseBuilder.error(rfe.getApiError());
 		}
-		MR_Cluster mrc =  mr_clusterService.getMr_Cluster( id, resp.getErr() );
+		MR_Cluster mrc =  mr_clusterService.getMr_Cluster(id, apiError);
 		if ( mrc != null && mrc.isStatusValid() ) {
 			return responseBuilder.success(Status.CREATED.getStatusCode(), mrc);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 }

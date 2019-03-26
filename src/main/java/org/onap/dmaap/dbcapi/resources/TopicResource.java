@@ -46,7 +46,6 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.ReplicationType;
 import org.onap.dmaap.dbcapi.model.FqtnType;
 import org.onap.dmaap.dbcapi.model.Topic;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.TopicService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
@@ -102,12 +101,9 @@ public class TopicResource extends BaseLoggingClass {
 	    @ApiResponse( code = 200, message = "Success", response = Topic.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response  addTopic( 
-			Topic topic,
-			@QueryParam("useExisting") String useExisting
-			) {
+	public Response  addTopic(Topic topic, @QueryParam("useExisting") String useExisting) {
 		logger.info( "addTopic request: " + topic  + " useExisting=" + useExisting );
-		ApiService check = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "topicName", topic.getTopicName(), "^\\S+$" );  //no white space allowed in topicName
@@ -141,11 +137,11 @@ public class TopicResource extends BaseLoggingClass {
 			flag = "true".compareToIgnoreCase( useExisting ) == 0;
 		}
 		
-		Topic mrc =  mr_topicService.addTopic(topic, check.getErr(), flag);
-		if ( mrc != null && check.getErr().is2xx() ) {
+		Topic mrc =  mr_topicService.addTopic(topic, apiError, flag);
+		if ( mrc != null && apiError.is2xx() ) {
 			return responseBuilder.success(CREATED.getStatusCode(), mrc);
 		}
-		return responseBuilder.error(check.getErr());
+		return responseBuilder.error(apiError);
 	}
 	
 	@PUT
@@ -157,15 +153,13 @@ public class TopicResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{topicId}")
-	public Response updateTopic( 
-			@PathParam("topicId") String topicId
-			) {
-		ApiService check = new ApiService();
+	public Response updateTopic(@PathParam("topicId") String topicId) {
+		ApiError apiError = new ApiError();
 
-		check.setCode(Status.BAD_REQUEST.getStatusCode());
-		check.setMessage( "Method /PUT not supported for /topics");
+		apiError.setCode(Status.BAD_REQUEST.getStatusCode());
+		apiError.setMessage( "Method /PUT not supported for /topics");
 		
-		return responseBuilder.error(check.getErr());
+		return responseBuilder.error(apiError);
 	}
 		
 	@DELETE
@@ -177,10 +171,8 @@ public class TopicResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{topicId}")
-	public Response deleteTopic( 
-			@PathParam("topicId") String id
-			){
-		ApiService check = new ApiService();
+	public Response deleteTopic(@PathParam("topicId") String id){
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "fqtn", id);
@@ -189,11 +181,11 @@ public class TopicResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 		
-		mr_topicService.removeTopic(id, check.getErr());
-		if ( check.getErr().is2xx()) {
+		mr_topicService.removeTopic(id, apiError);
+		if (apiError.is2xx()) {
 			return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 		} 
-		return responseBuilder.error(check.getErr());
+		return responseBuilder.error(apiError);
 	}
 	
 
@@ -206,11 +198,9 @@ public class TopicResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{topicId}")
-	public Response getTopic( 
-			@PathParam("topicId") String id
-			) {
+	public Response getTopic(@PathParam("topicId") String id) {
 		logger.info("Entry: /GET " + id);
-		ApiService check = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "topicName", id, "^\\S+$" );  //no white space allowed in topicName
@@ -218,9 +208,9 @@ public class TopicResource extends BaseLoggingClass {
 			logger.error("Error", rfe.getApiError());
 			return responseBuilder.error(rfe.getApiError());
 		}
-		Topic mrc =  mr_topicService.getTopic( id, check.getErr() );
+		Topic mrc =  mr_topicService.getTopic(id, apiError);
 		if ( mrc == null ) {
-			return responseBuilder.error(check.getErr());
+			return responseBuilder.error(apiError);
 		}
 		return responseBuilder.success(mrc);
 		}

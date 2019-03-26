@@ -100,25 +100,6 @@ public class ApiService extends BaseLoggingClass {
         return err;
     }
 
-
-    public void setErr(ApiError err) {
-        this.err = err;
-    }
-
-	public void setCode(int statusCode) {
-		err.setCode(statusCode);
-	}
-
-
-    public void setMessage(String string) {
-        err.setMessage(string);
-    }
-
-
-	public void setFields(String string) {
-		err.setFields(string);
-	}
-
     public void checkAuthorization() throws Exception {
 
         MDC.put(MDC_KEY_REQUEST_ID, requestId);
