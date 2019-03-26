@@ -4,6 +4,8 @@
  * ================================================================================
  * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright (c) 2019 IBM
+ * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,139 +19,140 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.dmaap.dbcapi.model;
 
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 public class DRSubTest {
-	String d, un, up, f, du, lu, s, o;
-	Boolean u100, susp;
+    String d, un, up, f, du, lu, s, o;
+    Boolean u100, susp;
 
-	@Before
-	public void setUp() throws Exception {
-		d = "central-onap";
-		un = "user1";
-		up = "secretW0rd";
-		f = "22";
-		s = "sub123";
-		du = "sub.server.onap.org:8443/deliver/here";
-		lu = "https://drps.onap.org:8443/sublog/123";
-		u100 = true;
-		susp = false;
-		o = "joe";
-	}
+    @Before
+    public void setUp() throws Exception {
+        d = "central-onap";
+        un = "user1";
+        up = "secretW0rd";
+        f = "22";
+        s = "sub123";
+        du = "sub.server.onap.org:8443/deliver/here";
+        lu = "https://drps.onap.org:8443/sublog/123";
+        u100 = true;
+        susp = false;
+        o = "joe";
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @After
+    public void tearDown() throws Exception {
+    }
 
+    @Test
+    public void testDRSubClassDefaultConstructor() {
 
-	@Test
-	public void testDRSubClassDefaultConstructor() {
+        DR_Sub t = new DR_Sub();
 
-		DR_Sub t = new DR_Sub();
-	
-		assertTrue( t.getDcaeLocationName() == null  );
-		assertTrue( t.getUsername() == null  );
-		assertTrue( t.getUserpwd() == null  );
-		assertTrue( t.getFeedId() == null  );
-		assertTrue( t.getDeliveryURL() == null  );
-		assertTrue( t.getLogURL() == null  );
-		assertTrue( t.getSubId() == null  );
-		assertTrue( ! t.isUse100() );
-		assertTrue( ! t.isSuspended() );
-		assertTrue( t.getOwner() == null  );
-		assertTrue( t.isGuaranteedDelivery() == false );
-		assertTrue( t.isGuaranteedSequence() == false );
-		assertTrue( t.isPrivilegedSubscriber() == false );
-		assertTrue( t.isDecompressData() == false );
-	}
+        assertTrue(t.getDcaeLocationName() == null);
+        assertTrue(t.getUsername() == null);
+        assertTrue(t.getUserpwd() == null);
+        assertTrue(t.getFeedId() == null);
+        assertTrue(t.getDeliveryURL() == null);
+        assertTrue(t.getLogURL() == null);
+        assertTrue(t.getSubId() == null);
+        assertTrue(!t.isUse100());
+        assertTrue(!t.isSuspended());
+        assertTrue(t.getOwner() == null);
+        assertTrue(t.isGuaranteedDelivery() == false);
+        assertTrue(t.isGuaranteedSequence() == false);
+        assertTrue(t.isPrivilegedSubscriber() == false);
+        assertTrue(t.isDecompressData() == false);
+    }
 
-	@Test
-	public void testDRSubClassConstructor() {
+    @Test
+    public void testDRSubClassConstructor() {
 
-		DR_Sub t = new DR_Sub( d, un, up, f, du, lu, u100 );
-	
-		assertTrue( d.equals( t.getDcaeLocationName() ));
-		assertTrue( un.equals( t.getUsername() ));
-		assertTrue( up.equals( t.getUserpwd() ));
-		assertTrue( f.equals( t.getFeedId() ));
-		assertTrue( du.equals( t.getDeliveryURL() ) );
-		assertTrue( lu.equals( t.getLogURL() ) );
-		assertTrue( t.isUse100() );
-		assertTrue( ! t.isSuspended() );
-	}
+        DR_Sub t = new DR_Sub(d, un, up, f, du, lu, u100);
 
-	@Test
-	public void testDRSubClassSetters() {
+        assertTrue(d.equals(t.getDcaeLocationName()));
+        assertTrue(un.equals(t.getUsername()));
+        assertTrue(up.equals(t.getUserpwd()));
+        assertTrue(f.equals(t.getFeedId()));
+        assertTrue(du.equals(t.getDeliveryURL()));
+        assertTrue(lu.equals(t.getLogURL()));
+        assertTrue(t.isUse100());
+        assertTrue(!t.isSuspended());
+    }
 
-		DR_Sub t = new DR_Sub();
+    @Test
+    public void testDRSubClassSetters() {
 
-		t.setDcaeLocationName( d );
-		assertTrue( d.equals( t.getDcaeLocationName() ));
-		t.setUsername( un );
-		assertTrue( un.equals( t.getUsername() ));
-		t.setUserpwd( up );
-		assertTrue( up.equals( t.getUserpwd() ));
-		t.setFeedId( f );
-		assertTrue( f.equals( t.getFeedId() ));
-		t.setSubId( s );
-		assertTrue( s.equals( t.getSubId() ));
-		t.setDeliveryURL( du );
-		assertTrue( du.equals( t.getDeliveryURL() ) );
-		t.setLogURL( lu );
-		assertTrue( lu.equals( t.getLogURL() ) );
-		boolean v = true;
-		t.setGuaranteedDelivery( v );
-		assertTrue( t.isGuaranteedDelivery() == v );
-		t.setGuaranteedSequence(v);
-		assertTrue( t.isGuaranteedSequence() == v );
-		t.setPrivilegedSubscriber(v);
-		assertTrue( t.isPrivilegedSubscriber() == v );
-		t.setDecompressData(v);
-		assertTrue( t.isDecompressData() == v );
-	}
+        DR_Sub t = new DR_Sub();
 
-	@Test
-	public void testJSONfromONAP() {
-	
+        t.setDcaeLocationName(d);
+        assertTrue(d.equals(t.getDcaeLocationName()));
+        t.setUsername(un);
+        assertTrue(un.equals(t.getUsername()));
+        t.setUserpwd(up);
+        assertTrue(up.equals(t.getUserpwd()));
+        t.setFeedId(f);
+        assertTrue(f.equals(t.getFeedId()));
+        t.setSubId(s);
+        assertTrue(s.equals(t.getSubId()));
+        t.setDeliveryURL(du);
+        assertTrue(du.equals(t.getDeliveryURL()));
+        t.setLogURL(lu);
+        assertTrue(lu.equals(t.getLogURL()));
+        boolean v = true;
+        t.setGuaranteedDelivery(v);
+        assertTrue(t.isGuaranteedDelivery() == v);
+        t.setGuaranteedSequence(v);
+        assertTrue(t.isGuaranteedSequence() == v);
+        t.setPrivilegedSubscriber(v);
+        assertTrue(t.isPrivilegedSubscriber() == v);
+        t.setDecompressData(v);
+        assertTrue(t.isDecompressData() == v);
+    }
 
-		DR_Sub s = new DR_Sub( d, un, up, f, du, lu, u100 );
-		String j = s.toProvJSON();
+    @Test
+    public void testJSONfromONAP() {
 
-		DR_Sub t = new DR_Sub( j );
+        DR_Sub s = new DR_Sub(d, un, up, f, du, lu, u100);
+        String j = s.toProvJSON();
 
-		assertTrue( un.equals( t.getUsername() ));
-		assertTrue( up.equals( t.getUserpwd() ));
-		//assertTrue( f.equals( t.getFeedId() ));
-		assertTrue( du.equals( t.getDeliveryURL() ) );
-		//assertTrue( lu.equals( t.getLogURL() ) );
-		assertTrue( ! t.isSuspended() );
+        DR_Sub t = new DR_Sub(j);
 
-	}
-	
-	@Test
-	public void testJSONfromATT() {
-	
+        assertTrue(un.equals(t.getUsername()));
+        assertTrue(up.equals(t.getUserpwd()));
+        assertTrue(du.equals(t.getDeliveryURL()));
+        assertTrue(!t.isSuspended());
 
-		DR_Sub s = new DR_Sub( d, un, up, f, du, lu, u100 );
+    }
 
-		DR_Sub t = new DR_Sub( s.toProvJSONforATT() );
+    @Test
+    public void testJSONfromATT() {
 
-		assertTrue( un.equals( t.getUsername() ));
-		assertTrue( up.equals( t.getUserpwd() ));
-		//assertTrue( f.equals( t.getFeedId() ));
-		assertTrue( du.equals( t.getDeliveryURL() ) );
-	//	assertTrue( lu.equals( t.getLogURL() ) );
-		assertTrue( ! t.isSuspended() );
+        DR_Sub s = new DR_Sub(d, un, up, f, du, lu, u100);
 
-	}
-	
+        DR_Sub t = new DR_Sub(s.toProvJSONforATT());
+
+        assertTrue(un.equals(t.getUsername()));
+        assertTrue(up.equals(t.getUserpwd()));
+        assertTrue(du.equals(t.getDeliveryURL()));
+        assertTrue(!t.isSuspended());
+
+    }
+
+    @Test
+    public void testEqualsAndHashCode() {
+        DR_Sub object1 = new DR_Sub(d, un, up, f, du, lu, u100);
+        DR_Sub object2 = new DR_Sub(d, un, up, f, du, lu, u100);
+
+        assertEquals("These should be equal", object1, object2);
+        int obj1hasCode = object1.hashCode();
+        assertEquals(obj1hasCode, object2.hashCode());
+    }
 }
