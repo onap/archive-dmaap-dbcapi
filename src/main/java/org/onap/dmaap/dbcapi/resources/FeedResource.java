@@ -46,7 +46,6 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.Feed;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.FeedService;
 
 
@@ -94,7 +93,7 @@ public class FeedResource extends BaseLoggingClass {
 			@WebParam(name = "feed") Feed feed,
 			@QueryParam("useExisting") String useExisting) {
 
-		ApiService resp = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "feedName", feed.getFeedName());
@@ -108,32 +107,32 @@ public class FeedResource extends BaseLoggingClass {
 		
 		
 		FeedService feedService = new FeedService();
-		Feed nfeed =  feedService.getFeedByName( feed.getFeedName(), feed.getFeedVersion(), resp.getErr() );
+		Feed nfeed =  feedService.getFeedByName( feed.getFeedName(), feed.getFeedVersion(), apiError);
 		if ( nfeed == null ) {
-			nfeed =  feedService.addFeed( feed, resp.getErr() );
+			nfeed =  feedService.addFeed(feed, apiError);
 			if ( nfeed != null ) {
 				return responseBuilder.success(nfeed);
 			} else {
 				logger.error( "Unable to create: " + feed.getFeedName() + ":" + feed.getFeedVersion());
 
-				return responseBuilder.error(resp.getErr());
+				return responseBuilder.error(apiError);
 			}
 		} else if ( nfeed.getStatus() == DmaapObject_Status.DELETED ) {
 			feed.setFeedId( nfeed.getFeedId());
-			nfeed =  feedService.updateFeed(feed, resp.getErr());
+			nfeed =  feedService.updateFeed(feed, apiError);
 			if ( nfeed != null ) {
 				return responseBuilder.success(nfeed);
 			} else {
 				logger.info( "Unable to update: " + feed.getFeedName() + ":" + feed.getFeedVersion());
 
-				return responseBuilder.error(resp.getErr());
+				return responseBuilder.error(apiError);
 			}
 		} else if ( (useExisting != null) && ("true".compareToIgnoreCase( useExisting ) == 0)) {
 			return responseBuilder.success(nfeed);
 		}
 
-		resp.setCode(Status.CONFLICT.getStatusCode());
-		return responseBuilder.error(resp.getErr());
+		apiError.setCode(Status.CONFLICT.getStatusCode());
+		return responseBuilder.error(apiError);
 	}
 	
 	@PUT
@@ -150,7 +149,7 @@ public class FeedResource extends BaseLoggingClass {
 			@WebParam(name = "feed") Feed feed) {
 
 		FeedService feedService = new FeedService();
-		ApiService resp = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "feedId", id);
@@ -159,7 +158,7 @@ public class FeedResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 
-		Feed nfeed = feedService.getFeed( id, resp.getErr() );
+		Feed nfeed = feedService.getFeed(id, apiError);
 		if ( nfeed == null || nfeed.getStatus() == DmaapObject_Status.DELETED ) {
 			return responseBuilder.notFound();
 		}
@@ -170,13 +169,13 @@ public class FeedResource extends BaseLoggingClass {
 		nfeed.setFeedDescription(feed.getFeedDescription());
 		nfeed.setFormatUuid(feed.getFormatUuid());
 		
-		nfeed =  feedService.updateFeed(nfeed, resp.getErr());
+		nfeed =  feedService.updateFeed(nfeed, apiError);
 		if ( nfeed != null ) {
 			return responseBuilder.success(nfeed);
 		} else {
 			logger.info( "Unable to update: " + feed.getFeedName() + ":" + feed.getFeedVersion());
 
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(apiError);
 		}
 	}
 	
@@ -189,25 +188,23 @@ public class FeedResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{id}")
-	public Response deleteFeed( 
-			@PathParam("id") String id
-			){
-		ApiService resp = new ApiService();
+	public Response deleteFeed(@PathParam("id") String id){
+		ApiError apiError = new ApiError();
 
 		logger.debug( "Entry: DELETE  " + id);
 		FeedService feedService = new FeedService();
-		Feed nfeed =  feedService.getFeed( id, resp.getErr() );
+		Feed nfeed =  feedService.getFeed(id, apiError);
 		if ( nfeed == null ) {
-			resp.setCode(Status.NOT_FOUND.getStatusCode());
-			return responseBuilder.error(resp.getErr());
+			apiError.setCode(Status.NOT_FOUND.getStatusCode());
+			return responseBuilder.error(apiError);
 		}
-		nfeed = feedService.removeFeed( nfeed, resp.getErr() );
+		nfeed = feedService.removeFeed(nfeed, apiError);
 		if ( nfeed == null || nfeed.getStatus() == DmaapObject_Status.DELETED ) {
 			return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 		}
 		logger.info( "Unable to delete: " + id + ":" + nfeed.getFeedVersion());
 
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 
 	@GET
@@ -219,16 +216,14 @@ public class FeedResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{id}")
-	public Response getFeed( 
-			@PathParam("id") String id
-			) {
-		ApiService resp = new ApiService();
+	public Response getFeed(@PathParam("id") String id) {
+		ApiError apiError = new ApiError();
 
 		FeedService feedService = new FeedService();
-		Feed nfeed =  feedService.getFeed( id, resp.getErr() );
+		Feed nfeed =  feedService.getFeed(id, apiError);
 		if ( nfeed == null ) {
-			resp.setCode(Status.NOT_FOUND.getStatusCode());
-			return responseBuilder.error(resp.getErr());
+			apiError.setCode(Status.NOT_FOUND.getStatusCode());
+			return responseBuilder.error(apiError);
 		}
 		return responseBuilder.success(nfeed);
 	}
@@ -244,24 +239,22 @@ public class FeedResource extends BaseLoggingClass {
 			@ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path( "/sync")
-	public Response syncFeeds ( 
-			@QueryParam("hard") String hardParam
-			) {
-		ApiService resp = new ApiService();
+	public Response syncFeeds (@QueryParam("hard") String hardParam) {
+		ApiError error = new ApiError();
 		
 		FeedService feedService = new FeedService();
 		boolean hard = false;
 		if (  hardParam != null && hardParam.equalsIgnoreCase("true")) {
 			hard = true;
 		}
-		feedService.sync( hard, resp.getErr() );
-		if ( resp.getErr().is2xx()) {	
+		feedService.sync( hard, error );
+		if ( error.is2xx()) {
 			List<Feed> nfeeds =  feedService.getAllFeeds();
 			GenericEntity<List<Feed>> list = new GenericEntity<List<Feed>>(nfeeds) {
 			};
 			return responseBuilder.success(list);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(error);
 	}
 	
 }

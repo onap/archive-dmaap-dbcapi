@@ -24,7 +24,6 @@ package org.onap.dmaap.dbcapi.resources;
 
 import com.google.common.collect.Iterables;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -44,7 +43,6 @@ import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Sub;
 import org.onap.dmaap.dbcapi.model.Feed;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.DR_SubService;
 import org.onap.dmaap.dbcapi.service.FeedService;
 
@@ -91,11 +89,9 @@ public class DR_SubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 200, message = "Success", response = DR_Sub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response addDr_Sub( 
-			DR_Sub sub
-			) {
-	
-		ApiService resp = new ApiService();
+	public Response addDr_Sub(DR_Sub sub) {
+
+		ApiError apiError = new ApiError();
 		FeedService feeds = new FeedService();
 		Feed fnew = null;
 		try {
@@ -110,14 +106,14 @@ public class DR_SubResource extends BaseLoggingClass {
 			// if we found a FeedName instead of a FeedId then try to look it up.
 			List<Feed> nfeeds =  feeds.getAllFeeds( sub.getFeedName(), sub.getFeedVersion(), "equals");
 			if ( nfeeds.isEmpty() ) {
-				resp.setCode(Status.NOT_FOUND.getStatusCode());
-				resp.setFields("feedName");
-				return responseBuilder.error(resp.getErr());
+				apiError.setCode(Status.NOT_FOUND.getStatusCode());
+				apiError.setFields("feedName");
+				return responseBuilder.error(apiError);
 			} else if (nfeeds.size() > 1) {
 				logger.debug( "Attempt to match "+ sub.getFeedName() + " ver="+sub.getFeedVersion() + " matched " + nfeeds.size() );
-				resp.setCode(Status.CONFLICT.getStatusCode());
-				resp.setFields("feedName");
-				return responseBuilder.error(resp.getErr());
+				apiError.setCode(Status.CONFLICT.getStatusCode());
+				apiError.setFields("feedName");
+				return responseBuilder.error(apiError);
 			}
 			fnew = Iterables.getOnlyElement(nfeeds);
 		}
@@ -130,19 +126,19 @@ public class DR_SubResource extends BaseLoggingClass {
 		}
 		// we may have fnew already if located by FeedName
 		if ( fnew == null ) {
-			fnew = feeds.getFeed( sub.getFeedId(), resp.getErr() );
+			fnew = feeds.getFeed( sub.getFeedId(), apiError);
 		}
 		if ( fnew == null ) {
 			logger.warn( "Specified feed " + sub.getFeedId() + " or " + sub.getFeedName() + " not known to Bus Controller");
-			resp.setCode(Status.NOT_FOUND.getStatusCode());
-			return responseBuilder.error(resp.getErr());
+			apiError.setCode(Status.NOT_FOUND.getStatusCode());
+			return responseBuilder.error(apiError);
 		}
 		DR_SubService dr_subService = new DR_SubService( fnew.getSubscribeURL());
 		ArrayList<DR_Sub> subs = fnew.getSubs();
 		logger.info( "num existing subs before = " + subs.size() );
-		DR_Sub snew = dr_subService.addDr_Sub(sub, resp.getErr() );
-		if ( ! resp.getErr().is2xx() ) {
-			return responseBuilder.error(resp.getErr());
+		DR_Sub snew = dr_subService.addDr_Sub(sub, apiError);
+		if (!apiError.is2xx()) {
+			return responseBuilder.error(apiError);
 		}
 		subs.add( snew );
 		logger.info( "num existing subs after = " + subs.size() );
@@ -162,12 +158,9 @@ public class DR_SubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
-	public Response updateDr_Sub( 
-			@PathParam("subId") String name, 
-			DR_Sub sub
-			) {
+	public Response updateDr_Sub(@PathParam("subId") String name, DR_Sub sub) {
 
-		ApiService resp = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "subId", name);
@@ -179,19 +172,19 @@ public class DR_SubResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 		FeedService feeds = new FeedService();
-		Feed fnew = feeds.getFeed( sub.getFeedId(), resp.getErr() );
+		Feed fnew = feeds.getFeed(sub.getFeedId(), apiError);
 		if ( fnew == null ) {
 			logger.warn( "Specified feed " + sub.getFeedId() + " not known to Bus Controller");
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(apiError);
 		}
 
 		DR_SubService dr_subService = new DR_SubService();
 		sub.setSubId(name);
-		DR_Sub nsub = dr_subService.updateDr_Sub(sub, resp.getErr() );
+		DR_Sub nsub = dr_subService.updateDr_Sub(sub, apiError);
 		if ( nsub != null && nsub.isStatusValid() ) {
 			return responseBuilder.success(nsub);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 		
 	@DELETE
@@ -203,11 +196,9 @@ public class DR_SubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
-	public Response deleteDr_Sub( 
-			@PathParam("subId") String id
-			){
+	public Response deleteDr_Sub(@PathParam("subId") String id){
 
-		ApiService resp = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "subId", id);
@@ -216,9 +207,9 @@ public class DR_SubResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 		DR_SubService dr_subService = new DR_SubService();
-		dr_subService.removeDr_Sub(id, resp.getErr() );
-		if ( ! resp.getErr().is2xx() ) {
-			return responseBuilder.error(resp.getErr());
+		dr_subService.removeDr_Sub(id, apiError);
+		if (!apiError.is2xx() ) {
+			return responseBuilder.error(apiError);
 		}
 		return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null );
 	}
@@ -232,10 +223,9 @@ public class DR_SubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
-	public Response get( 
-			@PathParam("subId") String id
-			) {
-		ApiService resp = new ApiService();
+	public Response get(@PathParam("subId") String id) {
+
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "subId", id);
@@ -244,10 +234,10 @@ public class DR_SubResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 		DR_SubService dr_subService = new DR_SubService();
-		DR_Sub sub =  dr_subService.getDr_Sub( id, resp.getErr() );
+		DR_Sub sub =  dr_subService.getDr_Sub(id, apiError);
 		if ( sub != null && sub.isStatusValid() ) {
 			return responseBuilder.success(sub);
 		}
-		return responseBuilder.error(resp.getErr());
+		return responseBuilder.error(apiError);
 	}
 }

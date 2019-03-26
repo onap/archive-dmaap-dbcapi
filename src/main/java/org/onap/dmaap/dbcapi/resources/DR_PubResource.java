@@ -46,7 +46,6 @@ import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.Feed;
-import org.onap.dmaap.dbcapi.service.ApiService;
 import org.onap.dmaap.dbcapi.service.DR_PubService;
 import org.onap.dmaap.dbcapi.service.FeedService;
 
@@ -87,10 +86,8 @@ public class DR_PubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 200, message = "Success", response = DR_Pub.class),
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
-	public Response addDr_Pub( 
-			DR_Pub pub
-			) {
-		ApiService resp = new ApiService();
+	public Response addDr_Pub(DR_Pub pub) {
+		ApiError apiError = new ApiError();
 		FeedService feeds = new FeedService();
 		Feed fnew = null;
 
@@ -109,7 +106,7 @@ public class DR_PubResource extends BaseLoggingClass {
 			List<Feed> nfeeds =  feeds.getAllFeeds( pub.getFeedName(), pub.getFeedVersion(), "equals");
 			if ( nfeeds.size() != 1 ) {
 				logger.debug( "Attempt to match "+ pub.getFeedName() + " ver="+pub.getFeedVersion() + " matched " + nfeeds.size() );
-				return responseBuilder.error(resp.getErr());
+				return responseBuilder.error(apiError);
 			}
 			fnew = nfeeds.get(0);
 		}
@@ -123,11 +120,11 @@ public class DR_PubResource extends BaseLoggingClass {
 
 		// we may have fnew already if located by FeedName
 		if ( fnew == null ) {
-			fnew = feeds.getFeed( pub.getFeedId(), resp.getErr() );
+			fnew = feeds.getFeed(pub.getFeedId(), apiError);
 		}
 		if ( fnew == null ) {
 			logger.info( "Specified feed " + pub.getFeedId() + " or " + pub.getFeedName() + " not known to Bus Controller");	
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(apiError);
 		}
 
 		ArrayList<DR_Pub> pubs = fnew.getPubs();
@@ -143,15 +140,15 @@ public class DR_PubResource extends BaseLoggingClass {
 		}
 		pubs.add( pub );
 		fnew.setPubs(pubs);
-		fnew = feeds.updateFeed( fnew, resp.getErr() );	
+		fnew = feeds.updateFeed(fnew, apiError);
 		
-		if ( ! resp.getErr().is2xx()) {	
-			return responseBuilder.error(resp.getErr());
+		if (!apiError.is2xx()) {
+			return responseBuilder.error(apiError);
 		}
 		pubs = fnew.getPubs();
 		logger.info( "num existing pubs after = " + pubs.size() );
 		
-		DR_Pub pnew = dr_pubService.getDr_Pub(pub.getPubId(), resp.getErr());
+		DR_Pub pnew = dr_pubService.getDr_Pub(pub.getPubId(), apiError);
 		return responseBuilder.success(Status.CREATED.getStatusCode(), pnew);
 	}
 	
@@ -164,10 +161,7 @@ public class DR_PubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{pubId}")
-	public Response updateDr_Pub( 
-			@PathParam("pubId") String name, 
-			DR_Pub pub
-			) {
+	public Response updateDr_Pub(@PathParam("pubId") String name, DR_Pub pub) {
 		logger.info( "Entry: PUT /dr_pubs");
 		pub.setPubId(name);
 		DR_Pub res = dr_pubService.updateDr_Pub(pub);
@@ -183,11 +177,9 @@ public class DR_PubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{pubId}")
-	public Response deleteDr_Pub( 
-			@PathParam("pubId") String id
-			){
+	public Response deleteDr_Pub(@PathParam("pubId") String id){
 
-		ApiService resp = new ApiService();
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "pubId", id);
@@ -195,21 +187,21 @@ public class DR_PubResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 
-		DR_Pub pub =  dr_pubService.getDr_Pub( id, resp.getErr() );
-		if ( ! resp.getErr().is2xx()) {	
-			return responseBuilder.error(resp.getErr());
+		DR_Pub pub =  dr_pubService.getDr_Pub(id, apiError);
+		if ( !apiError.is2xx()) {
+			return responseBuilder.error(apiError);
 		}
 		FeedService feeds = new FeedService();
-		Feed fnew = feeds.getFeed( pub.getFeedId(), resp.getErr() );
+		Feed fnew = feeds.getFeed(pub.getFeedId(), apiError);
 		if ( fnew == null ) {
 			logger.info( "Specified feed " + pub.getFeedId() + " not known to Bus Controller");	
-			return responseBuilder.error(resp.getErr());
+			return responseBuilder.error(apiError);
 		}
 		ArrayList<DR_Pub> pubs = fnew.getPubs();
 		if ( pubs.size() == 1 ) {
-			resp.setCode(Status.BAD_REQUEST.getStatusCode());
-			resp.setMessage( "Can't delete the last publisher of a feed");
-			return responseBuilder.error(resp.getErr());
+			apiError.setCode(Status.BAD_REQUEST.getStatusCode());
+			apiError.setMessage( "Can't delete the last publisher of a feed");
+			return responseBuilder.error(apiError);
 		}
 		
 		for( Iterator<DR_Pub> i = pubs.iterator(); i.hasNext(); ) {
@@ -219,14 +211,14 @@ public class DR_PubResource extends BaseLoggingClass {
 			}
 		}
 		fnew.setPubs(pubs);
-		fnew = feeds.updateFeed( fnew, resp.getErr() );
-		if ( ! resp.getErr().is2xx()) {	
-			return responseBuilder.error(resp.getErr());
+		fnew = feeds.updateFeed(fnew,apiError);
+		if (!apiError.is2xx()) {
+			return responseBuilder.error(apiError);
 		}
 		
-		dr_pubService.removeDr_Pub(id, resp.getErr() );
-		if ( ! resp.getErr().is2xx()) {	
-			return responseBuilder.error(resp.getErr());
+		dr_pubService.removeDr_Pub(id, apiError);
+		if (!apiError.is2xx()) {
+			return responseBuilder.error(apiError);
 		}
 		return responseBuilder.success(Status.NO_CONTENT.getStatusCode(), null);
 	}
@@ -240,10 +232,8 @@ public class DR_PubResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{pubId}")
-	public Response get( 
-			@PathParam("pubId") String id
-			) {
-		ApiService resp = new ApiService();
+	public Response get(@PathParam("pubId") String id) {
+		ApiError apiError = new ApiError();
 
 		try {
 			checker.required( "feedId", id);
@@ -251,9 +241,9 @@ public class DR_PubResource extends BaseLoggingClass {
 			return responseBuilder.error(rfe.getApiError());
 		}
 
-		DR_Pub pub =  dr_pubService.getDr_Pub( id, resp.getErr() );
-		if ( ! resp.getErr().is2xx()) {	
-			resp.getErr();			
+		DR_Pub pub =  dr_pubService.getDr_Pub(id, apiError);
+		if (!apiError.is2xx()) {
+			return responseBuilder.error(apiError);
 		}
 		return responseBuilder.success(Status.OK.getStatusCode(), pub);
 	}
