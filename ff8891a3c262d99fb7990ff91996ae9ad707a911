@@ -1,0 +1,89 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7366f7e7_98fb0740",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/resources/StopWatchFilter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-27T11:26:16Z",
+      "side": 1,
+      "message": "test for second filter method is missing",
+      "revId": "ff8891a3c262d99fb7990ff91996ae9ad707a911",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "da92cad3_1a7218e3",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/resources/StopWatchFilter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-27T11:26:16Z",
+      "side": 1,
+      "message": "maybe rename class to RequestTimeLogFilter",
+      "revId": "ff8891a3c262d99fb7990ff91996ae9ad707a911",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0144fb40_c9bf93df",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/resources/StopWatchFilter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-27T11:26:16Z",
+      "side": 1,
+      "message": "IOException is not thrown in this method",
+      "revId": "ff8891a3c262d99fb7990ff91996ae9ad707a911",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d6052871_b77a0814",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/resources/StopWatchFilter.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-27T11:26:16Z",
+      "side": 1,
+      "message": "IOException is not thrown in this method",
+      "revId": "ff8891a3c262d99fb7990ff91996ae9ad707a911",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d2a2e894_ca705b1e",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/StopWatchFilterTest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-03-27T11:26:16Z",
+      "side": 1,
+      "message": "please use better test name - setUp tells nothing in this case",
+      "revId": "ff8891a3c262d99fb7990ff91996ae9ad707a911",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
