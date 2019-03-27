@@ -137,6 +137,7 @@ public class JettyServer extends BaseLoggingClass {
 		String keystore = params.getProperty("KeyStoreFile", "etc/keystore");
 		logger.info("https Server using keystore at " + keystore);
 		sslContextFactory.setKeyStorePath(keystore);
+		sslContextFactory.setKeyStoreType(params.getProperty("KeyStoreType", "jks"));
 		sslContextFactory.setKeyStorePassword(params.getProperty("KeyStorePassword", "changeit"));
 		sslContextFactory.setKeyManagerPassword(params.getProperty("KeyPassword", "changeit"));
 	}
