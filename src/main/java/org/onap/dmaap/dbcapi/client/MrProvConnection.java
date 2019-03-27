@@ -36,131 +36,131 @@ import java.net.*;
 import java.util.Arrays;
 
 public class MrProvConnection extends BaseLoggingClass{
-	    
-	private String provURL;
-	
-	private HttpURLConnection uc;
+        
+    private String provURL;
+    
+    private HttpURLConnection uc;
 
-	
-	private String topicMgrCred;
-	private boolean useAAF;
-	private	String	user;
-	private	String	encPwd;
-	
-	public MrProvConnection() {
-		String mechIdProperty = "aaf.TopicMgrUser";
-		String pwdProperty = "aaf.TopicMgrPassword";
-		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
-		encPwd = p.getProperty( pwdProperty, "notSet" );
-		useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
-		topicMgrCred =  getCred();
-		
-	}
-	
-	private String getCred( ) {
+    
+    private String topicMgrCred;
+    private boolean useAAF;
+    private    String    user;
+    private    String    encPwd;
+    
+    public MrProvConnection() {
+        String mechIdProperty = "aaf.TopicMgrUser";
+        String pwdProperty = "aaf.TopicMgrPassword";
+        DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+        user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
+        encPwd = p.getProperty( pwdProperty, "notSet" );
+        useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
+        topicMgrCred =  getCred();
+        
+    }
+    
+    private String getCred( ) {
 
 
-		String pwd = "";
-		AafDecrypt decryptor = new AafDecrypt();	
-		pwd = decryptor.decrypt(encPwd);
-		return user + ":" + pwd;	
-	}
-	
-	
-	public boolean makeTopicConnection( MR_Cluster cluster ) {
-		logger.info( "connect to cluster: " + cluster.getDcaeLocationName());
-	
+        String pwd = "";
+        AafDecrypt decryptor = new AafDecrypt();    
+        pwd = decryptor.decrypt(encPwd);
+        return user + ":" + pwd;    
+    }
+    
+    
+    public boolean makeTopicConnection( MR_Cluster cluster ) {
+        logger.info( "connect to cluster: " + cluster.getDcaeLocationName());
+    
 
-		provURL = cluster.getTopicProtocol() + "://" + cluster.getFqdn() + ":" + cluster.getTopicPort() + "/topics/create";
+        provURL = cluster.getTopicProtocol() + "://" + cluster.getFqdn() + ":" + cluster.getTopicPort() + "/topics/create";
 
-		if ( cluster.getTopicProtocol().equals( "https" ) ) {
-			return makeSecureConnection( provURL );
-		}
-		return makeConnection( provURL );
-	}
+        if ( cluster.getTopicProtocol().equals( "https" ) ) {
+            return makeSecureConnection( provURL );
+        }
+        return makeConnection( provURL );
+    }
 
-	private boolean makeSecureConnection( String pURL ) {
-		logger.info( "makeConnection to " + pURL );
-	
-		try {
-			URL u = new URL( pURL );
-			uc = (HttpsURLConnection) u.openConnection();
-			uc.setInstanceFollowRedirects(false);
-			logger.info( "open connect to " + pURL );
-			return(true);
-		} catch( UnknownHostException uhe ){
-        	logger.error( "Caught UnknownHostException for " + pURL);
-        	return(false);
+    private boolean makeSecureConnection( String pURL ) {
+        logger.info( "makeConnection to " + pURL );
+    
+        try {
+            URL u = new URL( pURL );
+            uc = (HttpsURLConnection) u.openConnection();
+            uc.setInstanceFollowRedirects(false);
+            logger.info( "open connect to " + pURL );
+            return(true);
+        } catch( UnknownHostException uhe ){
+            logger.error( "Caught UnknownHostException for " + pURL);
+            return(false);
         } catch (Exception e) {
             logger.error("Unexpected error during openConnection of " + pURL );
-            e.printStackTrace();
+            logger.error("Unexpected error during openConnection of ",e );
             return(false);
         } 
 
-	}
-	private boolean makeConnection( String pURL ) {
-		logger.info( "makeConnection to " + pURL );
-	
-		try {
-			URL u = new URL( pURL );
-			uc = (HttpURLConnection) u.openConnection();
-			uc.setInstanceFollowRedirects(false);
-			logger.info( "open connect to " + pURL );
-			return(true);
-		} catch( UnknownHostException uhe ){
-        	logger.error( "Caught UnknownHostException for " + pURL);
-        	return(false);
+    }
+    private boolean makeConnection( String pURL ) {
+        logger.info( "makeConnection to " + pURL );
+    
+        try {
+            URL u = new URL( pURL );
+            uc = (HttpURLConnection) u.openConnection();
+            uc.setInstanceFollowRedirects(false);
+            logger.info( "open connect to " + pURL );
+            return(true);
+        } catch( UnknownHostException uhe ){
+            logger.error( "Caught UnknownHostException for " + pURL);
+            return(false);
         } catch (Exception e) {
             logger.error("Unexpected error during openConnection of " + pURL );
-            e.printStackTrace();
+            logger.error("Unexpected error during openConnection of ",e );
             return(false);
         } 
 
-	}
-	
-	static String bodyToString( InputStream is ) {
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader( new InputStreamReader(is));
-		String line;
-		try {
-			while ((line = br.readLine()) != null ) {
-				sb.append( line );
-			}
-		} catch (IOException ex ) {
-			errorLogger.error( "IOexception:" + ex);
-		}
-			
-		return sb.toString();
-	}
-	
-	public String doPostTopic( Topic postTopic, ApiError err ) {
-		String auth =  "Basic " + Base64.encodeBase64String(topicMgrCred.getBytes());
+    }
+    
+    static String bodyToString( InputStream is ) {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader br = new BufferedReader( new InputStreamReader(is));
+        String line;
+        try {
+            while ((line = br.readLine()) != null ) {
+                sb.append( line );
+            }
+        } catch (IOException ex ) {
+            errorLogger.error( "IOexception:" + ex);
+        }
+            
+        return sb.toString();
+    }
+    
+    public String doPostTopic( Topic postTopic, ApiError err ) {
+        String auth =  "Basic " + Base64.encodeBase64String(topicMgrCred.getBytes());
 
 
-		String responsemessage = null;
-		int rc = -1;
+        String responsemessage = null;
+        int rc = -1;
 
 
-		try {
-			byte[] postData = postTopic.getBytes();
-			logger.info( "post fields=" + Arrays.toString(postData));
-			
-			// when not using AAF, do not attempt Basic Authentication
-			if ( useAAF ) {
-				uc.setRequestProperty("Authorization", auth);
-				logger.info( "Authenticating with " + auth );
-			}
-			uc.setRequestMethod("POST");
-			uc.setRequestProperty("Content-Type", "application/json");
-			uc.setRequestProperty( "charset", "utf-8");
-			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
-			uc.setUseCaches(false);
-			uc.setDoOutput(true);
-			OutputStream os = null;
+        try {
+            byte[] postData = postTopic.getBytes();
+            logger.info( "post fields=" + Arrays.toString(postData));
+            
+            // when not using AAF, do not attempt Basic Authentication
+            if ( useAAF ) {
+                uc.setRequestProperty("Authorization", auth);
+                logger.info( "Authenticating with " + auth );
+            }
+            uc.setRequestMethod("POST");
+            uc.setRequestProperty("Content-Type", "application/json");
+            uc.setRequestProperty( "charset", "utf-8");
+            uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+            uc.setUseCaches(false);
+            uc.setDoOutput(true);
+            OutputStream os = null;
 
-			
-			try {
+            
+            try {
                  uc.connect();
                  os = uc.getOutputStream();
                  os.write( postData );
@@ -174,21 +174,21 @@ public class MrProvConnection extends BaseLoggingClass{
                  } catch (Exception e) {
                  }
             } catch ( UnknownHostException uhe ) {
-            	errorLogger.error( DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION , "Unknown Host Exception" , provURL );
-            	err.setCode(500);
-            	err.setMessage("Unknown Host Exception");
-            	err.setFields( uc.getURL().getHost());
-            	return new String( "500: " + uhe.getMessage());
+                errorLogger.error( DmaapbcLogMessageEnum.UNKNOWN_HOST_EXCEPTION , "Unknown Host Exception" , provURL );
+                err.setCode(500);
+                err.setMessage("Unknown Host Exception");
+                err.setFields( uc.getURL().getHost());
+                return new String( "500: " + uhe.getMessage());
             }catch ( ConnectException ce ) {
-            	errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, "HTTP Connection Exception"  );
-            	err.setCode(500);
-            	err.setMessage("HTTP Connection Exception");
-            	err.setFields( uc.getURL().getHost());
-            	return new String( "500: " + ce.getMessage());
+                errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, "HTTP Connection Exception"  );
+                err.setCode(500);
+                err.setMessage("HTTP Connection Exception");
+                err.setFields( uc.getURL().getHost());
+                return new String( "500: " + ce.getMessage());
             }
-			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
-			err.setCode(rc);
+            rc = uc.getResponseCode();
+            logger.info( "http response code:" + rc );
+            err.setCode(rc);
             responsemessage = uc.getResponseMessage();
             logger.info( "responsemessage=" + responsemessage );
             err.setMessage(responsemessage);
@@ -207,29 +207,29 @@ public class MrProvConnection extends BaseLoggingClass{
                  }
             }
             if (rc >= 200 && rc < 300 ) {
-        		String responseBody = null;
-     			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
-    			return responseBody;
+                String responseBody = null;
+                 responseBody = bodyToString( uc.getInputStream() );
+                logger.info( "responseBody=" + responseBody );
+                return responseBody;
 
             } 
             
-		} catch (Exception e) {
-			errorLogger.error("Unable to read response  " );
+        } catch (Exception e) {
+            errorLogger.error("Unable to read response  " );
            
         }
-		finally {
-			try {
-				uc.disconnect();
-			} catch ( Exception e ) {
-				errorLogger.error("Unable to disconnect");
-			}
-		}
-		return new String( rc +": " + responsemessage );
+        finally {
+            try {
+                uc.disconnect();
+            } catch ( Exception e ) {
+                errorLogger.error("Unable to disconnect");
+            }
+        }
+        return new String( rc +": " + responsemessage );
 
-	}
-	
+    }
+    
 
 
-		
+        
 }
