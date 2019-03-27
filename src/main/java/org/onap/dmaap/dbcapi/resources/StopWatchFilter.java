@@ -17,33 +17,27 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-package org.onap.dmaap.dbcapi.service;
+package org.onap.dmaap.dbcapi.resources;
 
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import org.junit.Test;
+import java.io.IOException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 
-public class StopWatchTest extends BaseLoggingClass {
+public class StopWatchFilter extends BaseLoggingClass implements ContainerRequestFilter, ContainerResponseFilter {
 
-    private StopWatch stopWatch = new StopWatch();
-
-    @Test
-    public void stopWatchShouldReturnElapsedTime() throws InterruptedException {
-        stopWatch.start();
-        Thread.sleep(50);
-        stopWatch.stop();
-        assertTrue(stopWatch.getElapsedTime() > 0);
+    @Override
+    public void filter(ContainerRequestContext requestContext) throws IOException {
+        requestContext.setProperty("start", System.currentTimeMillis());
     }
 
-    @Test
-    public void resetShouldSetElapsedTime() {
-        stopWatch.start();
-        stopWatch.stop();
-        stopWatch.resetElapsedTime();
-        assertEquals(0,stopWatch.getElapsedTime());
-
+    @Override
+    public void filter(ContainerRequestContext requestContext,
+        ContainerResponseContext containerResponseContext) throws IOException {
+        long startTime = (long) requestContext.getProperty("start");
+        long elapsedTime = System.currentTimeMillis() - startTime;
+        auditLogger.info("Request took {} ms", elapsedTime);
     }
-
 }

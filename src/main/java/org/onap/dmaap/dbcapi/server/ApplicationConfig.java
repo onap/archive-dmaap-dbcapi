@@ -30,7 +30,8 @@ public class ApplicationConfig extends ResourceConfig {
 	 */
 	public ApplicationConfig() {
 		
-        register(org.onap.dmaap.dbcapi.resources.AuthorizationFilter.class);
+        register(org.onap.dmaap.dbcapi.resources.AuthorizationFilter.class).
+					register(org.onap.dmaap.dbcapi.resources.StopWatchFilter.class);
   
     }
 }
