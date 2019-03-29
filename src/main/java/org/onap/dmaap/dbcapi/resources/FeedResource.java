@@ -232,4 +232,36 @@ public class FeedResource extends BaseLoggingClass {
 		}
 		return responseBuilder.success(nfeed);
 	}
+	
+	@PUT
+	@ApiOperation( value = "sync feeds to existing DR",
+	notes = "When Bus Controller is deployed after DR, then it is possible"
+			+ "that DR has previous provisioning data that needs to be imported"
+			+ "into Bus Controller.",
+	response = Feed.class )
+	@ApiResponses( value =  {
+			@ApiResponse( code = 200, message = "Success", response = Feed.class),
+			@ApiResponse( code = 400, message = "Error", response = ApiError.class )
+	})
+	@Path( "/sync")
+	public Response syncFeeds ( 
+			@QueryParam("hard") String hardParam
+			) {
+		ApiService resp = new ApiService();
+		
+		FeedService feedService = new FeedService();
+		boolean hard = false;
+		if (  hardParam != null && hardParam.equalsIgnoreCase("true")) {
+			hard = true;
+		}
+		feedService.sync( hard, resp.getErr() );
+		if ( resp.getErr().is2xx()) {	
+			List<Feed> nfeeds =  feedService.getAllFeeds();
+			GenericEntity<List<Feed>> list = new GenericEntity<List<Feed>>(nfeeds) {
+			};
+			return responseBuilder.success(list);
+		}
+		return responseBuilder.error(resp.getErr());
+	}
+	
 }

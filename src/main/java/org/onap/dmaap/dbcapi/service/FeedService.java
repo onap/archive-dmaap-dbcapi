@@ -25,12 +25,17 @@ package org.onap.dmaap.dbcapi.service;
 import org.onap.dmaap.dbcapi.util.RandomInteger;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.onap.dmaap.dbcapi.client.DrProvConnection;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
@@ -38,12 +43,14 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DR_Pub;
 import org.onap.dmaap.dbcapi.model.DR_Sub;
 import org.onap.dmaap.dbcapi.model.Feed;
+import org.onap.dmaap.dbcapi.model.MR_Client;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class FeedService  extends BaseLoggingClass {
 	
 	private Map<String, Feed> feeds = DatabaseClass.getFeeds();
+	private Map<String, DR_Sub> dr_subs = DatabaseClass.getDr_subs();
 	private DR_PubService pubService = new DR_PubService();
 	private DR_SubService subService = new DR_SubService();
 	private DcaeLocationService dcaeLocations = new DcaeLocationService();
@@ -67,6 +74,10 @@ public class FeedService  extends BaseLoggingClass {
 		f.setPubs(pubs);
 		ArrayList<DR_Sub> subs = subService.getDr_SubsByFeedId( f.getFeedId() );
 		f.setSubs(subs);	
+	}
+	
+	public List<Feed> getAllFeeds(){
+		return getAllFeeds(null, null, null);
 	}
 		
 	public List<Feed> getAllFeeds( String name, String ver, String match ) {
@@ -351,21 +362,29 @@ public class FeedService  extends BaseLoggingClass {
 	// 2) Call the DR Delete function.  Feed with the same name and version can never be added again
 	//
 	public Feed removeFeed( Feed req, ApiError err ) {
+		return removeFeed( req, err, true );
+	}
+	
+	public Feed removeFeed( Feed req, ApiError err, boolean hitDR ) {
 		
 		// strip pubs and subs from feed first no matter what
 		ArrayList<DR_Pub> pubs = pubService.getDr_PubsByFeedId( req.getFeedId() );
 		for( DR_Pub pub: pubs ) {
-			pubService.removeDr_Pub(pub.getPubId(), err);
+			pubService.removeDr_Pub(pub.getPubId(), err, hitDR);
 			if ( ! err.is2xx()) {
 				return req;
 			}
 		}
 		ArrayList<DR_Sub> subs = subService.getDr_SubsByFeedId( req.getFeedId() );
 		for ( DR_Sub sub: subs ) {
-			subService.removeDr_Sub(sub.getSubId(), err);
+			subService.removeDr_Sub(sub.getSubId(), err, hitDR);
 			if ( ! err.is2xx()) {
 				return req;
 			}
+		}
+		
+		if ( ! hitDR ) {
+			return feeds.remove(req.getFeedId());	
 		}
 	
 		if ( deleteHandling.equalsIgnoreCase("DeleteOnDR")) {
@@ -415,6 +434,92 @@ public class FeedService  extends BaseLoggingClass {
 
 		
 	}	
+	
+	
+	/*
+	 * sync will retrieve current config from DR and add it to the DB
+	 * when hard = true, then first git rid of current DR provisioning data (from the DB)
+	 */
+	public void sync( boolean hard, ApiError err ) {
+	
+		if ( hard ) {
+			
+			ArrayList<Feed> flist = new ArrayList<Feed>(this.getAllFeeds());
+			for ( Iterator<Feed> it = flist.iterator(); it.hasNext(); ) {
+				Feed f = it.next();
+	
+				@SuppressWarnings("unused")
+				Feed old = removeFeed( f, err, false );
+				if (! err.is2xx()) {
+					return;
+				}
+			}
+		}
+		
+		DrProvConnection prov = new DrProvConnection();
+		prov.makeDumpConnection();
+		String resp = prov.doGetDump( err );
+		if (! err.is2xx()) {
+			return;
+		}
+		logger.debug("sync: resp from DR is: " + resp);
+		
+		JSONParser parser = new JSONParser();
+		JSONObject jsonObj;
+		try {
+			jsonObj = (JSONObject) parser.parse( resp );
+		} catch ( ParseException pe ) {
+			logger.error( "Error parsing provisioning data: " + resp );
+			err.setCode(500);
+			return;
+		}
+		
+		int i;
+
+		JSONArray feedsArray = (JSONArray) jsonObj.get( "feeds");
+		for( i = 0; i < feedsArray.size(); i++ ) {
+			JSONObject entry = (JSONObject) feedsArray.get(i);
+			Feed fnew = new Feed( entry.toJSONString() );
+			
+			logger.info( "fnew status is:" + fnew.getStatus() );
+			if ( ! fnew.isStatusValid()) {		
+				err.setCode(500);
+				err.setMessage( "Unexpected response from DR backend" );
+				err.setFields("response");		
+				return;
+			}
+			
+				if ( ! savePubs( fnew )  ) {
+				err.setCode(Status.BAD_REQUEST.getStatusCode());
+				err.setMessage("Unable to save Pub or Sub objects");
+				return; 
+			}
+			fnew.setFormatUuid(fnew.getFormatUuid());
+			fnew.setLastMod();
+			feeds.put( fnew.getFeedId(), fnew );
+
+		}
+		
+		JSONArray subArray = (JSONArray) jsonObj.get( "subscriptions");
+		for( i = 0; i < subArray.size(); i++ ) {
+			JSONObject entry = (JSONObject) subArray.get(i);
+			DR_Sub snew = new DR_Sub( entry.toJSONString() );
+			
+			logger.info( "snew status is:" + snew.getStatus() );
+			if ( ! snew.isStatusValid()) {		
+				err.setCode(500);
+				err.setMessage( "Unexpected response from DR backend" );
+				err.setFields("response");		
+				return;
+			}
+			
+			dr_subs.put( snew.getSubId(), snew );
+
+		}
+		err.setCode(200);
+		return;
+		
+	}
 
 	private String simulateResp( Feed f, String action ){
 		String server = "localhost";
