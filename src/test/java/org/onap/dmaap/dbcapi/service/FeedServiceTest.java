@@ -95,5 +95,14 @@ public class FeedServiceTest {
 
 	}
 
+	
+	@Test 
+	public void syncTestHard() {
+		ApiError err = new ApiError();
+		ds.sync(  true, err );
+		
+		assert( err.getCode() >= 200 && err.getCode() < 300 );
+	}
+
 
 }

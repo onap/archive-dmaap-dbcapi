@@ -129,7 +129,11 @@ public class DR_PubService  extends BaseLoggingClass{
 	}
 		
 	public DR_Pub removeDr_Pub( String pubId, ApiError err ) {
-
+		return removeDr_Pub( pubId, err, true );
+	}
+		
+	
+	public DR_Pub removeDr_Pub( String pubId, ApiError err, boolean hitDR ) {
 		DR_Pub pub =  dr_pubs.get( pubId );
 		if ( pub == null ) {
 			err.setCode(Status.NOT_FOUND.getStatusCode());
