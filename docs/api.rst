@@ -4928,3 +4928,40 @@ Topic Model Structure
         topicName | No | string |  |  | the short name used by humans, and utilized to construct the `FQTN`
         version | No | string |  |  | a hook for any versioning needed for managing a `Topic` over time
 
+Security
+~~~~~~~~
+As default security is in Dmaap Bus Controller disabled.
+
+Enable
+------
+Settings to turn on security is in file dmaapbc.properties. The file is located in OOM project in path: ./oom/kubernetes/dmaap/components/dmaap-bc/resources/config/dmaapbc.properties
+During deployment the the file is placed into ConfigMap XXX-dmaap-bus-controller-config (XXX depend on deployment setup). The config map is linked to volume with read only permission so it can not be changed from pod level.
+Ater updating ConfigMap the bus controller pod needs to be restarted.
+
+Settings
+++++++++
+
+In the dmaapbc.properties there are settings:
+
+1. UseAAF: false
+When it will be changed to true then creating topic also will create required perms in AAF. The perms will be created in org.onap.dmaap.mr.
+The last element -mr- is related to another setting - MR.projectID .
+
+Example:
+  Topic name:
+    aSimpleTopic
+  Permitions
+    org.onap.dmaap.mr.topic|:topic.org.onap.dmaap.mr.aSimpleTopic|pub
+    org.onap.dmaap.mr.topic|:topic.org.onap.dmaap.mr.aSimpleTopic|sub
+    org.onap.dmaap.mr.topic|:topic.org.onap.dmaap.mr.aSimpleTopic|view
+
+
+
+Hint: User defined in the certificate of cadi (property:cadi.properties, user:dmaap-bc@dmaap-bc.onap.org) needs to have permissions to create and view such topics (org.onap.dmaap.mr.topic|*|*).
+
+2.#ApiPermission.Class: org.onap.dmaap.dbcapi.authentication.AafLurAndFish
+
+The ApiPermission.Class is commented. When uncommented then before creating anything user rights are checked. Call to bus controller needs to have given user credentials. The user ich checked in AAF for permission to call topic.
+The check is done in org.onap.dmaap-bc.api according to ApiNamespace setting.
+
+Hint: User defined in the certificate of cadi (property:cadi.properties, user:dmaap-bc@dmaap-bc.onap.org) needs to have permission to read the namespace (org.onap.dmaap-bc.api.access|*|read).
