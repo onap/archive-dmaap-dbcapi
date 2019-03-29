@@ -20,8 +20,8 @@
 package org.onap.dmaap.dbcapi.server;
 
 import org.glassfish.jersey.server.ResourceConfig;
-
-
+import org.onap.dmaap.dbcapi.resources.RequestTimeLogFilter;
+import org.onap.dmaap.dbcapi.resources.AuthorizationFilter;
 
 public class ApplicationConfig extends ResourceConfig {
 	
@@ -30,7 +30,8 @@ public class ApplicationConfig extends ResourceConfig {
 	 */
 	public ApplicationConfig() {
 		
-        register(org.onap.dmaap.dbcapi.resources.AuthorizationFilter.class);
+        register(AuthorizationFilter.class).
+					register(RequestTimeLogFilter.class);
   
     }
 }
