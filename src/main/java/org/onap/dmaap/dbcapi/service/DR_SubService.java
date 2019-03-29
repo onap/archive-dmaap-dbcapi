@@ -173,6 +173,11 @@ public class DR_SubService extends BaseLoggingClass {
 	}
 		
 	public void removeDr_Sub( String key, ApiError apiError ) {
+		removeDr_Sub( key, apiError, true );
+		return;
+	}
+	
+	public void removeDr_Sub( String key, ApiError apiError, boolean hitDR ) {
 		logger.debug( "enter removeDR_Subs()");
 		
 		DR_Sub sub = dr_subs.get( key );
@@ -180,11 +185,15 @@ public class DR_SubService extends BaseLoggingClass {
 			apiError.setCode(Status.NOT_FOUND.getStatusCode());
 			apiError.setFields( "subId");
 			apiError.setMessage("subId " + key + " not found");
-		} else {	
-			DrProvConnection prov = new DrProvConnection();
-			prov.makeSubPutConnection( key );
-			String resp = prov.doDeleteDr_Sub( sub, apiError );
-			logger.debug( "resp=" + resp );
+		} else {
+			if ( hitDR ) {
+				DrProvConnection prov = new DrProvConnection();
+				prov.makeSubPutConnection( key );
+				String resp = prov.doDeleteDr_Sub( sub, apiError );
+				logger.debug( "resp=" + resp );
+			} else {
+				apiError.setCode(200);
+			}
 			
 			if ( apiError.is2xx() || unit_test.equals( "Yes" ) ) {
 				dr_subs.remove(key);

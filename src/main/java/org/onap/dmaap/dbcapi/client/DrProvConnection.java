@@ -49,6 +49,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	private	String	feedContentType;
 	private	String	subContentType;
 	private	String unit_test;
+	private	String	provURI;
 	
 	private HttpsURLConnection uc;
 
@@ -63,6 +64,7 @@ public class DrProvConnection extends BaseLoggingClass {
 		behalfHeader = p.getProperty( "DR.onBehalfHeader", "X-DMAAP-DR-ON-BEHALF-OF");
 		feedContentType = p.getProperty( "DR.feedContentType", "application/vnd.dmaap-dr.feed");
 		subContentType = p.getProperty( "DR.subContentType", "application/vnd.dmaap-dr.subscription");
+		provURI = p.getProperty( "DR.ProvisioningURI", "/internal/prov");
 		logger.info( "provURL=" + provURL + " provApi=" + provApi + " behalfHeader=" + behalfHeader
 				+ " feedContentType=" + feedContentType + " subContentType=" + subContentType );
 		unit_test = p.getProperty( "UnitTest", "No" );
@@ -96,6 +98,10 @@ public class DrProvConnection extends BaseLoggingClass {
 		String uri = String.format("/internal/route/egress/?sub=%s&node=%s", 
 					sub,  nodep );
 		return makeConnection( provURL + uri );
+	}
+	public boolean makeDumpConnection() {
+		String url = provURL + provURI;
+		return makeConnection( url );
 	}
 	public boolean makeNodesConnection( String varName ) {
 		
@@ -923,5 +929,150 @@ public class DrProvConnection extends BaseLoggingClass {
 
 	}
 	
+	// add double-quotes around a value
+	// hope his is easier to read than in-line escaping...
+	private String dq( String v ) {
+		return ( "\"" + v + "\"");
+	}
+	private String dq( String k, String v) {
+		return( dq(k) + ":" + dq(v));
+	}
+	private String dqc( String k, String v) {
+		return( dq(k) + ":" + dq(v) + ",");
+	}
+	
+	private String dumpSimulation() {
+		logger.info( "enter dumpSimulation()");
+		String     				responseBody = 
+				"{"
+				+ dq("feeds") + ":["
+				+ "{" + dq( "suspend") + ":false,"
+					  + dq( "groupid") + ":0,"
+					  + dqc( "description", "Some description" )
+					  + dqc( "version", "m1.1") 
+					  + dq( "authorization") + ":"
+					  + "{" + dq( "endpoint_addrs" ) + ":[],"
+					  		+ dq( "classification", "unclassified")
+					  		+ dq( "endpoint_ids") + ":[{"
+					  			+ dqc( "password", "dradmin" )
+					  			+ dq( "id", "dradmin")
+					  			+ "}]}"
+					  	+ dq( "last_mod") + ":1553738110000,"
+					  	+ dq( "deleted") + ":false,"
+					  	+ dq( "feedid") + ":1,"
+					  	+ dqc( "name", "Default PM Feed")
+					  	+ dq( "business_description") + ":\"\","
+					  	+ dqc( "publisher", "onap")
+					  	+ dq( "links") + ":{"
+					  		+ dqc( "subscribe", "https://dmaap-dr-prov/subscribe/1")
+					  		+ dqc( "log", "https://dmaap-dr-prov/feedlog/1")
+					  		+ dqc( "publish", "https://dmaap-dr-prov/publish/1")
+					  		+ dq( "self", "https:/dmaap-dr-prov/feed/1")
+					  		+ "}"
+					  	+ dq( "created_date") + ":1553738110000 }"
+			  	+ "],"
+			  	+ dq( "groups") + ":["
+			  	+ "],"
+			  	+ dq( "subscriptions") + ":["
+			  	+ "],"
+			  	+ dq( "ingress") + ":["
+			  	+ "],"
+			  	+ dq( "egress") + ":{"
+			  	+ "},"
+			  	+ dq( "routing") + ":["
+			  	+ "],"
+			  + "}";
+		return responseBody;
+	}
+	
+	public String doGetDump( ApiError err ) {
+		logger.info( "entry: doGetDump() "  );
+
+		String responsemessage = null;
+		String responseBody = null;
+
+		try {
+	
+			uc.setRequestMethod("GET");
+			int rc = -1;
+			
+
+			try {
+                uc.connect();
+	
+
+            } catch (ProtocolException pe) {
+
+                 // Rcvd error instead of 100-Continue
+                 try {
+                     // work around glitch in Java 1.7.0.21 and likely others
+                     // without this, Java will connect multiple times to the server to run the same request
+                     uc.setDoOutput(false);
+                 } catch (Exception e) {
+                	 logger.error(e.getMessage(), e);
+                 }
+            } 
+	
+			rc = uc.getResponseCode();
+			logger.info( "http response code:" + rc );
+            responsemessage = uc.getResponseMessage();
+            logger.info( "responsemessage=" + responsemessage );
+	
+
+
+            if (responsemessage == null) {
+
+                 // work around for glitch in Java 1.7.0.21 and likely others
+                 // When Expect: 100 is set and a non-100 response is received, the response message is not set but the response code is
+                 String h0 = uc.getHeaderField(0);
+                 if (h0 != null) {
+                     int i = h0.indexOf(' ');
+                     int j = h0.indexOf(' ', i + 1);
+                     if (i != -1 && j != -1) {
+                         responsemessage = h0.substring(j + 1);
+                     }
+                 }
+            }
+	
+        	err.setCode(rc);  // may not really be an error, but we save rc
+            if (rc == 200 ) {
+     			responseBody = bodyToString( uc.getInputStream() );
+    			logger.info( "responseBody=" + responseBody );
+            } else {
+            	err.setMessage(responsemessage);
+            }
+            
+
+		} catch (ConnectException ce) {
+        	if ( unit_test.equals( "Yes" ) ) {
+    				err.setCode(200);
+    				err.setMessage( "simulated response");
+    				logger.info( "artificial 200 response from doGetNodes because unit_test =" + unit_test );
+    				responseBody = dumpSimulation();
+    							  
+           	} else {
+	            errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
+	            err.setCode( 500 );
+	        	err.setMessage("Backend connection refused");
+	        	logger.error(ce.getMessage(), ce);
+           	}
+		} catch (Exception e) {
+         	if ( unit_test.equals( "Yes" ) ) {
+    				err.setCode(200);
+    				err.setMessage( "simulated response");
+    				logger.info( "artificial 200 response from doGetNodes because unit_test =" + unit_test );
+    				responseBody = dumpSimulation();
+    							  
+           	} else {
+	            logger.error("Unable to read response  ", e.getMessage());
+           	}
+        } finally {
+
+			if ( uc != null ) uc.disconnect();
+        }
+
+		return responseBody;
+
+	}
 		
 }
