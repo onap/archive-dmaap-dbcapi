@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Piotr Karaś <piotr.karas@nokia.com>
+Code-Review+2: Dominic Lunanuova <dgl@research.att.com>
+Submitted-by: Dominic Lunanuova <dgl@research.att.com>
+Submitted-at: Fri, 29 Mar 2019 13:46:16 +0000
+Reviewed-on: https://gerrit.onap.org/r/83434
+Project: dmaap/dbcapi
+Branch: refs/heads/master
