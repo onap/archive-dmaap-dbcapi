@@ -23,6 +23,10 @@
 package org.onap.dmaap.dbcapi.server;
 
 
+import com.google.common.collect.Sets;
+import java.util.EnumSet;
+import java.util.Iterator;
+import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -72,6 +76,7 @@ public class JettyServer extends BaseLoggingClass {
 			HttpConfiguration https_config = new HttpConfiguration(http_config);
 			https_config.addCustomizer(new SecureRequestCustomizer());
 			SslContextFactory sslContextFactory = new SslContextFactory();
+			sslContextFactory.setWantClientAuth(true);
 
 			setUpKeystore(params, sslContextFactory);
 			setUpTrustStore(params, sslContextFactory);
@@ -114,6 +119,11 @@ public class JettyServer extends BaseLoggingClass {
         ServletHolder staticServlet = context.addServlet(DefaultServlet.class,"/*");
         staticServlet.setInitParameter("resourceBase","www");
         staticServlet.setInitParameter("pathInfoOnly","true");
+
+        context.addFilter("org.onap.dmaap.dbcapi.resources.AAFAuthenticationFilter", "/webapi/*",
+					Sets.newEnumSet(Sets.newHashSet(DispatcherType.FORWARD, DispatcherType.REQUEST), DispatcherType.class));
+				context.addFilter("org.onap.dmaap.dbcapi.resources.AAFAuthorizationFilter", "/webapi/*",
+					Sets.newEnumSet(Sets.newHashSet(DispatcherType.FORWARD, DispatcherType.REQUEST), DispatcherType.class));
 
         try {
 

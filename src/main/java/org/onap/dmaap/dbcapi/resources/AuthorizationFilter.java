@@ -26,33 +26,44 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import org.apache.log4j.Logger;
 import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
 import org.onap.dmaap.dbcapi.service.ApiService;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 
 @Authorization
 public class AuthorizationFilter implements ContainerRequestFilter   {
-	
-	private Logger logger = Logger.getLogger(AuthorizationFilter.class.getName());
-	private ResponseBuilder responseBuilder = new ResponseBuilder();
-	
+
+	private static final String AAF_FLAG = "UseAAF";
+	private final Logger logger = Logger.getLogger(AuthorizationFilter.class.getName());
+	private final ResponseBuilder responseBuilder = new ResponseBuilder();
+	private final boolean isAafEnabled;
+
+
+	public AuthorizationFilter() {
+		DmaapConfig dmaapConfig = (DmaapConfig) DmaapConfig.getConfig();
+		String flag = dmaapConfig.getProperty(AAF_FLAG, "false");
+		isAafEnabled = "true".equalsIgnoreCase(flag);
+	}
+
 	@Override
 	public void filter(ContainerRequestContext requestContext) {
 
-		ApiService apiResp = new ApiService()
-			.setAuth( requestContext.getHeaderString("Authorization") )
-			.setUriPath(requestContext.getUriInfo().getPath())
-			.setHttpMethod( requestContext.getMethod() )
-			.setRequestId( requestContext.getHeaderString("X-ECOMP-RequestID") );
+		if(!isAafEnabled) {
+			ApiService apiResp = new ApiService()
+				.setAuth(requestContext.getHeaderString("Authorization"))
+				.setUriPath(requestContext.getUriInfo().getPath())
+				.setHttpMethod(requestContext.getMethod())
+				.setRequestId(requestContext.getHeaderString("X-ECOMP-RequestID"));
 
-		try {
-			apiResp.checkAuthorization();
-		} catch ( AuthenticationErrorException ae ) {
-			logger.error("Error", ae);
-			requestContext.abortWith( responseBuilder.unauthorized( apiResp.getErr().getMessage() ) );
-		} catch ( Exception e ) {
-			logger.error("Error", e);
-			requestContext.abortWith( responseBuilder.unavailable() );
+			try {
+				apiResp.checkAuthorization();
+			} catch (AuthenticationErrorException ae) {
+				logger.error("Error", ae);
+				requestContext.abortWith(responseBuilder.unauthorized(apiResp.getErr().getMessage()));
+			} catch (Exception e) {
+				logger.error("Error", e);
+				requestContext.abortWith(responseBuilder.unavailable());
+			}
 		}
-
 	}
 
 }
