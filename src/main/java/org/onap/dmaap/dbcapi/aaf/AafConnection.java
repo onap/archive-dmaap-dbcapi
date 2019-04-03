@@ -37,8 +37,11 @@ import java.net.UnknownHostException;
 import java.net.ConnectException;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import org.apache.commons.codec.binary.Base64;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
@@ -129,6 +132,10 @@ public class AafConnection extends BaseLoggingClass {
 			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
+
+			SSLContext sc = SSLContext.getInstance("SSL");
+			sc.init(null, trustAllCerts, new java.security.SecureRandom());
+			uc.setSSLSocketFactory(sc.getSocketFactory());
 			OutputStream os = null;
 
 			
@@ -296,6 +303,27 @@ public class AafConnection extends BaseLoggingClass {
 		return rc;
 		
 	}
+
+	private TrustManager[] trustAllCerts = new TrustManager[]{
+		new X509TrustManager() {
+
+			@Override
+			public java.security.cert.X509Certificate[] getAcceptedIssuers()
+			{
+				return null;
+			}
+			@Override
+			public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType)
+			{
+				//No need to implement.
+			}
+			@Override
+			public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType)
+			{
+				//No need to implement.
+			}
+		}
+	};
 	
 
 }
