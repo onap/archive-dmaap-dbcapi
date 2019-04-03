@@ -22,7 +22,8 @@
 
 package org.onap.dmaap.dbcapi.server;
 
-
+import com.google.common.collect.Sets;
+import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -31,6 +32,7 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 
 import java.util.Properties;
+
 /**
  * A  Jetty server which supports:
  * 	- http and https (simultaneously for dev env)
@@ -38,48 +40,47 @@ import java.util.Properties;
  *  - static html pages (for documentation).
  */
 public class JettyServer extends BaseLoggingClass {
-	private Server server;
+
+    private Server server;
 
 
-	public Server getServer() {
-		return server;
-	}
+    public Server getServer() {
+        return server;
+    }
 
-    public JettyServer( Properties params ) throws Exception {
+    public JettyServer(Properties params) throws Exception {
 
         server = new Server();
-    	int httpPort = Integer.valueOf(params.getProperty("IntHttpPort", "80" ));
-       	int sslPort = Integer.valueOf(params.getProperty("IntHttpsPort", "443" ));
-       	boolean allowHttp = Boolean.valueOf(params.getProperty("HttpAllowed", "false"));
-    	serverLogger.info( "port params: http=" + httpPort + " https=" + sslPort );
-    	serverLogger.info( "allowHttp=" + allowHttp );
+        int httpPort = Integer.valueOf(params.getProperty("IntHttpPort", "80"));
+        int sslPort = Integer.valueOf(params.getProperty("IntHttpsPort", "443"));
+        boolean allowHttp = Boolean.valueOf(params.getProperty("HttpAllowed", "false"));
+        serverLogger.info("port params: http=" + httpPort + " https=" + sslPort);
+        serverLogger.info("allowHttp=" + allowHttp);
 
-		// HTTP Server
-    	HttpConfiguration http_config = new HttpConfiguration();
-    	http_config.setSecureScheme("https");
-    	http_config.setSecurePort(sslPort);
-    	http_config.setOutputBufferSize(32768);
+        // HTTP Server
+        HttpConfiguration http_config = new HttpConfiguration();
+        http_config.setSecureScheme("https");
+        http_config.setSecurePort(sslPort);
+        http_config.setOutputBufferSize(32768);
 
-    	
-    	
-        try(ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(http_config))) {
-			httpConnector.setPort(httpPort);
-			httpConnector.setIdleTimeout(30000);
+        try (ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(http_config))) {
+            httpConnector.setPort(httpPort);
+            httpConnector.setIdleTimeout(30000);
 
+            // HTTPS Server
 
-			// HTTPS Server
+            HttpConfiguration https_config = new HttpConfiguration(http_config);
+            https_config.addCustomizer(new SecureRequestCustomizer());
+            SslContextFactory sslContextFactory = new SslContextFactory();
+            sslContextFactory.setWantClientAuth(true);
 
-			HttpConfiguration https_config = new HttpConfiguration(http_config);
-			https_config.addCustomizer(new SecureRequestCustomizer());
-			SslContextFactory sslContextFactory = new SslContextFactory();
+            setUpKeystore(params, sslContextFactory);
+            setUpTrustStore(params, sslContextFactory);
 
-			setUpKeystore(params, sslContextFactory);
-			setUpTrustStore(params, sslContextFactory);
-
-			if (sslPort != 0) {
-                try(ServerConnector sslConnector = new ServerConnector(server,
-						new SslConnectionFactory(sslContextFactory, "http/1.1"),
-						new HttpConnectionFactory(https_config))) {
+            if (sslPort != 0) {
+                try (ServerConnector sslConnector = new ServerConnector(server,
+                    new SslConnectionFactory(sslContextFactory, "http/1.1"),
+                    new HttpConnectionFactory(https_config))) {
                     sslConnector.setPort(sslPort);
                     if (allowHttp) {
                         logger.info("Starting httpConnector on port " + httpPort);
@@ -91,62 +92,71 @@ public class JettyServer extends BaseLoggingClass {
                         server.setConnectors(new Connector[]{sslConnector});
                     }
                 }
-			} else {
-				serverLogger.info("NOT starting sslConnector on port " + sslPort + " for https");
-				if (allowHttp) {
-					serverLogger.info("Starting httpConnector on port " + httpPort);
-					server.setConnectors(new Connector[]{httpConnector});
-				}
-			}
-		}
+            } else {
+                serverLogger.info("NOT starting sslConnector on port " + sslPort + " for https");
+                if (allowHttp) {
+                    serverLogger.info("Starting httpConnector on port " + httpPort);
+                    server.setConnectors(new Connector[]{httpConnector});
+                }
+            }
+        }
 
         // Set context for servlet.  This is shared for http and https
-       	ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-    	context.setContextPath("/");
-        server.setHandler( context );
+        ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        server.setHandler(context);
 
-        ServletHolder jerseyServlet = context.addServlet( org.glassfish.jersey.servlet.ServletContainer.class, "/webapi/*");
+        ServletHolder jerseyServlet = context
+            .addServlet(org.glassfish.jersey.servlet.ServletContainer.class, "/webapi/*");
         jerseyServlet.setInitOrder(1);
-        jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "org.onap.dmaap.dbcapi.resources" );   
-        jerseyServlet.setInitParameter("javax.ws.rs.Application", "org.onap.dmaap.dbcapi.server.ApplicationConfig" );
-        
+        jerseyServlet.setInitParameter("jersey.config.server.provider.packages", "org.onap.dmaap.dbcapi.resources");
+        jerseyServlet.setInitParameter("javax.ws.rs.Application", "org.onap.dmaap.dbcapi.server.ApplicationConfig");
+
         // also serve up some static pages...
-        ServletHolder staticServlet = context.addServlet(DefaultServlet.class,"/*");
-        staticServlet.setInitParameter("resourceBase","www");
-        staticServlet.setInitParameter("pathInfoOnly","true");
+        ServletHolder staticServlet = context.addServlet(DefaultServlet.class, "/*");
+        staticServlet.setInitParameter("resourceBase", "www");
+        staticServlet.setInitParameter("pathInfoOnly", "true");
+
+        registerAuthFilters(context);
 
         try {
 
             serverLogger.info("Starting jetty server");
-        	String unit_test = params.getProperty("UnitTest", "No");
+            String unit_test = params.getProperty("UnitTest", "No");
             serverLogger.info("UnitTest=" + unit_test);
-			if ( unit_test.equals( "No" ) ) {
-        		server.start();
-        		server.dumpStdErr();
-            	server.join();
-			}
-        } catch ( Exception e ) {
-        	errorLogger.error( "Exception " + e );
+            if (unit_test.equals("No")) {
+                server.start();
+                server.dumpStdErr();
+                server.join();
+            }
+        } catch (Exception e) {
+            errorLogger.error("Exception " + e);
         } finally {
-        	server.destroy();
+            server.destroy();
         }
-        
+
     }
 
-	private void setUpKeystore(Properties params, SslContextFactory sslContextFactory) {
-		String keystore = params.getProperty("KeyStoreFile", "etc/keystore");
-		logger.info("https Server using keystore at " + keystore);
-		sslContextFactory.setKeyStorePath(keystore);
-		sslContextFactory.setKeyStoreType(params.getProperty("KeyStoreType", "jks"));
-		sslContextFactory.setKeyStorePassword(params.getProperty("KeyStorePassword", "changeit"));
-		sslContextFactory.setKeyManagerPassword(params.getProperty("KeyPassword", "changeit"));
-	}
+    private void registerAuthFilters(ServletContextHandler context) {
+        context.addFilter("org.onap.dmaap.dbcapi.resources.AAFAuthenticationFilter", "/webapi/*",
+            Sets.newEnumSet(Sets.newHashSet(DispatcherType.FORWARD, DispatcherType.REQUEST), DispatcherType.class));
+        context.addFilter("org.onap.dmaap.dbcapi.resources.AAFAuthorizationFilter", "/webapi/*",
+            Sets.newEnumSet(Sets.newHashSet(DispatcherType.FORWARD, DispatcherType.REQUEST), DispatcherType.class));
+    }
 
-	private void setUpTrustStore(Properties params, SslContextFactory sslContextFactory) {
-		String truststore = params.getProperty("TrustStoreFile", "etc/org.onap.dmaap-bc.trust.jks");
-		logger.info("https Server using truststore at " + truststore);
-		sslContextFactory.setTrustStorePath(truststore);
-		sslContextFactory.setTrustStoreType(params.getProperty("TrustStoreType", "jks"));
-		sslContextFactory.setTrustStorePassword(params.getProperty("TrustStorePassword", "changeit"));
-	}
+    private void setUpKeystore(Properties params, SslContextFactory sslContextFactory) {
+        String keystore = params.getProperty("KeyStoreFile", "etc/keystore");
+        logger.info("https Server using keystore at " + keystore);
+        sslContextFactory.setKeyStorePath(keystore);
+        sslContextFactory.setKeyStorePassword(params.getProperty("KeyStorePassword", "changeit"));
+        sslContextFactory.setKeyManagerPassword(params.getProperty("KeyPassword", "changeit"));
+    }
+
+    private void setUpTrustStore(Properties params, SslContextFactory sslContextFactory) {
+        String truststore = params.getProperty("TrustStoreFile", "etc/org.onap.dmaap-bc.trust.jks");
+        logger.info("https Server using truststore at " + truststore);
+        sslContextFactory.setTrustStorePath(truststore);
+        sslContextFactory.setTrustStoreType(params.getProperty("TrustStoreType", "jks"));
+        sslContextFactory.setTrustStorePassword(params.getProperty("TrustStorePassword", "changeit"));
+    }
 }
