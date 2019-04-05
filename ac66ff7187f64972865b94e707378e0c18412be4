@@ -1,0 +1,191 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6b45eca9_4f8f17fc",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "looks like update is not needed",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "294de6ba_179c2759",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "DmaapResource is not used in tests and can be removed",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "554fea5e_44d183cf",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "please add todo message:\n/*TODO: Cannot cleanup yet until still other Resources tests depends on the static DB content\njust not to forget about cleanup after refactor of all tests",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "d1d3d6c1_9a53cec6",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "check also that response has some entity",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "693bc5cd_f3686160",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "replace with assert of ApiError (fields and message)",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c55b3485_e5ac9e5e",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "add assert for ApiError (fields and message)",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5a4d6f2f_94a2211d",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "looks like some bug in implementation, maybe we should fix this and add error with code CONFLICT(409, \"Conflict\") and meaningful message",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fb710057_554dbc72",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "add assert for ApiError",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "963d5a53_bb003a4c",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "add assert for ApiError",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bf246930_94ce89a4",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "add assert for ApiError",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2f9d911d_ba020461",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-05T12:53:33Z",
+      "side": 1,
+      "message": "you can rebase this change ontop of https://gerrit.onap.org/r/#/c/84328/ and use in tests already extracted FastJerseyTestContainer class",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
