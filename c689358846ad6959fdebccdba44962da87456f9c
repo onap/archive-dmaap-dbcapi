@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "1f939593_0376878d",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/resources/AAFAuthorizationFilter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 2729
+      },
+      "writtenOn": "2019-04-05T13:03:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1b6e6c4_5a5ff8fd",
+      "revId": "c689358846ad6959fdebccdba44962da87456f9c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "1fe410e2_76214ccb",
         "filename": "src/main/java/org/onap/dmaap/dbcapi/resources/AuthorizationFilter.java",
         "patchSetId": 3
@@ -30,6 +48,24 @@
       "writtenOn": "2019-04-05T08:18:51Z",
       "side": 1,
       "message": "junit checking this change can be helpful",
+      "revId": "c689358846ad6959fdebccdba44962da87456f9c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1bd9adf6_fa6f2cd2",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/resources/AuthorizationFilter.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 2729
+      },
+      "writtenOn": "2019-04-05T13:03:36Z",
+      "side": 1,
+      "message": "I agree, currently no tests for this class, need to add some, but I think I\u0027ll do it in a separate task.",
+      "parentUuid": "1fe410e2_76214ccb",
       "revId": "c689358846ad6959fdebccdba44962da87456f9c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "d8c1924a_6fe099ac",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/server/JettyServer.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 2729
+      },
+      "writtenOn": "2019-04-05T13:03:36Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "a19d20d3_e396b6b4",
+      "revId": "c689358846ad6959fdebccdba44962da87456f9c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "2fbc2e46_a59870e2",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/AAFAuthenticationFilterTest.java",
         "patchSetId": 3
@@ -70,6 +124,24 @@
     },
     {
       "key": {
+        "uuid": "7a6df351_fd214050",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/AAFAuthenticationFilterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 2729
+      },
+      "writtenOn": "2019-04-05T13:03:36Z",
+      "side": 1,
+      "message": "done",
+      "parentUuid": "2fbc2e46_a59870e2",
+      "revId": "c689358846ad6959fdebccdba44962da87456f9c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "f4614e75_dc39284c",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/AAFAuthenticationFilterTest.java",
         "patchSetId": 3
@@ -81,6 +153,24 @@
       "writtenOn": "2019-04-05T08:18:51Z",
       "side": 1,
       "message": "this method can be extended (maybe also renamed) with two parameters:\ninitAuthFilter(String useAAF, String cadiProperties) and can be used for setup in almost all testcases",
+      "revId": "c689358846ad6959fdebccdba44962da87456f9c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "71041df5_c7ff7349",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/AAFAuthenticationFilterTest.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 2729
+      },
+      "writtenOn": "2019-04-05T13:03:36Z",
+      "side": 1,
+      "message": "Not quite, rest of the tests do not necessary use cadi mock and real init invocation is not part of \"given\" section. I can rename it, but extending this method is pointless in my opinion.",
+      "parentUuid": "f4614e75_dc39284c",
       "revId": "c689358846ad6959fdebccdba44962da87456f9c",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
