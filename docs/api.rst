@@ -4928,3 +4928,54 @@ Topic Model Structure
         topicName | No | string |  |  | the short name used by humans, and utilized to construct the `FQTN`
         version | No | string |  |  | a hook for any versioning needed for managing a `Topic` over time
 
+Security
+~~~~~~~~
+As default security is in Dmaap Bus Controller disabled.
+
+Enable
+------
+Settings to turn on security is in file dmaapbc.properties. The file is located in OOM project in path: ./oom/kubernetes/dmaap/components/dmaap-bc/resources/config/dmaapbc.properties
+During deployment the the file is placed into ConfigMap XXX-dmaap-bus-controller-config (XXX depend on deployment setup). The config map is linked to volume with read only permission so it can not be changed from pod level.
+Ater updating ConfigMap the bus controller pod needs to be restarted.
+
+Settings
+++++++++
+
+In the dmaapbc.properties for security settings there is a main flag:
+
+1.UseAAF: true
+
+If set to true then creating topic also will create required perms in AAF. The perms will be created in org.onap.dmaap.mr.
+The last element -mr- is related to another setting - MR.projectID .
+
+Example:
+  Topic name:
+    aSimpleTopic
+  Permitions
+    org.onap.dmaap.mr.topic|:topic.org.onap.dmaap.mr.aSimpleTopic|pub
+    org.onap.dmaap.mr.topic|:topic.org.onap.dmaap.mr.aSimpleTopic|sub
+    org.onap.dmaap.mr.topic|:topic.org.onap.dmaap.mr.aSimpleTopic|view
+
+
+Hint: User defined in the certificate of cadi (property:cadi.properties, user:dmaap-bc@dmaap-bc.onap.org) needs to have permissions to create and view such topics (org.onap.dmaap.mr.topic|*|*).
+
+
+Authentication is using CADI
+
+CADI confilguration is stored in CADI files. Location of the files is defined in varaible:
+cadi.properties: /opt/app/osaaf/local/org.onap.dmaap-bc.props
+
+The configuration is a mandatory and missing parameter or file cause exception.
+
+Authorization is done by CADI - configuration is required as above
+
+Call to bus controller needs to have given user credentials. The user ich checked in AAF for permission to call topic.
+The check is done in org.onap.dmaap-bc.api according to ApiNamespace setting.
+
+Hint: User defined in the certificate of cadi (property:cadi.properties, user:dmaap-bc@dmaap-bc.onap.org) needs to have permission to read the namespace (org.onap.dmaap-bc.api.access|*|read).
+
+
+2.UseAAF: false
+
+For backward compatibility, if AAF flag is turned off the previous implementation is enabled based on AuthorizationFilter and ApiPermission class.
+This filter switching has been made due to the technology differences: Jersey filters do not implement directly servlet API, but CADI filter is based on it.
