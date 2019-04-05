@@ -21,6 +21,7 @@
 package org.onap.dmaap.dbcapi.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Objects;
 
 @XmlRootElement
 public class DR_Node extends DmaapObject {
@@ -75,4 +76,19 @@ public class DR_Node extends DmaapObject {
 		this.version = version;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DR_Node dr_node = (DR_Node) o;
+		return Objects.equals(fqdn, dr_node.fqdn) &&
+				Objects.equals(dcaeLocationName, dr_node.dcaeLocationName) &&
+				Objects.equals(hostName, dr_node.hostName) &&
+				Objects.equals(version, dr_node.version);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(fqdn, dcaeLocationName, hostName, version);
+	}
 }

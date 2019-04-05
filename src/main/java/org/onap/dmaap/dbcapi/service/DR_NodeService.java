@@ -215,11 +215,11 @@ public class DR_NodeService extends BaseLoggingClass {
 	}
 	
 	public DR_Node updateDr_Node( DR_Node node, ApiError apiError ) {
-		DR_Node old = dr_nodes.get( node );
+		DR_Node old = dr_nodes.get( node.getFqdn() );
 		if ( old == null ) {
 			apiError.setCode(Status.NOT_FOUND.getStatusCode());
 			apiError.setFields( "fqdn");
-			apiError.setMessage( "Node " + node + " does not exist");
+			apiError.setMessage( "Node " + node.getFqdn() + " does not exist");
 			return null;
 		}
 		node.setLastMod();

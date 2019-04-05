@@ -118,10 +118,11 @@ public class DR_NodeResource extends BaseLoggingClass {
 		ApiService resp = new ApiService();
 
 		try {
-			checker.required( "dcaeLocation", name);
+			checker.required( "dcaeLocation", node.getDcaeLocationName());
 			checker.required( "fqdn", node.getFqdn());
 		} catch ( RequiredFieldException rfe ) {
-			return responseBuilder.error(rfe.getApiError());
+			return responseBuilder.error(new ApiError(BAD_REQUEST.getStatusCode(),
+					"missing required field", "dcaeLocation, fqdn"));
 		}
 		node.setFqdn(name);
 		DR_Node nNode = dr_nodeService.updateDr_Node(node, resp.getErr());
@@ -143,15 +144,8 @@ public class DR_NodeResource extends BaseLoggingClass {
 	public Response deleteDr_Node( 
 			@PathParam("fqdn") String name
 			){
-
 		ApiService resp = new ApiService();
 
-		try {
-			checker.required( "fqdn", name);
-		} catch ( RequiredFieldException rfe ) {
-			logger.debug( rfe.getApiError().toString() );
-			return responseBuilder.error(rfe.getApiError());
-		}
 		dr_nodeService.removeDr_Node(name, resp.getErr());
 		if ( resp.getErr().is2xx() ) {
 			return responseBuilder.success(NO_CONTENT.getStatusCode(), null);

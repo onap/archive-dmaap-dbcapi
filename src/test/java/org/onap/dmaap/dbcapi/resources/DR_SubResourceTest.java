@@ -25,11 +25,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,18 +49,16 @@ public class DR_SubResourceTest {
     private static final String LOG_URL = "https://dr-prov/sublog/id";
     private static final String DELIVERY_URL_TEMPLATE = "https://subscriber.onap.org/delivery/";
     private static final String LOG_URL_TEMPLATE = "https://dr-prov/sublog/";
-    private static FastJerseyTest testContainer;
+    private static FastJerseyTestContainer testContainer;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
         //TODO: init is still needed here to assure that dmaap is not null
         DatabaseClass.getDmaap().init(DMAAP_OBJECT_FACTORY.genDmaap());
-        DatabaseClass.getDmaap().update(DMAAP_OBJECT_FACTORY.genDmaap());
 
-        testContainer = new FastJerseyTest(new ResourceConfig()
+        testContainer = new FastJerseyTestContainer(new ResourceConfig()
             .register(DR_SubResource.class)
-            .register(FeedResource.class)
-            .register(DmaapResource.class));
+            .register(FeedResource.class));
         testContainer.init();
     }
 
@@ -76,7 +72,7 @@ public class DR_SubResourceTest {
     }
 
     @Before
-    public void cleanupDatabase() throws Exception {
+    public void cleanupDatabase() {
         DatabaseClass.clearDatabase();
     }
 
@@ -86,7 +82,7 @@ public class DR_SubResourceTest {
         Response resp = testContainer.target("dr_subs").request().get(Response.class);
         System.out.println("GET dr_subs resp=" + resp.getStatus());
 
-        assertTrue(resp.getStatus() == 200);
+        assertEquals(200, resp.getStatus());
         assertTrue(resp.hasEntity());
     }
 
@@ -412,7 +408,7 @@ public class DR_SubResourceTest {
         Entity<DR_Sub> reqEntity2 = Entity.entity(dr_sub, MediaType.APPLICATION_JSON);
         Response resp = testContainer.target("dr_subs").request().post(reqEntity2, Response.class);
         System.out.println("POST dr_subs resp=" + resp.getStatus());
-        assertTrue(resp.getStatus() == 201);
+        assertEquals(201, resp.getStatus());
         dr_sub = resp.readEntity(DR_Sub.class);
 
         return dr_sub;
@@ -441,22 +437,6 @@ public class DR_SubResourceTest {
         assertEquals(200, response.getStatus());
         assertTrue(response.hasEntity());
         assertEquals(sub, response.readEntity(DR_Sub.class));
-    }
-
-    //TODO: move it outside class and use in other Resource integration tests
-    private static class FastJerseyTest extends JerseyTest {
-
-        FastJerseyTest(Application jaxrsApplication) {
-            super(jaxrsApplication);
-        }
-
-        void init() throws Exception {
-            this.setUp();
-        }
-
-        void destroy() throws Exception {
-            this.tearDown();
-        }
     }
 }
 
