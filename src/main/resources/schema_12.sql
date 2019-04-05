@@ -24,7 +24,7 @@
     add column  guaranteed_delivery     boolean,
     add column  guaranteed_sequence     boolean,
     add column  privileged_subscriber    boolean,
-    add column  decompress_data          boolean
+    add column  decompress		         boolean
 ;
 
 

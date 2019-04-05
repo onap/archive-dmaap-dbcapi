@@ -45,7 +45,7 @@ public class DR_Sub extends DmaapObject {
 	private boolean guaranteedDelivery;
 	private boolean guaranteedSequence;
 	private boolean privilegedSubscriber;
-	private boolean decompressData;
+	private boolean decompress;
 
 	// NOTE: the following fields are optional in the API but not stored in the DB
 
@@ -116,9 +116,9 @@ public class DR_Sub extends DmaapObject {
 			this.setPrivilegedSubscriber(false);
 		}
 		try {
-			this.setDecompressData((boolean) jsonObj.get("decompressData"));
+			this.setDecompress((boolean) jsonObj.get("decompress"));
 		} catch( NullPointerException npe ) {
-			this.setDecompressData(false);
+			this.setDecompress(false);
 		}
 
 		JSONObject del = (JSONObject) jsonObj.get("delivery");
@@ -239,12 +239,12 @@ public class DR_Sub extends DmaapObject {
 		this.privilegedSubscriber = privilegedSubscriber;
 	}
 
-	public boolean isDecompressData() {
-		return decompressData;
+	public boolean isDecompress() {
+		return decompress;
 	}
 
-	public void setDecompressData(boolean decompressData) {
-		this.decompressData = decompressData;
+	public void setDecompress(boolean decompressData) {
+		this.decompress = decompressData;
 	}
 
 	public String getFeedName() {
@@ -286,7 +286,7 @@ public class DR_Sub extends DmaapObject {
 				,"0"
 				,"true"
 				,this.isPrivilegedSubscriber()
-				,this.isDecompressData()
+				,this.isDecompress()
 			);
 
 		logger.info( postJSON );
