@@ -24,6 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.onap.dmaap.dbcapi.util.RandomString;
 
+import java.util.Objects;
+
 @XmlRootElement
 public class DR_Pub extends DmaapObject {
 
@@ -151,5 +153,35 @@ public class DR_Pub extends DmaapObject {
 		return ri.nextString();
 		
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DR_Pub dr_pub = (DR_Pub) o;
+		return Objects.equals(dcaeLocationName, dr_pub.dcaeLocationName) &&
+				Objects.equals(username, dr_pub.username) &&
+				Objects.equals(userpwd, dr_pub.userpwd) &&
+				Objects.equals(feedId, dr_pub.feedId) &&
+				Objects.equals(pubId, dr_pub.pubId);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(dcaeLocationName, username, userpwd, feedId, pubId);
+	}
+
+	@Override
+	public String toString() {
+		return "DR_Pub{" +
+				"dcaeLocationName='" + dcaeLocationName + '\'' +
+				", username='" + username + '\'' +
+				", userpwd='" + userpwd + '\'' +
+				", feedId='" + feedId + '\'' +
+				", pubId='" + pubId + '\'' +
+				", feedName='" + feedName + '\'' +
+				", feedVersion='" + feedVersion + '\'' +
+				'}';
+	}
 }
