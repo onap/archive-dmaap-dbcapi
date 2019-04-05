@@ -104,7 +104,13 @@ public class DR_PubResource extends BaseLoggingClass {
 			}
 			// if we found a FeedName instead of a FeedId then try to look it up.
 			List<Feed> nfeeds =  feeds.getAllFeeds( pub.getFeedName(), pub.getFeedVersion(), "equals");
-			if ( nfeeds.size() != 1 ) {
+			if ( nfeeds.isEmpty() ) {
+				apiError.setCode(Status.NOT_FOUND.getStatusCode());
+				apiError.setFields("feedName");
+				return responseBuilder.error(apiError);
+			} else if (nfeeds.size() > 1){
+				apiError.setCode(Status.CONFLICT.getStatusCode());
+				apiError.setFields("feedName");
 				logger.debug( "Attempt to match "+ pub.getFeedName() + " ver="+pub.getFeedVersion() + " matched " + nfeeds.size() );
 				return responseBuilder.error(apiError);
 			}
