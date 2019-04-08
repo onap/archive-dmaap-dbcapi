@@ -1,10 +1,11 @@
-
 /*-
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
  * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
  * ================================================================================
+ * Modifications Copyright (c) 2019 IBM
+ * ===================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,32 +19,36 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.dmaap.dbcapi.database;
 
-import org.onap.dmaap.dbcapi.database.DBFieldHandler;
-import org.onap.dmaap.dbcapi.model.*;
-import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-import static org.junit.Assert.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
-import org.junit.After;
-import org.junit.Before;
+import org.apache.log4j.Logger;
 import org.junit.Test;
-import java.util.*;
-import java.sql.*;
+import org.onap.dmaap.dbcapi.authentication.AafLurAndFish;
+import org.onap.dmaap.dbcapi.model.ReplicationType;
+import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
 public class DBFieldHandlerTest {
 
-	private static final String  fmt = "%24s: %s%n";
+    private static final Logger logger = Logger.getLogger(AafLurAndFish.class);
 
-	ReflectionHarness rh = new ReflectionHarness();
+    private static final String fmt = "%24s: %s%n";
 
-   private static class TopicReplicationTypeHandler implements DBFieldHandler.SqlOp {
+    ReflectionHarness rh = new ReflectionHarness();
+
+    private static class TopicReplicationTypeHandler implements DBFieldHandler.SqlOp {
         public Object get(ResultSet rs, int index) throws Exception {
             int val = rs.getInt(index);
 
             return (ReplicationType.valueOf(val));
         }
+
         public void set(PreparedStatement ps, int index, Object val) throws Exception {
             if (val == null) {
                 ps.setInt(index, 0);
@@ -55,53 +60,55 @@ public class DBFieldHandlerTest {
         }
     }
 
+    @Test
+    public void test1() {
+        // rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get",
+        // "idNotSet@namespaceNotSet:pwdNotSet" );
+    }
 
+    @Test
+    public void test2() {
+        String v = "Validate";
+        // rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
+    }
 
-	@Before
-	public void setUp() throws Exception {
-	}
+    @Test
+    public void test3() {
+        try {
+            DBFieldHandler fh = new DBFieldHandler(String.class, "aString", 1);
+        } catch (Exception e) {
+            logger.error("Error", e);
+        }
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @Test
+    public void test4() {
+        try {
+            DBFieldHandler fh = new DBFieldHandler(String.class, "aString", 1, null);
+        } catch (Exception e) {
+            logger.error("Error", e);
+        }
+    }
 
+    @Test
+    public void testfesc() {
+        String sampleString = "@xyz,ww;,";
+        String finalString = DBFieldHandler.fesc(sampleString);
+        assertEquals("@axyz@cww@s@c", finalString);
+    }
 
-	@Test
-	public void test1() {
+    @Test
+    public void testfunesc() {
+        String sampleString = "@axyz@cww@s@c";
+        String convertedString = DBFieldHandler.funesc(sampleString);
+        assertEquals("@xyz,ww;,", convertedString);
+    }
 
-
-		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "get", "idNotSet@namespaceNotSet:pwdNotSet" );	
-	
-	}
-
-	@Test
-	public void test2() {
-		String v = "Validate";
-		//rh.reflect( "org.onap.dmaap.dbcapi.aaf.client.MrTopicConnection", "set", v );
-
-	}
-
-	@Test
-	public void test3() {
-
-		try {
-			DBFieldHandler fh = new DBFieldHandler( String.class, "aString", 1 );
-		} catch (Exception e ) {
-		}
-
-	}
-
-	@Test
-	public void test4() {
-
-		try {
-			DBFieldHandler fh = new DBFieldHandler( String.class, "aString", 1, null );
-		} catch (Exception e ) {
-		}
-
-	}
-
-
-
+    @Test
+    public void testfescWithNull() {
+        String sampleString1 = DBFieldHandler.fesc(null);
+        String sampleString2 = DBFieldHandler.funesc(null);
+        assertNull(null, sampleString1);
+        assertNull(null, sampleString2);
+    }
 }
-
