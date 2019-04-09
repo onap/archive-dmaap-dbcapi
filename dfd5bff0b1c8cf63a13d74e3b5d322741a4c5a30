@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Dominic Lunanuova <dgl@research.att.com>
+Code-Review+1: Andrew Gauld <agauld@att.com>
+Code-Review+2: varun gudisena <varuneshwar.gudisena@att.com>
+Submitted-by: varun gudisena <varuneshwar.gudisena@att.com>
+Submitted-at: Tue, 09 Apr 2019 21:17:21 +0000
+Reviewed-on: https://gerrit.onap.org/r/79814
+Project: dmaap/dbcapi
+Branch: refs/heads/master
