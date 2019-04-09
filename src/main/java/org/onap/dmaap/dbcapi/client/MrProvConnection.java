@@ -30,7 +30,10 @@ import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
 import java.io.*;
 import java.net.*;
 import java.util.Arrays;
@@ -43,9 +46,10 @@ public class MrProvConnection extends BaseLoggingClass{
 
     
     private String topicMgrCred;
-    private boolean useAAF;
+    private String authMethod;
     private    String    user;
     private    String    encPwd;
+    private boolean hostnameVerify;
     
     public MrProvConnection() {
         String mechIdProperty = "aaf.TopicMgrUser";
@@ -53,8 +57,9 @@ public class MrProvConnection extends BaseLoggingClass{
         DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
         user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
         encPwd = p.getProperty( pwdProperty, "notSet" );
-        useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
+        authMethod = p.getProperty("MR.authentication", "none");
         topicMgrCred =  getCred();
+        hostnameVerify= "true".equalsIgnoreCase(p.getProperty("MR.hostnameVerify", "true"));
         
     }
     
@@ -84,10 +89,22 @@ public class MrProvConnection extends BaseLoggingClass{
         logger.info( "makeConnection to " + pURL );
     
         try {
+    	
+			HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+				@Override
+				public boolean verify( String hostname, SSLSession session ) {
+					return true;
+				}
+			
+			};
             URL u = new URL( pURL );
             uc = (HttpsURLConnection) u.openConnection();
             uc.setInstanceFollowRedirects(false);
-            logger.info( "open connect to " + pURL );
+            if ( ! hostnameVerify ) {
+				HttpsURLConnection ucs = (HttpsURLConnection) uc;
+				ucs.setHostnameVerifier(hostnameVerifier);
+			}
+            logger.info( "open secure connect to " + pURL );
             return(true);
         } catch( UnknownHostException uhe ){
             logger.error( "Caught UnknownHostException for " + pURL);
@@ -105,7 +122,8 @@ public class MrProvConnection extends BaseLoggingClass{
         try {
             URL u = new URL( pURL );
             uc = (HttpURLConnection) u.openConnection();
-            uc.setInstanceFollowRedirects(false);
+            uc.setInstanceFollowRedirects(false);			
+
             logger.info( "open connect to " + pURL );
             return(true);
         } catch( UnknownHostException uhe ){
@@ -146,11 +164,12 @@ public class MrProvConnection extends BaseLoggingClass{
             byte[] postData = postTopic.getBytes();
             logger.info( "post fields=" + Arrays.toString(postData));
             
-            // when not using AAF, do not attempt Basic Authentication
-            if ( useAAF ) {
-                uc.setRequestProperty("Authorization", auth);
-                logger.info( "Authenticating with " + auth );
-            }
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "MR.authentication set for client certificate.  Not supported yet.");
+			}
             uc.setRequestMethod("POST");
             uc.setRequestProperty("Content-Type", "application/json");
             uc.setRequestProperty( "charset", "utf-8");
@@ -215,7 +234,7 @@ public class MrProvConnection extends BaseLoggingClass{
             } 
             
         } catch (Exception e) {
-            errorLogger.error("Unable to read response  " );
+            errorLogger.error("Unable to read response:  " + e.getMessage() );
            
         }
         finally {

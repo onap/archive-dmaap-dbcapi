@@ -50,14 +50,14 @@ public class MrTopicConnection extends BaseLoggingClass  {
 	
 	private  String mmProvCred; 
 	private	String unit_test;
-	private boolean useAAF;
+	private String authMethod;
 	private boolean hostnameVerify;
 
 	public MrTopicConnection(String user, String pwd ) {
 		mmProvCred = new String( user + ":" + pwd );
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
         unit_test = p.getProperty( "UnitTest", "No" );
-    	useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
+    	authMethod = p.getProperty("MR.authentication", "none");
     	hostnameVerify= "true".equalsIgnoreCase(p.getProperty("MR.hostnameVerify", "true"));
 	}
 	
@@ -146,9 +146,11 @@ public class MrTopicConnection extends BaseLoggingClass  {
 		try {
 			byte[] postData = postMessage.getBytes();
 			logger.info( "post fields=" + postMessage );
-			if ( useAAF ) {
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
 				uc.setRequestProperty("Authorization", auth);
 				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "MR.authentication set for client certificate.  Not supported yet.");
 			}
 			uc.setRequestMethod("POST");
 			uc.setRequestProperty("Content-Type", "application/json");
