@@ -70,6 +70,7 @@ public class TopicService extends BaseLoggingClass {
 	private static String centralCname;
 	private static boolean createTopicRoles;
 	private boolean strictGraph = true;
+	private boolean mmPerMR;
 
 
 	public TopicService(){
@@ -81,9 +82,11 @@ public class TopicService extends BaseLoggingClass {
 		if ( unit_test.equals( "Yes" ) ) {
 			strictGraph = false;
 		}
+		mmPerMR = "true".equalsIgnoreCase(p.getProperty("MirrorMakerPerMR", "true"));
 		logger.info( "TopicService properties: CentralCname=" + centralCname + 
 				"   defaultGlobarlMrHost=" + defaultGlobalMrHost +
-				" createTopicRoles=" + createTopicRoles );
+				" createTopicRoles=" + createTopicRoles +
+				" mmPerMR=" + mmPerMR );
 	}
 	
 	public Map<String, Topic> getTopics() {			
@@ -451,11 +454,11 @@ public class TopicService extends BaseLoggingClass {
 				case REPLICATION_EDGE_TO_CENTRAL:
 				case REPLICATION_EDGE_TO_CENTRAL_TO_GLOBAL:  // NOTE: this is for E2C portion only
 					source = cluster.getFqdn();
-					target = centralCname;
+					target = (mmPerMR)? groupCentralCluster.getFqdn() : centralCname;
 					break;
 				case REPLICATION_CENTRAL_TO_EDGE:
 				case REPLICATION_GLOBAL_TO_CENTRAL_TO_EDGE:  // NOTE: this is for C2E portion only
-					source = centralCname;
+					source = (mmPerMR) ? groupCentralCluster.getFqdn() : centralCname;
 					target = cluster.getFqdn();
 					break;
 				case REPLICATION_CENTRAL_TO_GLOBAL:
