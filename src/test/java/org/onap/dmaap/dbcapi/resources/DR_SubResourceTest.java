@@ -50,6 +50,7 @@ public class DR_SubResourceTest {
     private static final String DELIVERY_URL_TEMPLATE = "https://subscriber.onap.org/delivery/";
     private static final String LOG_URL_TEMPLATE = "https://dr-prov/sublog/";
     private static FastJerseyTestContainer testContainer;
+    private static TestFeedCreator testFeedCreator;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -60,6 +61,7 @@ public class DR_SubResourceTest {
             .register(DR_SubResource.class)
             .register(FeedResource.class));
         testContainer.init();
+        testFeedCreator = new TestFeedCreator(testContainer);
     }
 
     @AfterClass
@@ -189,7 +191,7 @@ public class DR_SubResourceTest {
     public void addDr_Sub_shallExecuteSuccessfully_whenValidFeedNameProvided() {
         //given
         String feedName = "testFeed";
-        addFeed(feedName, "test feed");
+        testFeedCreator.addFeed(feedName, "test feed");
         DR_Sub drSub = new DR_Sub(DCAE_LOCATION_NAME, USERNAME, USRPWD, null, DELIVERY_URL, LOG_URL, true);
         drSub.setFeedName(feedName);
         Entity<DR_Sub> requestedEntity = Entity.entity(drSub, MediaType.APPLICATION_JSON);
@@ -390,17 +392,6 @@ public class DR_SubResourceTest {
         assertNotNull(resp.readEntity(ApiError.class));
     }
 
-    private Feed addFeed(String name, String desc) {
-        Feed feed = new Feed(name, "1.0", desc, "dgl", "unrestricted");
-        Entity<Feed> reqEntity = Entity.entity(feed, MediaType.APPLICATION_JSON);
-        Response resp = testContainer.target("feeds").request().post(reqEntity, Response.class);
-        int rc = resp.getStatus();
-        System.out.println("POST feed resp=" + rc);
-        assertTrue(rc == 200 || rc == 409);
-        feed = resp.readEntity(Feed.class);
-        return feed;
-    }
-
     private DR_Sub addSub(String d, String un, String up, String feedId) {
         DR_Sub dr_sub = new DR_Sub(d, un, up, feedId,
             "https://subscriber.onap.org/foo", "https://dr-prov/sublog", true);
@@ -415,7 +406,7 @@ public class DR_SubResourceTest {
     }
 
     private String assureFeedIsInDB() {
-        Feed feed = addFeed("SubscriberTestFeed", "feed for DR_Sub testing");
+        Feed feed = testFeedCreator.addFeed("SubscriberTestFeed", "feed for DR_Sub testing");
         assertNotNull("Feed shall be added into DB properly", feed);
         return feed.getFeedId();
     }
