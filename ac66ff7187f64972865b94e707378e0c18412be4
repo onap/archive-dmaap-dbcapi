@@ -19,6 +19,24 @@
     },
     {
       "key": {
+        "uuid": "d16d4765_3a92df0f",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6b45eca9_4f8f17fc",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "294de6ba_179c2759",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
         "patchSetId": 1
@@ -30,6 +48,24 @@
       "writtenOn": "2019-04-05T12:53:33Z",
       "side": 1,
       "message": "DmaapResource is not used in tests and can be removed",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "f39ee901_d5087faf",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "294de6ba_179c2759",
       "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -53,6 +89,24 @@
     },
     {
       "key": {
+        "uuid": "7c66c673_834198b0",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "554fea5e_44d183cf",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "d1d3d6c1_9a53cec6",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
         "patchSetId": 1
@@ -64,6 +118,24 @@
       "writtenOn": "2019-04-05T12:53:33Z",
       "side": 1,
       "message": "check also that response has some entity",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "11c05e5a_554b1d1f",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1d3d6c1_9a53cec6",
       "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -87,6 +159,24 @@
     },
     {
       "key": {
+        "uuid": "a236c423_ec389a4b",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "693bc5cd_f3686160",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "c55b3485_e5ac9e5e",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
         "patchSetId": 1
@@ -98,6 +188,24 @@
       "writtenOn": "2019-04-05T12:53:33Z",
       "side": 1,
       "message": "add assert for ApiError (fields and message)",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "9c2ccfe4_215c4402",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c55b3485_e5ac9e5e",
       "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
@@ -138,6 +246,24 @@
     },
     {
       "key": {
+        "uuid": "d7c4094e_fc03a04d",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb710057_554dbc72",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "963d5a53_bb003a4c",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
         "patchSetId": 1
@@ -155,6 +281,24 @@
     },
     {
       "key": {
+        "uuid": "f6553d92_eab78c6c",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "963d5a53_bb003a4c",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bf246930_94ce89a4",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
         "patchSetId": 1
@@ -166,6 +310,24 @@
       "writtenOn": "2019-04-05T12:53:33Z",
       "side": 1,
       "message": "add assert for ApiError",
+      "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4d88a329_32e16726",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/resources/DR_PubResourceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 253,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-09T06:52:25Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bf246930_94ce89a4",
       "revId": "ac66ff7187f64972865b94e707378e0c18412be4",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
