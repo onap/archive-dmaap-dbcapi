@@ -31,8 +31,10 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.HttpURLConnection;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSession;
 
 import org.apache.commons.codec.binary.Base64;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
@@ -48,14 +50,15 @@ public class MrTopicConnection extends BaseLoggingClass  {
 	
 	private  String mmProvCred; 
 	private	String unit_test;
-	private boolean useAAF;
-
+	private String authMethod;
+	private boolean hostnameVerify;
 
 	public MrTopicConnection(String user, String pwd ) {
 		mmProvCred = new String( user + ":" + pwd );
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
         unit_test = p.getProperty( "UnitTest", "No" );
-    	useAAF= "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
+    	authMethod = p.getProperty("MR.authentication", "none");
+    	hostnameVerify= "true".equalsIgnoreCase(p.getProperty("MR.hostnameVerify", "true"));
 	}
 	
 	public boolean makeTopicConnection( MR_Cluster cluster, String topic, String overrideFqdn ) {
@@ -71,13 +74,28 @@ public class MrTopicConnection extends BaseLoggingClass  {
 		return makeConnection( topicURL );
 	}
 
+	
 	private boolean makeSecureConnection( String pURL ) {
 		logger.info( "makeConnection to " + pURL );
-	
+		
 		try {
+			HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+				@Override
+				public boolean verify( String hostname, SSLSession session ) {
+					return true;
+				}
+			
+			};
+	
+		
 			URL u = new URL( pURL );
-			uc = (HttpsURLConnection) u.openConnection();
+			uc = (HttpsURLConnection) u.openConnection();			
 			uc.setInstanceFollowRedirects(false);
+			if ( ! hostnameVerify ) {
+				HttpsURLConnection ucs = (HttpsURLConnection) uc;
+				ucs.setHostnameVerifier(hostnameVerifier);
+			}
+	
 			logger.info( "open connection to " + pURL );
 			return(true);
 		} catch (Exception e) {
@@ -128,9 +146,11 @@ public class MrTopicConnection extends BaseLoggingClass  {
 		try {
 			byte[] postData = postMessage.getBytes();
 			logger.info( "post fields=" + postMessage );
-			if ( useAAF ) {
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
 				uc.setRequestProperty("Authorization", auth);
 				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "MR.authentication set for client certificate.  Not supported yet.");
 			}
 			uc.setRequestMethod("POST");
 			uc.setRequestProperty("Content-Type", "application/json");

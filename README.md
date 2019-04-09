@@ -98,6 +98,13 @@ The table below lists all the settings, default values (if not set), and shows a
 |-|-|-|-|
 |MR.projectID          | Value for some constructs of fully qualified topic names | 99999                                 | ONAP |
 |-|-|-|-|
+|MR.hostnameVerify     | Indicates if we want to relax hostname verification on SSL connection  | true                                 | false |
+|-|-|-|-|
+|MR.authentication     | Authentication method used when connecting to MR | none                                 | basicAuth |
+|                      | none = no creds sent (default)                   |  |  |
+|                      | basicAuth = formulate Basic Auth HTTP Header using name and pwd credentials |     |  |
+|                      | cert = use client certificate                    |  |  |
+|-|-|-|-|
 |cadi.properties       | Path to CADI properties file                            | /opt/app/osaaf/local/org.onap.dmaap-bc.props | /opt/app/osaaf/lcoal/org.onap.dmaap-bc.props |
 |-|-|-|-|
 |aaf.URL               | URL of the AAF server                                   | https://authentication.domain.netset.com:8095/proxy/ | https://aaf-authz/ |

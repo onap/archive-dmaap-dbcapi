@@ -75,6 +75,13 @@ public class AAFAuthenticationFilter implements Filter {
             httpResponse.setCharacterEncoding("UTF-8");
             httpResponse.getWriter().print(buildErrorResponse(errorMsg));
             httpResponse.getWriter().flush();
+        } else if ( httpResponse.getStatus() == 403 ) {
+            String errorMsg = "Authorization failure implies server (dmaap-bc) credentials to AAF are not correct";
+            LOGGER.error(errorMsg);
+            httpResponse.setContentType("application/json");
+            httpResponse.setCharacterEncoding("UTF-8");
+            httpResponse.getWriter().print(buildErrorResponse(errorMsg));
+            httpResponse.getWriter().flush();
         }
     }
 
