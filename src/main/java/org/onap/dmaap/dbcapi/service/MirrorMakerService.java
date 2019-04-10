@@ -51,6 +51,14 @@ public class MirrorMakerService extends BaseLoggingClass {
 	private static MrTopicConnection prov;
 	private static AafDecrypt decryptor;
 	
+	static final String PROV_USER_PROPERTY = "MM.ProvUserMechId";
+	static final String PROV_PWD_PROPERTY = "MM.ProvUserPwd";
+	static final String PROV_PWD_DEFAULT = "pwdNotSet";
+	static final String SOURCE_REPLICATION_PORT_PROPERTY = "MR.SourceReplicationPort";
+	static final String SOURCE_REPLICATION_PORT_DEFAULT = "9092";
+	static final String TARGET_REPLICATION_PORT_PROPERTY = "MR.TargetReplicationPort";
+	static final String TARGET_REPLICATION_PORT_DEFAULT = "2181";
+	
 	private static String provUser;
 	private static String provUserPwd;
 	private static String defaultProducerPort;
@@ -63,10 +71,10 @@ public class MirrorMakerService extends BaseLoggingClass {
 		super();
 		decryptor = new AafDecrypt();
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		provUser = p.getProperty("MM.ProvUserMechId");
-		provUserPwd = decryptor.decrypt(p.getProperty( "MM.ProvUserPwd", "notSet" ));
-		defaultProducerPort = p.getProperty( "MR.SourceReplicationPort", "9092");
-		defaultConsumerPort = p.getProperty( "MR.TargetReplicationPort", "2181");	
+		provUser = p.getProperty(PROV_USER_PROPERTY);
+		provUserPwd = decryptor.decrypt(p.getProperty( PROV_PWD_PROPERTY, PROV_PWD_DEFAULT ));
+		defaultProducerPort = p.getProperty( SOURCE_REPLICATION_PORT_PROPERTY, SOURCE_REPLICATION_PORT_DEFAULT );
+		defaultConsumerPort = p.getProperty( TARGET_REPLICATION_PORT_PROPERTY, TARGET_REPLICATION_PORT_DEFAULT );	
 		centralFqdn = p.getProperty("MR.CentralCname", "notSet");
 		maxTopicsPerMM = Integer.valueOf( p.getProperty( "MaxTopicsPerMM", "5"));
 		mmPerMR = "true".equalsIgnoreCase(p.getProperty("MirrorMakerPerMR", "true"));
@@ -166,7 +174,7 @@ public class MirrorMakerService extends BaseLoggingClass {
 		return ret;
 	}
 	
-	public MirrorMaker getNextMM( String source, String target, String fqtn ) {
+	public MirrorMaker findNextMM( String source, String target, String fqtn ) {
 		int i = 0;
 		MirrorMaker mm = null;
 		while( mm == null ) {
@@ -201,7 +209,7 @@ public class MirrorMakerService extends BaseLoggingClass {
 			int last = whitelist.size() - 1;
 			String topic = whitelist.get(last);
 			whitelist.remove(last);
-			MirrorMaker mm = this.getNextMM( source, target, "aValueThatShouldNotMatchAnything" );
+			MirrorMaker mm = this.findNextMM( source, target, "aValueThatShouldNotMatchAnything" );
 			mm.addTopic(topic);	
 			this.updateMirrorMaker(mm);
 		}
@@ -210,6 +218,38 @@ public class MirrorMakerService extends BaseLoggingClass {
 
 		return orig;
 		
+	}
+	
+	public static String getProvUser() {
+		return provUser;
+	}
+
+	public static void setProvUser(String provUser) {
+		MirrorMakerService.provUser = provUser;
+	}
+
+	public static String getProvUserPwd() {
+		return provUserPwd;
+	}
+
+	public static void setProvUserPwd(String provUserPwd) {
+		MirrorMakerService.provUserPwd = provUserPwd;
+	}
+
+	public static String getDefaultProducerPort() {
+		return defaultProducerPort;
+	}
+
+	public static void setDefaultProducerPort(String defaultProducerPort) {
+		MirrorMakerService.defaultProducerPort = defaultProducerPort;
+	}
+
+	public static String getDefaultConsumerPort() {
+		return defaultConsumerPort;
+	}
+
+	public static void setDefaultConsumerPort(String defaultConsumerPort) {
+		MirrorMakerService.defaultConsumerPort = defaultConsumerPort;
 	}
 
 }
