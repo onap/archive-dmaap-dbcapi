@@ -54,6 +54,12 @@ public class TopicResourceTest extends JerseyTest {
 
 	private static final String  fmt = "%24s: %s%n";
 
+	private boolean is2xx(int val ) {
+		if ( val >= 200 && val < 300 ) {
+			return true;
+		}
+		return false;
+	}
 
 	@Before
 	public void preTest() throws Exception {
@@ -62,9 +68,10 @@ public class TopicResourceTest extends JerseyTest {
 
 			Dmaap dmaap = factory.genDmaap();
 			Entity<Dmaap> reqEntity = Entity.entity( dmaap, MediaType.APPLICATION_JSON );
-			Response resp = target( "dmaap").request().put( reqEntity, Response.class );
-			System.out.println( resp.getStatus() );
-			assertTrue( resp.getStatus() == 200 );
+			Response resp = target( "dmaap").request().post( reqEntity, Response.class );
+			System.out.println( "POST dmaap resp=" + resp.getStatus() );
+			assertTrue( is2xx( resp.getStatus()) );
+		
 		}catch (Exception e ) {
 		}
 		try {
@@ -73,7 +80,7 @@ public class TopicResourceTest extends JerseyTest {
 			Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
 			System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ));
 			if ( resp.getStatus() != 409 ) {
-				assertTrue( resp.getStatus() == 201 );
+				assertTrue( is2xx( resp.getStatus())  );
 			}
 		} catch (Exception e ) {
 		}
@@ -83,7 +90,7 @@ public class TopicResourceTest extends JerseyTest {
 			Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
 			System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
 			if (resp.getStatus() != 409 ) {
-				assertTrue( resp.getStatus() == 200 );
+				assertTrue( is2xx( resp.getStatus()) );
 			}	
 		} catch (Exception e ) {
 			

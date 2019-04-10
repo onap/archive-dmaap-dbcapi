@@ -42,6 +42,9 @@ public class MirrorMakerServiceTest {
 	private MR_ClusterService mcs;
 	private MR_ClientService cls;
 	private DcaeLocationService dls;
+	
+	private Topic replicationTopic;
+
 
 	DmaapService ds;
 	String locname;
@@ -73,6 +76,24 @@ public class MirrorMakerServiceTest {
 		mcs.addMr_Cluster( node, err);
 		node = factory.genMR_Cluster("edge" );
 		mcs.addMr_Cluster(node,  err);
+
+
+		String t = "org.onap.dmaap.bridgingTopic";
+		replicationTopic = factory.genSimpleTopic(t);
+		replicationTopic.setReplicationCase( ReplicationType.REPLICATION_EDGE_TO_CENTRAL );
+
+		String c = "publisher";
+		String[] a = { "sub", "view" };
+		MR_Client sub = factory.genMR_Client("central",  replicationTopic.getFqtn(), c, a );
+		String[] b = { "pub", "view" };
+		MR_Client pub = factory.genMR_Client( "edge", replicationTopic.getFqtn(), c, b );
+		ArrayList<MR_Client> clients = new ArrayList<MR_Client>();
+
+		clients.add( sub );
+		clients.add( pub );
+
+		replicationTopic.setClients( clients );
+
 	}
 
 	@After
@@ -101,23 +122,8 @@ public class MirrorMakerServiceTest {
 	public void CreateMirrorMakerWithSingleTopic() {
 		ApiError err = new ApiError();
 
-		String t = "org.onap.dmaap.bridgingTopic";
-		Topic topic = factory.genSimpleTopic(t);
-		topic.setReplicationCase( ReplicationType.REPLICATION_EDGE_TO_CENTRAL );
 
-		String c = "publisher";
-		String[] a = { "sub", "view" };
-		MR_Client sub = factory.genMR_Client("central",  topic.getFqtn(), c, a );
-		String[] b = { "pub", "view" };
-		MR_Client pub = factory.genMR_Client( "edge", topic.getFqtn(), c, b );
-		ArrayList<MR_Client> clients = new ArrayList<MR_Client>();
-
-		clients.add( sub );
-		clients.add( pub );
-
-		topic.setClients( clients );
-
-		Topic nTopic = ts.updateTopic( topic, err );
+		Topic nTopic = ts.addTopic(replicationTopic, err, true );
 
 		assertTrue( err.getCode() == 200 );
 		
@@ -126,6 +132,13 @@ public class MirrorMakerServiceTest {
 	
 	@Test
 	public void DeleteMirrorMakerWithSingleTopic() {
+
+		ApiError err = new ApiError();
+		Topic nTopic = ts.addTopic(replicationTopic, err, true );
+		replicationTopic.setTopicDescription("modified topic");
+		nTopic = ts.updateTopic( replicationTopic, err );
+
+		assertTrue( err.getCode() == 200 );
 
 		
 		List<String> mma = mms.getAllMirrorMakers();
@@ -149,23 +162,11 @@ public class MirrorMakerServiceTest {
 
 		ApiError err = new ApiError();
 
-		String t = "org.onap.dmaap.bridgingTopic";
-		Topic topic = factory.genSimpleTopic(t);
-		topic.setReplicationCase( ReplicationType.REPLICATION_EDGE_TO_CENTRAL );
 
-		String c = "publisher";
-		String[] a = { "sub", "view" };
-		MR_Client sub = factory.genMR_Client("central",  topic.getFqtn(), c, a );
-		String[] b = { "pub", "view" };
-		MR_Client pub = factory.genMR_Client( "edge", topic.getFqtn(), c, b );
-		ArrayList<MR_Client> clients = new ArrayList<MR_Client>();
+		Topic nTopic = ts.addTopic( replicationTopic, err, true );
+		replicationTopic.setTopicDescription("modified topic");
+		nTopic = ts.updateTopic( replicationTopic, err );
 
-		clients.add( sub );
-		clients.add( pub );
-
-		topic.setClients( clients );
-
-		Topic nTopic = ts.updateTopic( topic, err );
 
 		assertTrue( err.getCode() == 200 );
 		List<String> mma = mms.getAllMirrorMakers();

@@ -204,9 +204,9 @@ public class MrTopicConnection extends BaseLoggingClass  {
             
 		} catch (Exception e) {
         	if ( unit_test.equals( "Yes" ) ) {
-				response.setCode(200);
+				response.setCode(201);
 				response.setMessage( "simulated response");
-				logger.info( "artificial 200 response from doPostMessage because unit_test =" + unit_test );
+				logger.info( "artificial 201 response from doPostMessage because unit_test =" + unit_test );
         	} else {
 
 				response.setCode(500);
