@@ -83,7 +83,7 @@ public class TopicResourceTest extends JerseyTest {
 			Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
 			System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
 			if (resp.getStatus() != 409 ) {
-				assertTrue( resp.getStatus() == 200 );
+				assertTrue( resp.getStatus() == 201 );
 			}	
 		} catch (Exception e ) {
 			

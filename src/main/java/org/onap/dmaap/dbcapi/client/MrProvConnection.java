@@ -49,6 +49,7 @@ public class MrProvConnection extends BaseLoggingClass{
     private String authMethod;
     private    String    user;
     private    String    encPwd;
+    private	String	unit_test;
     private boolean hostnameVerify;
     
     public MrProvConnection() {
@@ -60,6 +61,7 @@ public class MrProvConnection extends BaseLoggingClass{
         authMethod = p.getProperty("MR.authentication", "none");
         topicMgrCred =  getCred();
         hostnameVerify= "true".equalsIgnoreCase(p.getProperty("MR.hostnameVerify", "true"));
+        unit_test = p.getProperty( "UnitTest", "No" );
         
     }
     
@@ -199,11 +201,17 @@ public class MrProvConnection extends BaseLoggingClass{
                 err.setFields( uc.getURL().getHost());
                 return new String( "500: " + uhe.getMessage());
             }catch ( ConnectException ce ) {
-                errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, "HTTP Connection Exception"  );
-                err.setCode(500);
-                err.setMessage("HTTP Connection Exception");
-                err.setFields( uc.getURL().getHost());
+               	if ( unit_test.equals( "Yes" ) ) {
+    				err.setCode(200);
+    				err.setMessage( "simulated response");
+    				logger.info( "artificial 200 response from doPostMessage because unit_test =" + unit_test );
+            	} else { 
+	                errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, "HTTP Connection Exception"  );
+	                err.setCode(500);
+	                err.setMessage("HTTP Connection Exception");
+	                err.setFields( uc.getURL().getHost());
                 return new String( "500: " + ce.getMessage());
+            	}
             }
             rc = uc.getResponseCode();
             logger.info( "http response code:" + rc );

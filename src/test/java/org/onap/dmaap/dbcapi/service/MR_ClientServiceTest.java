@@ -97,7 +97,7 @@ public class MR_ClientServiceTest {
 		if ( nTopic != null ) {
 			assertTrue( nTopic.getTopicName().equals( topic.getTopicName() ));
 		}
-		String[] actions = { "pub", "view" };
+
 		MR_Client c = factory.genPublisher( "edge",  topic.getFqtn() );
 
 		c = cls.addMr_Client( c, topic, err );
@@ -114,7 +114,7 @@ public class MR_ClientServiceTest {
 	}
 
 	@Test
-	public void test5() {
+	public void AddSubscriberToTopic() {
 		Topic topic = factory.genSimpleTopic( "test5" );
 		ApiError err = new ApiError();
 		Topic nTopic = ts.addTopic( topic, err, false );
@@ -124,11 +124,13 @@ public class MR_ClientServiceTest {
 		MR_Client c = factory.genPublisher( "central", topic.getFqtn() );
 
 		c = cls.addMr_Client( c, topic, err );
-		if ( c != null ) {
-				c = factory.genSubscriber( "central", topic.getFqtn() );
-				c = cls.updateMr_Client( c, err );
-				assertTrue( err.getCode() == 200 );
-		}
-	}
+		assertTrue( c != null );
 
+		c = factory.genSubscriber( "central", topic.getFqtn() );
+		c = cls.addMr_Client( c, topic, err );
+		assertTrue( err.getCode() == 200 );
+
+		
+	}
+	
 }
