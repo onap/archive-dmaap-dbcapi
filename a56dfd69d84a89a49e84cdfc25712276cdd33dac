@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "fc077184_e87f7320",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-11T07:09:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74552ccd_b0d25ec7",
+      "range": {
+        "startLine": 50,
+        "startChar": 53,
+        "endLine": 50,
+        "endChar": 62
+      },
+      "revId": "a56dfd69d84a89a49e84cdfc25712276cdd33dac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "0ca12c29_548b5883",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
         "patchSetId": 1
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "84ad65b0_ac4aff96",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-11T07:09:34Z",
+      "side": 1,
+      "message": "in this case it\u0027s better to see both values as literals in the test setup in order to better understand the test",
+      "parentUuid": "0ca12c29_548b5883",
+      "range": {
+        "startLine": 104,
+        "startChar": 73,
+        "endLine": 104,
+        "endChar": 79
+      },
+      "revId": "a56dfd69d84a89a49e84cdfc25712276cdd33dac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "110403a5_abe7ae19",
         "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
         "patchSetId": 1
@@ -59,6 +107,30 @@
       "writtenOn": "2019-04-11T07:02:35Z",
       "side": 1,
       "message": "assign all \"locationB\" to variables (private static final String).",
+      "range": {
+        "startLine": 105,
+        "startChar": 60,
+        "endLine": 105,
+        "endChar": 69
+      },
+      "revId": "a56dfd69d84a89a49e84cdfc25712276cdd33dac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "73ebb48e_ac3b143b",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-04-11T07:09:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "110403a5_abe7ae19",
       "range": {
         "startLine": 105,
         "startChar": 60,
