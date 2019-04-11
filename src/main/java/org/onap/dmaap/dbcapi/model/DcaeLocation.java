@@ -22,11 +22,10 @@ package org.onap.dmaap.dbcapi.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.log4j.Logger;
+import java.util.Objects;
 
 @XmlRootElement
 public class DcaeLocation extends DmaapObject {
-	static final Logger errorLogger = Logger.getLogger(MR_Cluster.class);
 	private String clli;
 	private String dcaeLayer;
 	private String dcaeLocationName;
@@ -100,4 +99,21 @@ public class DcaeLocation extends DmaapObject {
 		this.subnet = subnet;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		DcaeLocation that = (DcaeLocation) o;
+		return Objects.equals(clli, that.clli) &&
+				Objects.equals(dcaeLayer, that.dcaeLayer) &&
+				Objects.equals(dcaeLocationName, that.dcaeLocationName) &&
+				Objects.equals(openStackAvailabilityZone, that.openStackAvailabilityZone) &&
+				Objects.equals(subnet, that.subnet);
+	}
+
+	@Override
+	public int hashCode() {
+
+		return Objects.hash(clli, dcaeLayer, dcaeLocationName, openStackAvailabilityZone, subnet);
+	}
 }
