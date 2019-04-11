@@ -2,14 +2,14 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,80 +19,126 @@
  */
 package org.onap.dmaap.dbcapi.service;
 
-import  org.onap.dmaap.dbcapi.model.*;
-import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
-
-import static org.junit.Assert.*;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
+import org.onap.dmaap.dbcapi.model.DcaeLocation;
+import org.onap.dmaap.dbcapi.model.DmaapObject;
+
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 public class DcaeLocationServiceTest {
 
-	private static final String  fmt = "%24s: %s%n";
+    private static final String LOCATION_A = "locationA";
+    private static final String LOCATION_B = "locationB";
+    private DcaeLocationService locationService = new DcaeLocationService(new HashMap<>());
 
-	ReflectionHarness rh = new ReflectionHarness();
+    @Test
+    public void getAllDcaeLocations_shouldReturnEmptyCollection() {
 
-	DcaeLocationService ds;
+        List<DcaeLocation> allDcaeLocations = locationService.getAllDcaeLocations();
 
-	@Before
-	public void setUp() throws Exception {
-		ds = new DcaeLocationService();
-	}
+        assertTrue(allDcaeLocations.isEmpty());
+    }
 
-	@After
-	public void tearDown() throws Exception {
-	}
+    @Test
+    public void addDcaeLocation_shouldAddLocationToMap() {
+        DcaeLocation locationA = createDcaeLocation(LOCATION_A);
 
+        DcaeLocation addedLocation = locationService.addDcaeLocation(locationA);
 
-	@Test
-	public void test1() {
+        assertEquals(locationA, locationService.getDcaeLocation(LOCATION_A));
+        assertSame(locationA, addedLocation);
+    }
 
+    @Test
+    public void addDcaeLocation_shouldSetStatusAndLastModDate() {
+        DcaeLocation locationA = createDcaeLocation(LOCATION_A);
+        Date creationDate = new Date(10);
+        locationA.setLastMod(creationDate);
 
-		//rh.reflect( "org.onap.dmaap.dbcapi.service.DcaeLocationService", "get", null );	
-	
-	}
+        DcaeLocation addedLocation = locationService.addDcaeLocation(locationA);
 
-	@Test
-	public void test2() {
-		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.service.DcaeLocationService", "set", v );
+        assertTrue(addedLocation.getLastMod().after(creationDate));
+        assertEquals(DmaapObject.DmaapObject_Status.VALID, addedLocation.getStatus());
+    }
 
-	}
+    @Test
+    public void updateDcaeLocation_shouldUpdateLocationAndLastModDate() {
+        DcaeLocation location = createDcaeLocation(LOCATION_A);
+        Date creationDate = new Date(10);
+        location.setLastMod(creationDate);
+        locationService.addDcaeLocation(location);
 
-	@Test
-	public void test3() {
-		String n = "demo-network-c";
-		DcaeLocation nd = new DcaeLocation( "CLLI0123", "central-layer", n,  "zoneA", "10.10.10.0/24" );
-		
-		DcaeLocation gd = ds.addDcaeLocation( nd );
+        DcaeLocation updatedLocation = locationService.updateDcaeLocation(location);
 
-		assertTrue( nd.getDcaeLocationName().equals( gd.getDcaeLocationName() ));
-	}
+        assertTrue(updatedLocation.getLastMod().after(creationDate));
+        assertSame(location, updatedLocation);
+    }
 
-	@Test
-	public void test4() {
-		List<DcaeLocation> d = ds.getAllDcaeLocations();
+    @Test
+    public void updateDcaeLocation_shouldShouldReturnNullWhenLocationNameIsEmpty() {
+        DcaeLocation location = createDcaeLocation("");
 
-	}
+        DcaeLocation updatedLocation = locationService.updateDcaeLocation(location);
 
-	@Test
-	public void test5() {
-		String n = "demo-network-c";
-		DcaeLocation nd = new DcaeLocation( "CLLI9999", "central-layer", n,  "zoneA", "10.10.10.0/24" );
-		DcaeLocation gd = ds.updateDcaeLocation( nd );
+        assertNull(updatedLocation);
+        assertTrue(locationService.getAllDcaeLocations().isEmpty());
+    }
 
-		assertTrue( nd.getDcaeLocationName().equals( gd.getDcaeLocationName() ));
+    @Test
+    public void removeDcaeLocation_shouldRemoveLocationFromService() {
+        locationService.addDcaeLocation(createDcaeLocation(LOCATION_A));
 
-	}
+        locationService.removeDcaeLocation(LOCATION_A);
 
-	@Test
-	public void test6() {
+        assertTrue(locationService.getAllDcaeLocations().isEmpty());
+    }
 
-		String n = "demo-network-c";
-		DcaeLocation gd = ds.removeDcaeLocation( n );
-	}
+    @Test
+    public void getCentralLocation_shouldGetFirstCentralLocation() {
+        locationService.addDcaeLocation(createDcaeLocation(LOCATION_A, "layerA"));
+        locationService.addDcaeLocation(createDcaeLocation(LOCATION_B, "centralLayer"));
+
+        assertEquals(LOCATION_B, locationService.getCentralLocation());
+    }
+
+    @Test
+    public void getCentralLocation_shouldReturnDefaultCentralLocationNameWhenThereIsNoCentralLocation() {
+        locationService.addDcaeLocation(createDcaeLocation(LOCATION_A, "layerA"));
+
+        assertEquals("aCentralLocation", locationService.getCentralLocation());
+    }
+
+    @Test
+    public void isEdgeLocation_shouldReturnTrueForNotCentralLocation() {
+        locationService.addDcaeLocation(createDcaeLocation(LOCATION_A, "layerA"));
+        locationService.addDcaeLocation(createDcaeLocation(LOCATION_B, "centralLayer"));
+
+        assertTrue(locationService.isEdgeLocation(LOCATION_A));
+        assertFalse(locationService.isEdgeLocation(LOCATION_B));
+    }
+
+    @Test
+    public void isEdgeLocation_shouldReturnFalseWhenLocationDoesNotExist() {
+        locationService.addDcaeLocation(createDcaeLocation(LOCATION_A, "layerA"));
+
+        assertFalse(locationService.isEdgeLocation("not_existing_location"));
+    }
+
+    private DcaeLocation createDcaeLocation(String locationName) {
+        return createDcaeLocation(locationName, "dcaeLayer");
+    }
+
+    private DcaeLocation createDcaeLocation(String locationName, String dcaeLayer) {
+        return new DcaeLocation("clli", dcaeLayer, locationName, "openStackAvailabilityZone", "subnet");
+    }
+
 
 }
