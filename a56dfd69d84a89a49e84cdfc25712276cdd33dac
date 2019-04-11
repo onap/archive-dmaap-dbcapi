@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "74552ccd_b0d25ec7",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-11T07:02:35Z",
+      "side": 1,
+      "message": "assign all \"locationA\" to variables (private static final String).",
+      "range": {
+        "startLine": 50,
+        "startChar": 53,
+        "endLine": 50,
+        "endChar": 62
+      },
+      "revId": "a56dfd69d84a89a49e84cdfc25712276cdd33dac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "0ca12c29_548b5883",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-11T07:02:35Z",
+      "side": 1,
+      "message": "assign all \"layerA\" to variables (private static final String).",
+      "range": {
+        "startLine": 104,
+        "startChar": 73,
+        "endLine": 104,
+        "endChar": 79
+      },
+      "revId": "a56dfd69d84a89a49e84cdfc25712276cdd33dac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "110403a5_abe7ae19",
+        "filename": "src/test/java/org/onap/dmaap/dbcapi/service/DcaeLocationServiceTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 105,
+      "author": {
+        "id": 3435
+      },
+      "writtenOn": "2019-04-11T07:02:35Z",
+      "side": 1,
+      "message": "assign all \"locationB\" to variables (private static final String).",
+      "range": {
+        "startLine": 105,
+        "startChar": 60,
+        "endLine": 105,
+        "endChar": 69
+      },
+      "revId": "a56dfd69d84a89a49e84cdfc25712276cdd33dac",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
