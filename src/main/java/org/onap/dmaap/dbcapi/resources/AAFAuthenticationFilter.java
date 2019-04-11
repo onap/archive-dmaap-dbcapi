@@ -21,7 +21,9 @@ package org.onap.dmaap.dbcapi.resources;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -98,7 +100,7 @@ public class AAFAuthenticationFilter implements Filter {
             try {
                 String cadiPropertiesFile = dmaapConfig.getProperty(CADI_PROPERTIES);
                 if(cadiPropertiesFile != null && !cadiPropertiesFile.isEmpty()) {
-                    cadiFilter = new CadiFilter(new PropAccess(cadiPropertiesFile));
+                    cadiFilter = new CadiFilter(loadCadiProperties(cadiPropertiesFile));
                 } else {
                     throw new ServletException("Cannot initialize CADI filter.CADI properties not available.");
                 }
@@ -106,6 +108,18 @@ public class AAFAuthenticationFilter implements Filter {
                 LOGGER.error("CADI init error :" + e.getMessage());
                 throw e;
             }
+        }
+    }
+
+    private PropAccess loadCadiProperties(String propertiesFilePath) throws ServletException {
+        try {
+            Properties props = new Properties();
+            props.load(new FileInputStream(propertiesFilePath));
+            return new PropAccess(props);
+        } catch (IOException e) {
+            String msg = "Could not load CADI properties file: " + propertiesFilePath;
+            LOGGER.error(msg, e);
+            throw new ServletException(msg);
         }
     }
 
