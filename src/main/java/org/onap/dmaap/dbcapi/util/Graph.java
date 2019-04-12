@@ -53,19 +53,17 @@ public class Graph {
 		if ( clients == null )
 			return;
 		initGraph( clients, strict, "" );
-		return;
 
 	}
 	public Graph( List<MR_Client> clients, boolean strict, String group ) {
 		if ( clients == null )
 			return;
 		initGraph( clients, strict, group );
-		return;
 	}
 	
 	private void initGraph(List<MR_Client> clients, boolean strict, String group ) {
 		MR_ClusterService clusters = new MR_ClusterService();
-		this.graph = new HashMap<String, String>();
+		this.graph = new HashMap<>();
 		this.hasCentral = false;
 		for( MR_Client client: clients ) {
 			if ( ! strict || client.isStatusValid()) {

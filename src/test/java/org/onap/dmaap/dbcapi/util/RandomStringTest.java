@@ -17,24 +17,44 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.dmaap.dbcapi.util;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RandomIntegerTest {
+public class RandomStringTest {
 
-    private static final int RANGE = 10;
-    private RandomInteger ri = new RandomInteger(RANGE);
+    private static final int LENGTH = 10;
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    private RandomString randomString = new RandomString(LENGTH);
 
     @Test
-    public void next_shouldReturnIntegerFromGivenRange() {
+    public void nextString_shouldReturnStringWithGivenLength() {
 
-        int next = ri.next();
+        String nextString = randomString.nextString();
 
-        assertTrue(next >= 0 && next <= RANGE);
+        assertEquals(LENGTH, nextString.length());
     }
 
-}
+    @Test
+    public void nextString_shouldReturnAlphanumeric() {
 
+        String nextString = randomString.nextString();
+
+        assertTrue(nextString.matches("[a-z0-9]*"));
+    }
+
+    @Test
+    public void constructor_shouldThrowExceptionForNegativeLength() {
+
+        thrown.expect(IllegalArgumentException.class);
+
+        new RandomString(-1);
+    }
+}
