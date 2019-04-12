@@ -25,7 +25,6 @@ import java.util.Date;
 // with some modifications
 import java.util.Random;
 
-
 public final class RandomInteger {
 	private static Random randomGenerator;
 	private int range;
@@ -39,24 +38,6 @@ public final class RandomInteger {
 	public int next(){
 		return randomGenerator.nextInt(range);
 	}
-  
-/** Generate 10 random integers in the range 0..99. 
-  public static final void main(String... aArgs){
-    log("Generating 10 random integers in range 0..99.");
-    RandomInteger ri = new RandomInteger(100);
-    //note a single Random object is reused here
-    
-    for (int idx = 1; idx <= 10; ++idx){
-      int randomInt = ri.next();
-      log("Generated : " + randomInt);
-    }
-    
-    log("Done.");
-  }
-  
-  private static void log(String aMessage){
-    System.out.println(aMessage);
-  }
-*/
+
 }
  
