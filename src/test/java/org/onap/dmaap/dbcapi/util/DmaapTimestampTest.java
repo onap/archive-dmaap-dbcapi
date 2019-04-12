@@ -17,24 +17,26 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.dmaap.dbcapi.util;
 
 import org.junit.Test;
 
+import java.util.Date;
+
 import static org.junit.Assert.assertTrue;
 
-public class RandomIntegerTest {
+public class DmaapTimestampTest {
 
-    private static final int RANGE = 10;
-    private RandomInteger ri = new RandomInteger(RANGE);
+    private DmaapTimestamp dmaapTimestamp = new DmaapTimestamp();
 
     @Test
-    public void next_shouldReturnIntegerFromGivenRange() {
+    public void mark_shouldUpdateTimestamp() {
+        dmaapTimestamp = new DmaapTimestamp(new Date(10));
+        Date timestamp = dmaapTimestamp.getVal();
 
-        int next = ri.next();
+        dmaapTimestamp.mark();
 
-        assertTrue(next >= 0 && next <= RANGE);
+        assertTrue(timestamp.before(dmaapTimestamp.getVal()));
     }
-
 }
-

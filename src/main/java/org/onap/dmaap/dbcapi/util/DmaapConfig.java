@@ -37,10 +37,8 @@ public class DmaapConfig extends Properties	{
 		return(configfname);
 	}
 	private DmaapConfig() {
-		try {
-			InputStream is = new FileInputStream(configfname);
+		try (InputStream is = new FileInputStream(configfname)){
 			load(is);
-			is.close();
 		} catch (Exception e) {
 			System.err.println("Unable to load configuration file " + configfname);
 			org.apache.log4j.Logger.getLogger(getClass()).fatal("Unable to load configuration file " + configfname, e);
