@@ -107,7 +107,7 @@ The table below lists all the settings, default values (if not set), and shows a
 |-|-|-|-|
 |cadi.properties       | Path to CADI properties file                            | /opt/app/osaaf/local/org.onap.dmaap-bc.props | /opt/app/osaaf/lcoal/org.onap.dmaap-bc.props |
 |-|-|-|-|
-|aaf.URL               | URL of the AAF server                                   | https://authentication.domain.netset.com:8095/proxy/ | https://aaf-authz/ |
+|aaf.URL               | URL of the AAF server                                   | https://authentication.domain.netset.com:8100/proxy/ | https://aaf-service.onap:8100/ |
 |-|-|-|-|
 |aaf.TopicMgrUser      | AAF Identity of Topic Mgr                               | noMechId@domain.netset.com             | dmaap-bc-topic-mgr@dmaap-bc-topic-mgr.onap.org | 
 |-|-|-|-|

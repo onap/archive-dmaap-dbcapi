@@ -87,7 +87,7 @@ public class AafService extends BaseLoggingClass {
 	
 	public AafService(ServiceType t ) {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
-		aafURL = p.getProperty( "aaf.URL", "https://authentication.domain.netset.com:8095/proxy/");
+		aafURL = p.getProperty( "aaf.URL", "https://authentication.domain.netset.com:8100/proxy/");
 		initAafService( t );
 	}
 	public AafService( ServiceType t, String url ) {
