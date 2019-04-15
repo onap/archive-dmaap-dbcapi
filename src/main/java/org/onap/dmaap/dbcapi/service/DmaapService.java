@@ -28,7 +28,6 @@ import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
 import org.onap.dmaap.dbcapi.authentication.ApiPerms;
-import org.onap.dmaap.dbcapi.authentication.ApiPolicy;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
@@ -42,7 +41,8 @@ import org.onap.dmaap.dbcapi.util.Singleton;
 
 public class DmaapService  extends BaseLoggingClass  {
 
-	
+	private static final String AAF_AUTH_FLAG = "UseAAF";
+	private boolean isAafEnabled;
 	private Singleton<Dmaap> dmaapholder = DatabaseClass.getDmaap();
 	private static String noEnvironmentPrefix;
 	
@@ -60,7 +60,10 @@ public class DmaapService  extends BaseLoggingClass  {
 
 		multiSite = "true".equalsIgnoreCase(p.getProperty("MR.multisite", "true"));
 		noEnvironmentPrefix = p.getProperty( "AAF.NoEnvironmentPrefix", "org.onap");
-		
+
+		String aafAuthFlag = p.getProperty(AAF_AUTH_FLAG, "false");
+		isAafEnabled = "true".equalsIgnoreCase(aafAuthFlag);
+
 		logger.info( "DmaapService settings: " + 
 				" topicFactory=" + topicFactory +
 				" topicMgrRole=" + topicMgrRole +
@@ -86,8 +89,7 @@ public class DmaapService  extends BaseLoggingClass  {
 			dmaapholder.update(nd);
 			
 			AafService aaf = new AafService( ServiceType.AAF_Admin);
-			ApiPolicy apiPolicy = new ApiPolicy();
-			if ( apiPolicy.getUseAuthClass() ) {
+			if (isAafEnabled) {
 				ApiPerms p = new ApiPerms();
 				p.setEnvMap();
 			}
@@ -129,8 +131,7 @@ public class DmaapService  extends BaseLoggingClass  {
 			nd.setLastMod();
 			dmaapholder.update(nd);  //need to set this so the following perms will pick up any new vals.
 			//dcaeTopicNs = dmaapholder.get().getTopicNsRoot();
-			ApiPolicy apiPolicy = new ApiPolicy();
-			if ( apiPolicy.getUseAuthClass()) {
+			if (isAafEnabled) {
 				ApiPerms p = new ApiPerms();
 				p.setEnvMap();
 			}
