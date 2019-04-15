@@ -24,7 +24,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import org.onap.dmaap.dbcapi.authentication.ApiPerms;
-import org.onap.dmaap.dbcapi.authentication.ApiPolicy;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.*;
 import org.onap.dmaap.dbcapi.model.Dmaap;
@@ -37,7 +36,7 @@ import org.slf4j.MDC;
 
 public class Main extends BaseLoggingClass {
 
-	
+    private static final String AAF_AUTH_FLAG = "UseAAF";
     private Properties parameters;
     private static String provFQDN;
 
@@ -98,13 +97,11 @@ public class Main extends BaseLoggingClass {
 		// for fresh installs, we may come up with no dmaap name so need to have a way for Controller to talk to us
 		Singleton<Dmaap> dmaapholder = DatabaseClass.getDmaap();
 		String name = dmaapholder.get().getDmaapName();
-		ApiPolicy apiPolicy = new ApiPolicy();
-		if ( apiPolicy.getUseAuthClass() && (name == null || name.isEmpty())) {
+		if (isAafEnabled() && (name == null || name.isEmpty())) {
 			ApiPerms p = new ApiPerms();
 			p.setBootMap();
 		}
 
-    	
         try {
         	new JettyServer( parameters );
         } catch (Exception e) {
@@ -112,6 +109,12 @@ public class Main extends BaseLoggingClass {
             System.exit(1);
         }
 
+    }
+
+    private boolean isAafEnabled() {
+        DmaapConfig config = (DmaapConfig)DmaapConfig.getConfig();
+        String aafAuthFlag = config.getProperty(AAF_AUTH_FLAG, "false");
+        return "true".equalsIgnoreCase(aafAuthFlag);
     }
 
 }
