@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "1320a306_915557ea",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/service/ApiService.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 2729
+      },
+      "writtenOn": "2019-04-16T10:48:01Z",
+      "side": 1,
+      "message": "If AllowAll default class is used, then this part won\u0027t work as expected. Even when there is no credentials provided, empty check should be invoked, and request shall be permitted.",
+      "revId": "bba0604a3a046a29d7a0185e22f8efaaae5ab197",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
