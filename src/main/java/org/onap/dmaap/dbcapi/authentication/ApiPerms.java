@@ -88,12 +88,8 @@ public  class ApiPerms extends BaseLoggingClass {
 
 			DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 			String api = p.getProperty("ApiNamespace", "apiNamespace.not.set");
-			
-			// this is needed because PE AAF may be a different instance than AAF used by MR
-			String peEnv = p.getProperty("PeAafEnvironment", "notSet");
-			String url = p.getProperty( new String( "PeAafUrl." + peEnv ), "URL.not.set" );
-			logger.info( "PeAafEnvironment=" + peEnv + " using URL " + url);
-			AafService aaf = new AafService(ServiceType.AAF_Admin, url );
+
+			AafService aaf = new AafService(ServiceType.AAF_Admin);
 			
 			for ( int i = 0; i < pmap.length ; i++ ) {
 				String uri = new String( api + "." + pmap[i].getUri());
