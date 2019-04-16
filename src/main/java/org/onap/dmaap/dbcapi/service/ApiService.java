@@ -21,10 +21,8 @@
 package org.onap.dmaap.dbcapi.service;
 
 import static com.att.eelf.configuration.Configuration.MDC_KEY_REQUEST_ID;
-import static com.att.eelf.configuration.Configuration.MDC_PARTNER_NAME;
 import static com.att.eelf.configuration.Configuration.MDC_SERVICE_NAME;
 
-import javax.xml.bind.DatatypeConverter;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.authentication.ApiPolicy;
 import org.onap.dmaap.dbcapi.authentication.AuthenticationErrorException;
@@ -45,6 +43,7 @@ public class ApiService extends BaseLoggingClass {
     private String requestId;
     private ApiError err;
     private ApiPolicy apiPolicy;
+    private CredentialsParser credentialsParser = new CredentialsParser();
 
     public ApiService() {
 
@@ -127,29 +126,17 @@ public class ApiService extends BaseLoggingClass {
         if (env == null || env.isEmpty()) {
             env = "boot";
         }
-        if (!apiPolicy.getUseAuthClass()) {
+        if (!apiPolicy.isPermissionClassSet()) {
             return;  // skip authorization if not enabled
         }
-        if (authorization == null || authorization.isEmpty()) {
-            String errmsg = "No basic authorization value provided ";
-            err.setMessage(errmsg);
-            logger.info(errmsg);
-            throw new AuthenticationErrorException();
-        }
-        String credentials = authorization.substring("Basic".length()).trim();
-        byte[] decoded = DatatypeConverter.parseBase64Binary(credentials);
-        String decodedString = new String(decoded);
-        String[] actualCredentials = decodedString.split(":");
-        String ID = actualCredentials[0];
-        String Password = actualCredentials[1];
-        MDC.put(MDC_PARTNER_NAME, ID);
-        try {
 
+        Credentials credentials = credentialsParser.parse(authorization);
+        try {
             DmaapPerm p = new DmaapPerm(apiNamespace + "." + uri, env, method);
-            apiPolicy.check(ID, Password, p);
+            apiPolicy.check(credentials.getId(), credentials.getPwd(), p);
         } catch (AuthenticationErrorException ae) {
             String errmsg =
-                "User " + ID + " failed authentication/authorization for " + apiNamespace + "." + uriPath + " " + env
+                "User " + credentials.getId() + " failed authentication/authorization for " + apiNamespace + "." + uriPath + " " + env
                     + " " + method;
             logger.info(errmsg);
             err.setMessage(errmsg);

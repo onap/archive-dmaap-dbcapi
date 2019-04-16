@@ -87,7 +87,7 @@ public class DmaapService  extends BaseLoggingClass  {
 			
 			AafService aaf = new AafService( ServiceType.AAF_Admin);
 			ApiPolicy apiPolicy = new ApiPolicy();
-			if ( apiPolicy.getUseAuthClass() ) {
+			if ( apiPolicy.isPermissionClassSet() ) {
 				ApiPerms p = new ApiPerms();
 				p.setEnvMap();
 			}
@@ -130,7 +130,7 @@ public class DmaapService  extends BaseLoggingClass  {
 			dmaapholder.update(nd);  //need to set this so the following perms will pick up any new vals.
 			//dcaeTopicNs = dmaapholder.get().getTopicNsRoot();
 			ApiPolicy apiPolicy = new ApiPolicy();
-			if ( apiPolicy.getUseAuthClass()) {
+			if ( apiPolicy.isPermissionClassSet()) {
 				ApiPerms p = new ApiPerms();
 				p.setEnvMap();
 			}
