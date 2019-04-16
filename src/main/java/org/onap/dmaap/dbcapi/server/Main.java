@@ -99,7 +99,7 @@ public class Main extends BaseLoggingClass {
 		Singleton<Dmaap> dmaapholder = DatabaseClass.getDmaap();
 		String name = dmaapholder.get().getDmaapName();
 		ApiPolicy apiPolicy = new ApiPolicy();
-		if ( apiPolicy.getUseAuthClass() && (name == null || name.isEmpty())) {
+		if ( apiPolicy.isPermissionClassSet() && (name == null || name.isEmpty())) {
 			ApiPerms p = new ApiPerms();
 			p.setBootMap();
 		}

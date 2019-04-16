@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,10 @@
 
 package org.onap.dmaap.dbcapi.authentication;
 
-public class AuthenticationErrorException extends Exception {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 
-    public AuthenticationErrorException() {
-    }
-
-    public AuthenticationErrorException(String s) {
-        super(s);
+public class AllowAll implements ApiAuthorizationCheckInterface {
+    @Override
+    public void check(String mechid, String pwd, DmaapPerm p) {
     }
 }

@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,22 @@
  * ============LICENSE_END=========================================================
  */
 
-package org.onap.dmaap.dbcapi.authentication;
+package org.onap.dmaap.dbcapi.service;
 
-public class AuthenticationErrorException extends Exception {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+import javax.xml.bind.DatatypeConverter;
 
-    public AuthenticationErrorException() {
+class CredentialsParser {
+
+    Credentials parse(String authorizationHeader) {
+        if (authorizationHeader == null || authorizationHeader.isEmpty()) {
+            return Credentials.empty();
+        }
+
+        String credentials = authorizationHeader.substring("Basic".length()).trim();
+        byte[] decoded = DatatypeConverter.parseBase64Binary(credentials);
+        String decodedString = new String(decoded);
+        String[] actualCredentials = decodedString.split(":");
+        return new Credentials(actualCredentials[0], actualCredentials[1]);
     }
 
-    public AuthenticationErrorException(String s) {
-        super(s);
-    }
 }

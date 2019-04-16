@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,22 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
-
 package org.onap.dmaap.dbcapi.authentication;
 
-public class AuthenticationErrorException extends Exception {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
+import org.junit.Test;
 
-    public AuthenticationErrorException() {
-    }
+import static org.junit.Assert.fail;
 
-    public AuthenticationErrorException(String s) {
-        super(s);
+public class AllowAllTest {
+
+    private AllowAll allowAll = new AllowAll();
+
+    @Test
+    public void check_shouldPassValidationForAllPerms() {
+        try {
+            allowAll.check(null, null, null);
+        } catch (Exception e) {
+            fail("No exception should be thrown");
+        }
     }
 }
