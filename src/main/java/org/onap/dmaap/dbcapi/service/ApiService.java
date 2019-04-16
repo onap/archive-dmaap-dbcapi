@@ -127,7 +127,7 @@ public class ApiService extends BaseLoggingClass {
         if (env == null || env.isEmpty()) {
             env = "boot";
         }
-        if (!apiPolicy.getUseAuthClass()) {
+        if (!apiPolicy.isPermissionClassSet()) {
             return;  // skip authorization if not enabled
         }
         if (authorization == null || authorization.isEmpty()) {
