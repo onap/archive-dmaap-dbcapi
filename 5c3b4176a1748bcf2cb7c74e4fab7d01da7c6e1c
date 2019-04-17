@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "4888fabb_1201971c",
+        "filename": "docs/api-table.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 269
+      },
+      "writtenOn": "2019-04-17T18:05:07Z",
+      "side": 1,
+      "message": "add space",
+      "revId": "5c3b4176a1748bcf2cb7c74e4fab7d01da7c6e1c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8e60ab0e_f8d16143",
+        "filename": "docs/api-table.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 269
+      },
+      "writtenOn": "2019-04-17T18:05:07Z",
+      "side": 1,
+      "message": "add space",
+      "revId": "5c3b4176a1748bcf2cb7c74e4fab7d01da7c6e1c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "462b13f8_899cbc47",
+        "filename": "docs/api-table.rst",
+        "patchSetId": 3
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 269
+      },
+      "writtenOn": "2019-04-17T18:05:07Z",
+      "side": 1,
+      "message": "should be \":download:`link \u003cswagger.json\u003e`\"\nadd space on the beginning",
+      "revId": "5c3b4176a1748bcf2cb7c74e4fab7d01da7c6e1c",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
