@@ -1,8 +1,12 @@
-.. This work is licensed under a Creative Commons Attribution 4.0 International License.
+DMaaP Bus Controller REST API Download docs
+===========================================
+
+.. toctree::
+    :maxdepth: 3
 
 .. this table is provided to allow for download of API documentation in diff formats
 
-..csv-table::
+.. csv-table::
   :header: "API name", "Swagger JSON"
   :widths: 10,5
 
