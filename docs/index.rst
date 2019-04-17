@@ -4,4 +4,5 @@
    :maxdepth: 1
 
    api-table
+   dbcapi-gen
    api
