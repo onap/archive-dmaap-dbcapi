@@ -19,19 +19,14 @@
  */
 package org.onap.dmaap.dbcapi.database;
 
-import org.onap.dmaap.dbcapi.database.DBMap;
-import org.onap.dmaap.dbcapi.database.DBSingleton;
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 import org.onap.dmaap.dbcapi.util.Singleton;
-
-import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import java.util.*;
-import java.sql.*;
 
 public class DBMapTest {
 
@@ -72,7 +67,7 @@ public class DBMapTest {
 	public void test3() {
 		try {
                 dmaap = new DBSingleton<Dmaap>(Dmaap.class, "dmaap");
-				Dmaap nd = new Dmaap();
+				Dmaap nd = new Dmaap.DmaapBuilder().createDmaap();
 				dmaap.update(nd);
 		} catch (Exception e ) {
 		}

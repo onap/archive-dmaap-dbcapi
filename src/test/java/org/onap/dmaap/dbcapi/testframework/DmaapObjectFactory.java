@@ -19,29 +19,8 @@
  */
 package org.onap.dmaap.dbcapi.testframework;
 
-import org.onap.dmaap.dbcapi.model.DR_Node;
-import org.onap.dmaap.dbcapi.model.DR_Sub;
-import org.onap.dmaap.dbcapi.model.DcaeLocation;
-import org.onap.dmaap.dbcapi.model.Dmaap;
-import org.onap.dmaap.dbcapi.model.FqtnType;
-import org.onap.dmaap.dbcapi.model.MR_Client;
-import org.onap.dmaap.dbcapi.model.MR_Cluster;
-import org.onap.dmaap.dbcapi.model.Topic;
+import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.util.RandomInteger;
-
-import static org.junit.Assert.*;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import static java.lang.System.out;
-import static java.lang.System.err;
 
 public class DmaapObjectFactory {
 
@@ -75,7 +54,7 @@ public class DmaapObjectFactory {
 	private static final String prot = "http";
 
 	public Dmaap genDmaap() {
-		return new Dmaap( dmaap_ver, dmaap_topic_root, dmaap_name, dmaap_dr, dmaap_log_url, dmaap_mm_topic, "nk", "ako" );
+		return new Dmaap.DmaapBuilder().setVer(dmaap_ver).setTnr(dmaap_topic_root).setDn(dmaap_name).setDpu(dmaap_dr).setLu(dmaap_log_url).setBat(dmaap_mm_topic).setNk("nk").setAko("ako").createDmaap();
 	}
 
 	public DcaeLocation genDcaeLocation( String layer ) {
