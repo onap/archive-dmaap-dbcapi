@@ -19,6 +19,8 @@
  */
 package org.onap.dmaap.dbcapi.service;
 
+import org.junit.BeforeClass;
+import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import  org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
@@ -42,8 +44,12 @@ public class TopicServiceTest {
 	private MR_ClientService cls;
 	private DcaeLocationService dls;
 
-	DmaapService ds;
 	String locname;
+
+	@BeforeClass
+	public static void setUpClass() {
+		DatabaseClass.getDmaap().init(factory.genDmaap());
+	}
 
 	@Before
 	public void setUp() throws Exception {
@@ -51,9 +57,6 @@ public class TopicServiceTest {
 		assert( ts != null );
 		mcs = new MR_ClusterService();
 		assert( mcs != null );
-		Dmaap nd = factory.genDmaap();
-		ds = new DmaapService();
-		ds.addDmaap( nd );
 		ts = new TopicService();
 		mcs = new MR_ClusterService();
 		cls = new MR_ClientService();
