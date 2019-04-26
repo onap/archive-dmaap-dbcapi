@@ -22,7 +22,7 @@ package org.onap.dmaap.dbcapi.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.log4j.Logger;
+import java.util.Objects;
 
 @XmlRootElement
 public class Dmaap extends DmaapObject {
@@ -128,4 +128,37 @@ public class Dmaap extends DmaapObject {
 		this.loggingUrl = loggingUrl;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Dmaap dmaap = (Dmaap) o;
+		return Objects.equals(version, dmaap.version) &&
+				Objects.equals(topicNsRoot, dmaap.topicNsRoot) &&
+				Objects.equals(dmaapName, dmaap.dmaapName) &&
+				Objects.equals(drProvUrl, dmaap.drProvUrl) &&
+				Objects.equals(bridgeAdminTopic, dmaap.bridgeAdminTopic) &&
+				Objects.equals(loggingUrl, dmaap.loggingUrl) &&
+				Objects.equals(nodeKey, dmaap.nodeKey) &&
+				Objects.equals(accessKeyOwner, dmaap.accessKeyOwner);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(version, topicNsRoot, dmaapName, drProvUrl, bridgeAdminTopic, loggingUrl, nodeKey, accessKeyOwner);
+	}
+
+	@Override
+	public String toString() {
+		return "Dmaap{" +
+				"version='" + version + '\'' +
+				", topicNsRoot='" + topicNsRoot + '\'' +
+				", dmaapName='" + dmaapName + '\'' +
+				", drProvUrl='" + drProvUrl + '\'' +
+				", bridgeAdminTopic='" + bridgeAdminTopic + '\'' +
+				", loggingUrl='" + loggingUrl + '\'' +
+				", nodeKey='" + nodeKey + '\'' +
+				", accessKeyOwner='" + accessKeyOwner + '\'' +
+				'}';
+	}
 }
