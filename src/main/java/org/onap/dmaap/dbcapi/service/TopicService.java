@@ -223,82 +223,87 @@ public class TopicService extends BaseLoggingClass {
 	}
 
 	public Topic addTopic( Topic topic, ApiError err, Boolean useExisting ) {
-		logger.info( "Entry: addTopic");
-		logger.info( "Topic name=" + topic.getTopicName() + " fqtnStyle=" + topic.getFqtnStyle() );
-		String nFqtn =  topic.genFqtn();
-		logger.info( "FQTN=" + nFqtn );
-		Topic pTopic = getTopic( nFqtn, err );
-		if ( pTopic != null ) {
-			String t = "topic already exists: " + nFqtn;
-			logger.info( t );
-			if (  useExisting ) {
-				err.setCode(Status.OK.getStatusCode());
-				return pTopic;
-			}
-			err.setMessage( t );
-			err.setFields( "fqtn");
-			err.setCode(Status.CONFLICT.getStatusCode());
-			return null;
-		}
-		err.reset();  // err filled with NOT_FOUND is expected case, but don't want to litter...
-
-		topic.setFqtn( nFqtn );
-		
-		aafTopicSetup( topic, err );
-		if ( err.getCode() >= 400 ) {
-			return null;
-		}	
-
-		if ( topic.getReplicationCase().involvesGlobal() ) {
-			if ( topic.getGlobalMrURL() == null ) {
-				topic.setGlobalMrURL(defaultGlobalMrHost);
-			}
-			if ( ! Fqdn.isValid( topic.getGlobalMrURL())) {
-				logger.error( "GlobalMR FQDN not valid: " + topic.getGlobalMrURL());
-				topic.setStatus( DmaapObject_Status.INVALID);
-				err.setCode(500);
-				err.setMessage("Value is not a valid FQDN:" +  topic.getGlobalMrURL() );
-				err.setFields("globalMrURL");
-	
+		Topic ntopic = null;
+		try {
+			logger.info("Entry: addTopic");
+			logger.info("Topic name=" + topic.getTopicName() + " fqtnStyle=" + topic.getFqtnStyle());
+			String nFqtn = topic.genFqtn();
+			logger.info("FQTN=" + nFqtn);
+			Topic pTopic = getTopic(nFqtn, err);
+			if (pTopic != null) {
+				String t = "topic already exists: " + nFqtn;
+				logger.info(t);
+				if (useExisting) {
+					err.setCode(Status.OK.getStatusCode());
+					return pTopic;
+				}
+				err.setMessage(t);
+				err.setFields("fqtn");
+				err.setCode(Status.CONFLICT.getStatusCode());
 				return null;
 			}
-		}
+			err.reset();  // err filled with NOT_FOUND is expected case, but don't want to litter...
 
+			topic.setFqtn(nFqtn);
 
-		if ( topic.getNumClients() > 0 ) {
-			ArrayList<MR_Client> clients = new ArrayList<MR_Client>(topic.getClients());
-		
-	
-			ArrayList<MR_Client> clients2 = new ArrayList<MR_Client>();
-			for ( Iterator<MR_Client> it = clients.iterator(); it.hasNext(); ) {
-				MR_Client c = it.next();
+			aafTopicSetup(topic, err);
+			if (err.getCode() >= 400) {
+				return null;
+			}
 
-				logger.info( "c fqtn=" + c.getFqtn() + " ID=" + c.getMrClientId() + " url=" + c.getTopicURL());
-				MR_Client nc = new MR_Client( c.getDcaeLocationName(), topic.getFqtn(), c.getClientRole(), c.getAction());
-				nc.setFqtn(topic.getFqtn());
-				nc.setClientIdentity( c.getClientIdentity());
-				logger.info( "nc fqtn=" + nc.getFqtn() + " ID=" + nc.getMrClientId() + " url=" + nc.getTopicURL());
-				clients2.add( clientService.addMr_Client(nc, topic, err));
-				if ( ! err.is2xx()) {
+			if (topic.getReplicationCase().involvesGlobal()) {
+				if (topic.getGlobalMrURL() == null) {
+					topic.setGlobalMrURL(defaultGlobalMrHost);
+				}
+				if (!Fqdn.isValid(topic.getGlobalMrURL())) {
+					logger.error("GlobalMR FQDN not valid: " + topic.getGlobalMrURL());
+					topic.setStatus(DmaapObject_Status.INVALID);
+					err.setCode(500);
+					err.setMessage("Value is not a valid FQDN:" + topic.getGlobalMrURL());
+					err.setFields("globalMrURL");
+
 					return null;
 				}
 			}
 
-			topic.setClients(clients2);
-		}
 
-		Topic ntopic = checkForBridge( topic, err );
-		if ( ntopic == null ) {
-			topic.setStatus( DmaapObject_Status.INVALID);
-			if ( ! err.is2xx()) {
-				return null;
+			if (topic.getNumClients() > 0) {
+				ArrayList<MR_Client> clients = new ArrayList<MR_Client>(topic.getClients());
+
+
+				ArrayList<MR_Client> clients2 = new ArrayList<MR_Client>();
+				for (Iterator<MR_Client> it = clients.iterator(); it.hasNext(); ) {
+					MR_Client c = it.next();
+
+					logger.info("c fqtn=" + c.getFqtn() + " ID=" + c.getMrClientId() + " url=" + c.getTopicURL());
+					MR_Client nc = new MR_Client(c.getDcaeLocationName(), topic.getFqtn(), c.getClientRole(), c.getAction());
+					nc.setFqtn(topic.getFqtn());
+					nc.setClientIdentity(c.getClientIdentity());
+					logger.info("nc fqtn=" + nc.getFqtn() + " ID=" + nc.getMrClientId() + " url=" + nc.getTopicURL());
+					clients2.add(clientService.addMr_Client(nc, topic, err));
+					if (!err.is2xx()) {
+						return null;
+					}
+				}
+
+				topic.setClients(clients2);
 			}
+
+			ntopic = checkForBridge(topic, err);
+			if (ntopic == null) {
+				topic.setStatus(DmaapObject_Status.INVALID);
+				if (!err.is2xx()) {
+					return null;
+				}
+			}
+
+
+			mr_topics.put(nFqtn, ntopic);
+
+			err.setCode(Status.OK.getStatusCode());
+		} catch (Exception e) {
+			logger.error("Error", e);
 		}
-
-		
-		mr_topics.put( nFqtn, ntopic );
-
-		err.setCode(Status.OK.getStatusCode());
 		return ntopic;
 	}
 	
