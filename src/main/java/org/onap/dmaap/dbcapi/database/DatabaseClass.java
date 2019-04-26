@@ -144,7 +144,8 @@ public class DatabaseClass extends BaseLoggingClass {
                 }
                 break;
             case MEMORY:
-                initMemoryDatabase();
+                inMemoryResourceInit();
+                dmaap.init(new Dmaap("0", "", "", "", "", "", "", ""));
                 break;
         }
     }
