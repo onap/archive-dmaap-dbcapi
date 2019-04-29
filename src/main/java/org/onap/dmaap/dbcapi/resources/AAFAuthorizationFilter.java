@@ -40,16 +40,16 @@ import org.onap.dmaap.dbcapi.util.PermissionBuilder;
 public class AAFAuthorizationFilter implements Filter{
 
     private static final Logger LOGGER = Logger.getLogger(AAFAuthenticationFilter.class.getName());
-    static final String AAF_AUTHZ_FLAG = "UseAAF";
-    private boolean isAafEnabled = false;
+    static final String CADI_AUTHZ_FLAG = "enableCADI";
+    private boolean isCadiEnabled = false;
 
     private PermissionBuilder permissionBuilder;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         DmaapConfig dmaapConfig = getConfig();
-        isAafEnabled = "true".equalsIgnoreCase(dmaapConfig.getProperty(AAF_AUTHZ_FLAG, "false"));
-        if(isAafEnabled) {
+        isCadiEnabled = "true".equalsIgnoreCase(dmaapConfig.getProperty(CADI_AUTHZ_FLAG, "false"));
+        if(isCadiEnabled) {
             permissionBuilder = new PermissionBuilder(dmaapConfig, getDmaapService());
         }
     }
@@ -58,7 +58,7 @@ public class AAFAuthorizationFilter implements Filter{
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
         throws IOException, ServletException {
 
-        if(isAafEnabled) {
+        if(isCadiEnabled) {
             HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
             permissionBuilder.updateDmaapInstance();
             String permission = permissionBuilder.buildPermission(httpRequest);
@@ -110,7 +110,7 @@ public class AAFAuthorizationFilter implements Filter{
         this.permissionBuilder = permissionBuilder;
     }
 
-    void setAafEnabled(boolean aafEnabled) {
-        isAafEnabled = aafEnabled;
+    void setCadiEnabled(boolean cadiEnabled) {
+        isCadiEnabled = cadiEnabled;
     }
 }

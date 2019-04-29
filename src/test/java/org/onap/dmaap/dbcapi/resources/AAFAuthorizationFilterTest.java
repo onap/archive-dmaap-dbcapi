@@ -107,7 +107,7 @@ public class AAFAuthorizationFilterTest {
     @Test
     public void doFilter_shouldSkipAuthorization_whenAAFnotUsed() throws Exception {
         //given
-        filter.setAafEnabled(false);
+        filter.setCadiEnabled(false);
 
         //when
         filter.doFilter(servletRequest,servletResponse,filterChain);
@@ -125,7 +125,7 @@ public class AAFAuthorizationFilterTest {
         String permission = "org.onap.dmaap-bc.api.topics|mr|GET";
         when(permissionBuilder.buildPermission(servletRequest)).thenReturn(permission);
         configureServletRequest(permission, user, true);
-        filter.setAafEnabled(true);
+        filter.setCadiEnabled(true);
 
         //when
         filter.doFilter(servletRequest,servletResponse,filterChain);
@@ -143,7 +143,7 @@ public class AAFAuthorizationFilterTest {
         String permission = "org.onap.dmaap-bc.api.topics|mr|GET";
         when(permissionBuilder.buildPermission(servletRequest)).thenReturn(permission);
         configureServletRequest(permission, user, false);
-        filter.setAafEnabled(true);
+        filter.setCadiEnabled(true);
 
         String errorMsgJson = "{\"code\":403,\"message\":\"User "+user+" does not have permission "
             + permission +"\",\"fields\":\"Authorization\",\"2xx\":false}";
@@ -167,6 +167,6 @@ public class AAFAuthorizationFilterTest {
     }
 
     private void configureAAFUsage(Boolean isUsed) {
-        doReturn(isUsed.toString()).when(dmaapConfig).getProperty(eq(AAFAuthorizationFilter.AAF_AUTHZ_FLAG), anyString());
+        doReturn(isUsed.toString()).when(dmaapConfig).getProperty(eq(AAFAuthorizationFilter.CADI_AUTHZ_FLAG), anyString());
     }
 }

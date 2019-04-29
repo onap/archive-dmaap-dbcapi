@@ -78,20 +78,20 @@ public class AAFAuthenticationFilterTest {
     @Test
     public void init_shouldNotInitializeCADI_whenAafIsNotUsed() throws Exception {
         //given
-        doReturn("false").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.AAF_AUTHN_FLAG), anyString());
+        doReturn("false").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.CADI_AUTHN_FLAG), anyString());
 
         //when
         filter.init(filterConfig);
 
         //then
-        assertFalse(filter.isAafEnabled());
+        assertFalse(filter.isCadiEnabled());
         assertNull(filter.getCadiFilter());
     }
 
     @Test
     public void doFilter_shouldSkipCADI_whenAafIsNotUsed() throws Exception {
         //given
-        doReturn("false").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.AAF_AUTHN_FLAG), anyString());
+        doReturn("false").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.CADI_AUTHN_FLAG), anyString());
         filter.init(filterConfig);
         filter.setCadiFilter(cadiFilterMock);
 
@@ -106,7 +106,7 @@ public class AAFAuthenticationFilterTest {
     @Test
     public void init_shouldFail_whenAafIsUsed_andCadiPropertiesHasNotBeenSet() throws Exception {
         //given
-        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.AAF_AUTHN_FLAG), anyString());
+        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.CADI_AUTHN_FLAG), anyString());
         doReturn("").when(dmaapConfig).getProperty(AAFAuthenticationFilter.CADI_PROPERTIES);
 
         //then
@@ -121,7 +121,7 @@ public class AAFAuthenticationFilterTest {
     public void init_shouldFail_whenAafIsUsed_andInvalidCadiPropertiesSet() throws Exception {
         //given
         String invalidFilePath = "src/test/resources/notExisting.properties";
-        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.AAF_AUTHN_FLAG), anyString());
+        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.CADI_AUTHN_FLAG), anyString());
         doReturn(invalidFilePath).when(dmaapConfig).getProperty(AAFAuthenticationFilter.CADI_PROPERTIES);
 
         //then
@@ -135,14 +135,14 @@ public class AAFAuthenticationFilterTest {
     @Test
     public void init_shouldInitializeCADI_whenAafIsUsed_andValidCadiPropertiesSet() throws Exception {
         //given
-        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.AAF_AUTHN_FLAG), anyString());
+        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.CADI_AUTHN_FLAG), anyString());
         doReturn("src/test/resources/cadi.properties").when(dmaapConfig).getProperty(AAFAuthenticationFilter.CADI_PROPERTIES);
 
         //when
         filter.init(filterConfig);
 
         //then
-        assertTrue(filter.isAafEnabled());
+        assertTrue(filter.isCadiEnabled());
         assertNotNull(filter.getCadiFilter());
     }
 
@@ -184,7 +184,7 @@ public class AAFAuthenticationFilterTest {
     }
 
     private void initCADIFilter() throws Exception{
-        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.AAF_AUTHN_FLAG), anyString());
+        doReturn("true").when(dmaapConfig).getProperty(eq(AAFAuthenticationFilter.CADI_AUTHN_FLAG), anyString());
         doReturn("src/test/resources/cadi.properties").when(dmaapConfig).getProperty(AAFAuthenticationFilter.CADI_PROPERTIES);
         filter.init(filterConfig);
         filter.setCadiFilter(cadiFilterMock);

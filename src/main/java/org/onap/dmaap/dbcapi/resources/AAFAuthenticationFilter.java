@@ -42,16 +42,16 @@ public class AAFAuthenticationFilter implements Filter {
 
     private static final Logger LOGGER = Logger.getLogger(AAFAuthenticationFilter.class.getName());
     static final String CADI_PROPERTIES = "cadi.properties";
-    static final String AAF_AUTHN_FLAG = "UseAAF";
+    static final String CADI_AUTHN_FLAG = "enableCADI";
 
-    private boolean isAafEnabled;
+    private boolean isCadiEnabled;
     private CadiFilter cadiFilter;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         DmaapConfig dmaapConfig = getConfig();
-        String flag = dmaapConfig.getProperty(AAF_AUTHN_FLAG, "false");
-        isAafEnabled = "true".equalsIgnoreCase(flag);
+        String flag = dmaapConfig.getProperty(CADI_AUTHN_FLAG, "false");
+        isCadiEnabled = "true".equalsIgnoreCase(flag);
         initCadi(dmaapConfig);
     }
 
@@ -60,7 +60,7 @@ public class AAFAuthenticationFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
         throws IOException, ServletException {
 
-        if(isAafEnabled) {
+        if(isCadiEnabled) {
             cadiFilter.doFilter(servletRequest, servletResponse, filterChain);
             updateResponseBody((HttpServletResponse)servletResponse);
         } else {
@@ -96,7 +96,7 @@ public class AAFAuthenticationFilter implements Filter {
     }
 
     private void initCadi(DmaapConfig dmaapConfig) throws ServletException {
-        if(isAafEnabled) {
+        if(isCadiEnabled) {
             try {
                 String cadiPropertiesFile = dmaapConfig.getProperty(CADI_PROPERTIES);
                 if(cadiPropertiesFile != null && !cadiPropertiesFile.isEmpty()) {
@@ -136,7 +136,7 @@ public class AAFAuthenticationFilter implements Filter {
         this.cadiFilter = cadiFilter;
     }
 
-    boolean isAafEnabled() {
-        return isAafEnabled;
+    boolean isCadiEnabled() {
+        return isCadiEnabled;
     }
 }

@@ -32,22 +32,22 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 @Authorization
 public class AuthorizationFilter implements ContainerRequestFilter   {
 
-	private static final String AAF_FLAG = "UseAAF";
+	private static final String AAF_CADI_FLAG = "enableCADI";
 	private final Logger logger = Logger.getLogger(AuthorizationFilter.class.getName());
 	private final ResponseBuilder responseBuilder = new ResponseBuilder();
-	private final boolean isAafEnabled;
+	private final boolean isCadiEnabled;
 
 
 	public AuthorizationFilter() {
 		DmaapConfig dmaapConfig = (DmaapConfig) DmaapConfig.getConfig();
-		String flag = dmaapConfig.getProperty(AAF_FLAG, "false");
-		isAafEnabled = "true".equalsIgnoreCase(flag);
+		String flag = dmaapConfig.getProperty(AAF_CADI_FLAG, "false");
+		isCadiEnabled = "true".equalsIgnoreCase(flag);
 	}
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) {
 
-		if(!isAafEnabled) {
+		if(!isCadiEnabled) {
 			ApiService apiResp = new ApiService()
 				.setAuth(requestContext.getHeaderString("Authorization"))
 				.setUriPath(requestContext.getUriInfo().getPath())
