@@ -59,13 +59,13 @@ public class TopicService extends BaseLoggingClass {
 	// REF: https://wiki.web.att.com/pages/viewpage.action?pageId=519703122
 	private static String defaultGlobalMrHost;
 	
-	private Map<String, Topic> mr_topics = DatabaseClass.getTopics();
+	private Map<String, Topic> mr_topics;
 	
 	private static DmaapService dmaapSvc = new DmaapService();
-	private MR_ClientService clientService = new MR_ClientService();
-	private MR_ClusterService clusters = new MR_ClusterService();
-	private DcaeLocationService locations = new DcaeLocationService();
-	private MirrorMakerService	bridge = new MirrorMakerService();
+	private MR_ClientService clientService;
+	private MR_ClusterService clusters;
+	private DcaeLocationService locations;
+	private MirrorMakerService	bridge;
 	
 	private static String centralCname;
 	private static boolean createTopicRoles;
@@ -74,22 +74,33 @@ public class TopicService extends BaseLoggingClass {
 
 
 	public TopicService(){
-		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
+		this(DatabaseClass.getTopics(), new MR_ClientService(), (DmaapConfig)DmaapConfig.getConfig(),
+				new MR_ClusterService(), new DcaeLocationService(), new MirrorMakerService());
+
+	}
+
+	TopicService(Map<String, Topic> mr_topics,  MR_ClientService clientService, DmaapConfig p,
+				 MR_ClusterService clusters, DcaeLocationService locations, MirrorMakerService	bridge) {
+		this.mr_topics = mr_topics;
+		this.clientService = clientService;
 		defaultGlobalMrHost = p.getProperty("MR.globalHost", "global.host.not.set");
 		centralCname = p.getProperty("MR.CentralCname");
 		createTopicRoles = "true".equalsIgnoreCase(p.getProperty("aaf.CreateTopicRoles", "true"));
 		String unit_test = p.getProperty( "UnitTest", "No" );
-		if ( unit_test.equals( "Yes" ) ) {
+		if ( "Yes".equals(unit_test)) {
 			strictGraph = false;
 		}
 		mmPerMR = "true".equalsIgnoreCase(p.getProperty("MirrorMakerPerMR", "true"));
-		logger.info( "TopicService properties: CentralCname=" + centralCname + 
+		logger.info( "TopicService properties: CentralCname=" + centralCname +
 				"   defaultGlobarlMrHost=" + defaultGlobalMrHost +
 				" createTopicRoles=" + createTopicRoles +
 				" mmPerMR=" + mmPerMR );
+		this.clusters = clusters;
+		this.locations = locations;
+		this.bridge = bridge;
 	}
-	
-	public Map<String, Topic> getTopics() {			
+
+	public Map<String, Topic> getTopics() {
 		return mr_topics;
 	}
 		
@@ -104,7 +115,8 @@ public class TopicService extends BaseLoggingClass {
 		ArrayList<Topic> topics = new ArrayList<>(mr_topics.values());
 		if ( withClients ) {
 			for( Topic topic: topics ) {
-				topic.setClients( clientService.getAllMrClients(topic.getFqtn()));
+				ArrayList<MR_Client> allMrClients = clientService.getAllMrClients(topic.getFqtn());
+				topic.setClients(allMrClients);
 			}
 		}
 		return topics;
