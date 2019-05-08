@@ -19,12 +19,11 @@
  */
 package org.onap.dmaap.dbcapi.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import javax.servlet.http.HttpServletRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -139,11 +138,11 @@ public class PermissionBuilderTest {
     }
 
     private Dmaap provideDefaultInstance() {
-        return new  Dmaap("0", "", "", "", "", "", "", "");
+        return new Dmaap.DmaapBuilder().setVer("0").setTnr("").setDn("").setDpu("").setLu("").setBat("").setNk("").setAko("").createDmaap();
     }
 
     private Dmaap provideRealInstance(String dmaapName) {
-        Dmaap dmaap = new Dmaap("1", "org.onap.dmaap", dmaapName, "https://dmaap-dr-prov:8443", "", "DCAE_MM_AGENT", "", "");
+        Dmaap dmaap = new Dmaap.DmaapBuilder().setVer("1").setTnr("org.onap.dmaap").setDn(dmaapName).setDpu("https://dmaap-dr-prov:8443").setLu("").setBat("DCAE_MM_AGENT").setNk("").setAko("").createDmaap();
         dmaap.setStatus(DmaapObject_Status.VALID);
         return dmaap;
     }

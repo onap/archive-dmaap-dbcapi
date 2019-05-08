@@ -22,8 +22,6 @@ package org.onap.dmaap.dbcapi.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.log4j.Logger;
-
 @XmlRootElement
 public class Dmaap extends DmaapObject {
 	
@@ -42,24 +40,72 @@ public class Dmaap extends DmaapObject {
 		
 	}
 	
-	public Dmaap( String ver, 
-					String tnr,
-					String dn,
-					String dpu,
-					String lu,
-					String bat,
-					String nk,
-					String ako ) {
-		this.version = ver;
-		this.topicNsRoot = tnr;
-		this.dmaapName = dn;
-		this.drProvUrl = dpu;
-		this.bridgeAdminTopic = bat;
-		this.loggingUrl = lu;
-		this.nodeKey = nk;
-		this.accessKeyOwner = ako;
+	public Dmaap( DmaapBuilder builder ) {
+		this.version = builder.ver;
+		this.topicNsRoot = builder.tnr;
+		this.dmaapName = builder.dn;
+		this.drProvUrl = builder.dpu;
+		this.bridgeAdminTopic = builder.bat;
+		this.loggingUrl = builder.lu;
+		this.nodeKey = builder.nk;
+		this.accessKeyOwner = builder.ako;
 		this.setStatus( DmaapObject_Status.NEW );
 
+	}
+
+	public static class DmaapBuilder {
+		private String ver;
+		private String tnr;
+		private String dn;
+		private String dpu;
+		private String lu;
+		private String bat;
+		private String nk;
+		private String ako;
+
+		public DmaapBuilder setVer(String ver) {
+			this.ver = ver;
+			return this;
+		}
+
+		public DmaapBuilder setTnr(String tnr) {
+			this.tnr = tnr;
+			return this;
+		}
+
+		public DmaapBuilder setDn(String dn) {
+			this.dn = dn;
+			return this;
+		}
+
+		public DmaapBuilder setDpu(String dpu) {
+			this.dpu = dpu;
+			return this;
+		}
+
+		public DmaapBuilder setLu(String lu) {
+			this.lu = lu;
+			return this;
+		}
+
+		public DmaapBuilder setBat(String bat) {
+			this.bat = bat;
+			return this;
+		}
+
+		public DmaapBuilder setNk(String nk) {
+			this.nk = nk;
+			return this;
+		}
+
+		public DmaapBuilder setAko(String ako) {
+			this.ako = ako;
+			return this;
+		}
+
+		public Dmaap createDmaap() {
+			return new Dmaap(this);
+		}
 	}
 
 	public String getVersion() {

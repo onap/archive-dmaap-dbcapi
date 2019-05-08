@@ -48,7 +48,7 @@ public class DmaapTest {
 	@Test
 	public void testDmaapClassDefaultConstructor() {
 
-		Dmaap t = new Dmaap();
+		Dmaap t = new Dmaap.DmaapBuilder().createDmaap();
 	
 		assertTrue( t.getVersion() == null  );
 		assertTrue( t.getTopicNsRoot() == null  );
@@ -64,7 +64,7 @@ public class DmaapTest {
 	@Test
 	public void testDmaapClassConstructor() {
 
-		Dmaap t = new Dmaap( ver, tnr, dn, dpu, lu, bat, nk, ako );
+		Dmaap t = new Dmaap.DmaapBuilder().setVer(ver).setTnr(tnr).setDn(dn).setDpu(dpu).setLu(lu).setBat(bat).setNk(nk).setAko(ako).createDmaap();
 	
 		assertTrue( ver.equals( t.getVersion() ));
 		assertTrue( tnr.equals( t.getTopicNsRoot() ));
@@ -80,7 +80,7 @@ public class DmaapTest {
 	@Test
 	public void testDmaapClassSetters() {
 
-		Dmaap t = new Dmaap();
+		Dmaap t = new Dmaap.DmaapBuilder().createDmaap();
 
 		t.setVersion( ver );
 		assertTrue( ver.equals( t.getVersion() ));

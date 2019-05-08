@@ -109,7 +109,7 @@ public class DatabaseClass extends BaseLoggingClass {
                     break;
             }
 
-            dmaap.init(new Dmaap("0", "", "", "", "", "", "", ""));
+            dmaap.init(new Dmaap.DmaapBuilder().setVer("0").setTnr("").setDn("").setDpu("").setLu("").setBat("").setNk("").setAko("").createDmaap());
             // force initial read from DB, if it exists
             @SuppressWarnings("unused")
             Dmaap dmx = dmaap.get();

@@ -60,7 +60,7 @@ public class DmaapServiceTest {
 
 	@Test
 	public void test3() {
-		Dmaap nd = new Dmaap( "1", "org.onap.dmaap", "onap-demo", "drps.demo.onap.org", "", "MMAGENT_TOPIC", "", "" );
+		Dmaap nd = new Dmaap.DmaapBuilder().setVer("1").setTnr("org.onap.dmaap").setDn("onap-demo").setDpu("drps.demo.onap.org").setLu("").setBat("MMAGENT_TOPIC").setNk("").setAko("").createDmaap();
 		ds.addDmaap( nd );
 	}
 
@@ -72,7 +72,7 @@ public class DmaapServiceTest {
 
 	@Test
 	public void test5() {
-		Dmaap nd = new Dmaap( "2", "org.onap.dmaap", "onap-demo", "drps.demo.onap.org", "", "MMAGENT_TOPIC", "", "" );
+		Dmaap nd = new Dmaap.DmaapBuilder().setVer("2").setTnr("org.onap.dmaap").setDn("onap-demo").setDpu("drps.demo.onap.org").setLu("").setBat("MMAGENT_TOPIC").setNk("").setAko("").createDmaap();
 		ds.updateDmaap( nd );
 
 	}

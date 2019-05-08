@@ -20,17 +20,12 @@
  */
 package org.onap.dmaap.dbcapi.database;
 
-import org.onap.dmaap.dbcapi.database.DBSingleton;
 import org.onap.dmaap.dbcapi.model.*;
 import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
-
-import static org.junit.Assert.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.*;
-import java.sql.*;
 
 public class DBSingletonTest {
 
@@ -54,7 +49,7 @@ public class DBSingletonTest {
 
 		try {
 			DBSingleton<Dmaap> dmaap = new DBSingleton<Dmaap>(Dmaap.class, "dmaap");
-			Dmaap d = new Dmaap();
+			Dmaap d = new Dmaap.DmaapBuilder().createDmaap();
 			dmaap.init( d );
 			d = dmaap.get();
 			d.setDmaapName( "foo" );
