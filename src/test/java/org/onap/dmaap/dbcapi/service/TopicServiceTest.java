@@ -2,14 +2,14 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,190 +17,223 @@
  * limitations under the License.
  * ============LICENSE_END=========================================================
  */
+
 package org.onap.dmaap.dbcapi.service;
 
-import  org.onap.dmaap.dbcapi.model.*;
-import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
-import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
-
-import static org.junit.Assert.*;
-
-import org.junit.After;
+import com.google.common.collect.ImmutableMap;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.List;
-import java.util.ArrayList;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.onap.dmaap.dbcapi.model.ApiError;
+import org.onap.dmaap.dbcapi.model.MR_Client;
+import org.onap.dmaap.dbcapi.model.Topic;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
+import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.google.common.collect.Iterables.getOnlyElement;
+import static com.google.common.collect.Lists.newArrayList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.onap.dmaap.dbcapi.model.ReplicationType.REPLICATION_GLOBAL_TO_FQDN;
+
+@RunWith(MockitoJUnitRunner.class)
 public class TopicServiceTest {
 
-	private static final String  fmt = "%24s: %s%n";
-	private static DmaapObjectFactory factory = new DmaapObjectFactory();
-	ReflectionHarness rh = new ReflectionHarness();
+    private static final String TOPIC_FQTN = "topic_1";
+    private static final String GLOBAL_MR_HOST = "global.mr.host";
+    private TopicService topicService;
+    @Mock
+    private MR_ClientService clientService;
+    @Mock
+    private DmaapConfig dmaapConfig;
+    @Mock
+    private MR_ClusterService clusters;
+    @Mock
+    private DcaeLocationService locations;
+    @Mock
+    private MirrorMakerService bridge;
 
-	private TopicService ts;
-	private MR_ClusterService mcs;
-	private MR_ClientService cls;
-	private DcaeLocationService dls;
+    @Before
+    public void setUp() throws Exception {
+        given(dmaapConfig.getProperty("MR.globalHost", "global.host.not.set")).willReturn(GLOBAL_MR_HOST);
+        createTopicService();
+    }
 
-	DmaapService ds;
-	String locname;
+    @Test
+    public void getTopics_shouldReturnTopicsReceivedDuringServiceCreation() {
 
-	@Before
-	public void setUp() throws Exception {
-		ts = new TopicService();
-		assert( ts != null );
-		mcs = new MR_ClusterService();
-		assert( mcs != null );
-		Dmaap nd = factory.genDmaap();
-		ds = new DmaapService();
-		ds.addDmaap( nd );
-		ts = new TopicService();
-		mcs = new MR_ClusterService();
-		cls = new MR_ClientService();
+        ImmutableMap<String, Topic> topics = ImmutableMap.of(TOPIC_FQTN, new Topic());
+        topicService = new TopicService(topics, clientService, dmaapConfig, clusters, locations, bridge);
 
-		dls = new DcaeLocationService();
-		DcaeLocation loc = factory.genDcaeLocation( "central" );
-		locname = loc.getDcaeLocationName();
-		dls.addDcaeLocation( loc );
-		loc = factory.genDcaeLocation( "edge");
+        assertEquals(topics, topicService.getTopics());
+    }
 
-		ApiError err = new ApiError();
-		
-		MR_Cluster node = factory.genMR_Cluster( "central" );
-		mcs.addMr_Cluster( node, err);
-		node = factory.genMR_Cluster("edge" );
-		mcs.addMr_Cluster(node,  err);
-	}
+    @Test
+    public void getAllTopics_shouldReturnTopicsWithClients() {
 
-	@After
-	public void tearDown() throws Exception {
-	}
+        ArrayList<MR_Client> mrClients = newArrayList(new MR_Client());
+        given(clientService.getAllMrClients(TOPIC_FQTN)).willReturn(mrClients);
+
+        List<Topic> allTopics = topicService.getAllTopics();
+
+        assertThat(getOnlyElement(allTopics), hasCorrectFqtn(TOPIC_FQTN));
+        assertEquals(mrClients, getOnlyElement(allTopics).getClients());
+    }
+
+    @Test
+    public void getAllTopicsWithoutClients_shouldReturnNoClients() {
+
+        List<Topic> allTopics = topicService.getAllTopicsWithoutClients();
+
+        assertThat(getOnlyElement(allTopics), hasCorrectFqtn(TOPIC_FQTN));
+        assertNull(getOnlyElement(allTopics).getClients());
+        verifyZeroInteractions(clientService);
+    }
+
+    @Test
+    public void getAllTopics_shouldCacheClients() {
+
+        ArrayList<MR_Client> mrClients = newArrayList(new MR_Client());
+        given(clientService.getAllMrClients(TOPIC_FQTN)).willReturn(mrClients);
+
+        topicService.getAllTopics();
+        List<Topic> allTopics = topicService.getAllTopicsWithoutClients();
+
+        assertThat(getOnlyElement(allTopics), hasCorrectFqtn(TOPIC_FQTN));
+        assertEquals(mrClients, getOnlyElement(allTopics).getClients());
+    }
+
+    @Test
+    public void getTopic_shouldReturnTopicByFqtn() {
+
+        ApiError apiError = new ApiError();
+        Topic topic = topicService.getTopic(TOPIC_FQTN, apiError);
+
+        assertThat(topic, hasCorrectFqtn(TOPIC_FQTN));
+        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+    }
+
+    @Test
+    public void getTopic_shouldReturnTopicWithMrClients() {
+
+        ArrayList<MR_Client> mrClients = newArrayList(new MR_Client());
+        given(clientService.getAllMrClients(TOPIC_FQTN)).willReturn(mrClients);
+
+        Topic topic = topicService.getTopic(TOPIC_FQTN, new ApiError());
+
+        assertThat(topic, hasCorrectFqtn(TOPIC_FQTN));
+        assertEquals(mrClients, topic.getClients());
+    }
+
+    @Test
+    public void getTopic_shouldReturnError() {
+
+        ApiError apiError = new ApiError();
+        Topic topic = topicService.getTopic("not_existing", apiError);
+
+        assertNull(topic);
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), apiError.getCode());
+    }
+
+    @Test
+    public void addTopic_shouldAddNewTopic() {
+        Topic newTopic = createTopic("");
+
+        ApiError apiError = new ApiError();
+        Topic addedTopic = topicService.addTopic(newTopic, apiError, true);
+
+        assertSame(newTopic, addedTopic);
+        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+        assertNotNull(topicService.getTopic(addedTopic.getFqtn(), new ApiError()));
+    }
+
+    @Test
+    public void addTopic_shouldReturnErrorWhenTopicAlreadyExists() {
+        Topic newTopic = createTopic("");
+
+        ApiError apiError = new ApiError();
+        Topic addedTopic = topicService.addTopic(newTopic, apiError, false);
+        Topic secondAddedTopic = topicService.addTopic(addedTopic, apiError, false);
+
+        assertNull(secondAddedTopic);
+        assertEquals(Response.Status.CONFLICT.getStatusCode(), apiError.getCode());
+    }
+
+    @Test
+    public void addTopic_shouldAddTheSameTopicWhenUseExistingIsSet() {
+        Topic newTopic = createTopic("");
+
+        ApiError apiError = new ApiError();
+        Topic addedTopic = topicService.addTopic(newTopic, apiError, false);
+        Topic secondAddedTopic = topicService.addTopic(addedTopic, apiError, true);
+
+        assertSame(addedTopic, secondAddedTopic);
+        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+        assertNotNull(topicService.getTopic(secondAddedTopic.getFqtn(), new ApiError()));
+    }
 
 
-	@Test
-	public void test1() {
+    @Test
+    public void addTopic_shouldSetGlobalMrURL() {
+        Topic newTopic = createTopic(TOPIC_FQTN);
+        newTopic.setReplicationCase(REPLICATION_GLOBAL_TO_FQDN);
 
+        ApiError apiError = new ApiError();
+        Topic addedTopic = topicService.addTopic(newTopic, apiError, true);
 
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "get", null );	
-	
-	}
+        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+        assertEquals(GLOBAL_MR_HOST, addedTopic.getGlobalMrURL());
+    }
 
-	@Test
-	public void test2() {
-		String v = "Validate";
-		rh.reflect( "org.onap.dmaap.dbcapi.service.TopicService", "set", v );
+    @Test
+    public void addTopic_shouldReturnErrorWhenGlobalMrURLIsInvalid() {
+        given(dmaapConfig.getProperty("MR.globalHost", "global.host.not.set")).willReturn("invalid@host");
+        createTopicService();
+        Topic newTopic = createTopic(TOPIC_FQTN);
+        newTopic.setReplicationCase(REPLICATION_GLOBAL_TO_FQDN);
 
-	}
+        ApiError apiError = new ApiError();
+        Topic addedTopic = topicService.addTopic(newTopic, apiError, true);
 
-	@Test
-	public void test3() {
-		String t = "test3";
-		Topic topic = factory.genSimpleTopic( t );
-		ApiError err = new ApiError();
-		
-		Topic nTopic = ts.addTopic( topic, err, false );
-		if ( nTopic != null ) {
-			assertTrue( nTopic.getTopicName().equals( t ));
-		}
+        assertEquals(500, apiError.getCode());
+        assertNull(addedTopic);
+    }
 
-	}
+    private void createTopicService() {
+        Map<String, Topic> mrTopics = new HashMap<>();
+        mrTopics.put(TOPIC_FQTN, createTopic(TOPIC_FQTN));
+        topicService = new TopicService(mrTopics, clientService, dmaapConfig, clusters, locations, bridge);
+    }
 
-	@Test
-	public void test3a() {
+    private Topic createTopic(String fqtn) {
+        return new Topic(fqtn, "name", "desc", "tnxEnabled", "owner");
+    }
 
+    public static Matcher<Topic> hasCorrectFqtn(final String fqtn) {
+        return new BaseMatcher<Topic>() {
+            public boolean matches(Object o) {
+                return fqtn.equals(((Topic) o).getFqtn());
+            }
 
-		ApiError err = new ApiError();
-
-		String t = "org.onap.dmaap.interestingTopic";
-		Topic topic = factory.genSimpleTopic(t);
-		String f = "mrc.onap.org:3904/events/org.onap.dmaap.interestingTopic";
-		String c = "publisher";
-		String[] a = { "sub", "view" };
-		MR_Client sub = factory.genMR_Client("central",  f, c, a );
-		String[] b = { "pub", "view" };
-		MR_Client pub = factory.genMR_Client( "edge", f, c, b );
-		ArrayList<MR_Client> clients = new ArrayList<MR_Client>();
-
-		clients.add( sub );
-		clients.add( pub );
-
-		topic.setClients( clients );
-
-		ts.reviewTopic( topic );
-		ts.checkForBridge( topic, err );
-		
-		Topic nTopic = ts.addTopic( topic, err, false );
-		if ( nTopic != null ) {
-			assertTrue( nTopic.getTopicName().equals( t ));
-		}
-		
-
-		ts.removeTopic( "test3", err );
-	}
-
-	@Test
-	public void test4() {
-		List<Topic> l = ts.getAllTopics();
-
-	}
-
-	@Test
-	public void test5() {
-		ApiError err = new ApiError();
-
-		Topic topic = factory.genSimpleTopic("test5");
-		Topic nTopic = ts.updateTopic( topic, err );
-
-		assertTrue( err.getCode() == 200 );
-	}
-	
-	@Test
-	public void bridgeTest6() {
-		ApiError err = new ApiError();
-
-		String t = "org.onap.dmaap.bridgingTopic";
-		Topic topic = factory.genSimpleTopic(t);
-		topic.setReplicationCase( ReplicationType.REPLICATION_EDGE_TO_CENTRAL );
-
-		String c = "publisher";
-		String[] a = { "sub", "view" };
-		MR_Client sub = factory.genMR_Client("central",  topic.getFqtn(), c, a );
-		String[] b = { "pub", "view" };
-		MR_Client pub = factory.genMR_Client( "edge", topic.getFqtn(), c, b );
-		ArrayList<MR_Client> clients = new ArrayList<MR_Client>();
-
-		clients.add( sub );
-		clients.add( pub );
-
-		topic.setClients( clients );
-
-		Topic nTopic = ts.updateTopic( topic, err );
-
-		assertTrue( err.getCode() == 200 );
-	}
-	@Test
-	public void bridgeTest7() {
-		ApiError err = new ApiError();
-
-		String t = "org.onap.dmaap.bridgingTopic7";
-		Topic topic = factory.genSimpleTopic(t);
-		topic.setReplicationCase( ReplicationType.REPLICATION_CENTRAL_TO_EDGE );
-
-		String c = "publisher";
-		String[] a = { "sub", "view" };
-		MR_Client sub = factory.genMR_Client("edge",  topic.getFqtn(), c, a );
-		String[] b = { "pub", "view" };
-		MR_Client pub = factory.genMR_Client( "central", topic.getFqtn(), c, b );
-		ArrayList<MR_Client> clients = new ArrayList<MR_Client>();
-
-		clients.add( sub );
-		clients.add( pub );
-
-		topic.setClients( clients );
-
-		Topic nTopic = ts.updateTopic( topic, err );
-
-		assertTrue( err.getCode() == 200 );
-	}
+            public void describeTo(Description description) {
+                description.appendText("Topics should should be equal. Expected fqtn: ").appendValue(fqtn);
+            }
+        };
+    }
 
 }
