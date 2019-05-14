@@ -73,11 +73,8 @@ public class PermissionBuilder {
 
     private String getPermissionType(String pathInfo) {
         char pathSeparator = '/';
-        String relativePath = (pathInfo.charAt(pathInfo.length()-1) == pathSeparator) ?
-            pathInfo.substring(0,pathInfo.length()-1) : pathInfo;
-
-        String[] pathSlices = relativePath.split(String.valueOf(pathSeparator));
-        return pathSlices[pathSlices.length-1];
+        String[] pathSlices = pathInfo.split(String.valueOf(pathSeparator));
+        return pathSlices[1];
     }
 
     String getInstance() {
