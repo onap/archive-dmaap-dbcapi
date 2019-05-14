@@ -116,7 +116,21 @@ public class PermissionBuilderTest {
     @Test
     public void buildPermission_shouldBuildPermissionWithRealInstance() {
         //given
-        String path = "/subpath/topics/";
+        String path = "/dmaap";
+        String method = "GET";
+        initPermissionBuilder(path, method, provideRealInstance(DMAAP_NAME));
+
+        //when
+        String permission = permissionBuilder.buildPermission(request);
+
+        //then
+        assertEquals("org.onap.dmaap-bc.api.dmaap|mr|GET", permission);
+    }
+
+    @Test
+    public void buildPermission_shouldBuildPermissionWhenUrlContainsId() {
+        //given
+        String path = "/topics/topic_id_123";
         String method = "GET";
         initPermissionBuilder(path, method, provideRealInstance(DMAAP_NAME));
 
