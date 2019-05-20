@@ -69,7 +69,7 @@ public class MR_ClusterServiceTest {
 		String locname = "central-demo";
 
 		DcaeLocationService dls = new DcaeLocationService();
-		DcaeLocation loc = new DcaeLocation( "CLLI1234", "central-onap", locname, "aZone", "10.10.10.0/24" );
+		DcaeLocation loc = new DcaeLocation( "CLLI1234", "some-onap", locname, "aZone", "10.10.10.0/24" );
 		dls.addDcaeLocation( loc );
 
 		ApiError err = new ApiError();
