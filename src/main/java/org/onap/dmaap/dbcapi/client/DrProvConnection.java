@@ -22,6 +22,8 @@
 
 package org.onap.dmaap.dbcapi.client;
 
+import org.apache.commons.codec.binary.Base64;
+import org.onap.dmaap.dbcapi.aaf.AafDecrypt;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;
@@ -30,7 +32,10 @@ import org.onap.dmaap.dbcapi.model.Feed;
 import org.onap.dmaap.dbcapi.service.DmaapService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
+
 import java.io.*;
 import java.net.ConnectException;
 import java.net.ProtocolException;
@@ -51,6 +56,12 @@ public class DrProvConnection extends BaseLoggingClass {
 	private	String unit_test;
 	private	String	provURI;
 	
+    private String feedMgrCred;
+    private String authMethod;
+    private    String    user;
+    private    String    encPwd;
+    private boolean hostnameVerify;
+	
 	private HttpsURLConnection uc;
 
 
@@ -68,9 +79,25 @@ public class DrProvConnection extends BaseLoggingClass {
 		logger.info( "provURL=" + provURL + " provApi=" + provApi + " behalfHeader=" + behalfHeader
 				+ " feedContentType=" + feedContentType + " subContentType=" + subContentType );
 		unit_test = p.getProperty( "UnitTest", "No" );
+		
+        String mechIdProperty = "aaf.FeedMgrUser";
+        String pwdProperty = "aaf.FeedMgrPassword";
+        user = p.getProperty( mechIdProperty, "noMechId@domain.netset.com" );
+        encPwd = p.getProperty( pwdProperty, "notSet" );
+        authMethod = p.getProperty("DR.authentication", "none");
+        feedMgrCred =  getCred();
+        
+        hostnameVerify= "true".equalsIgnoreCase(p.getProperty("DR.hostnameVerify", "true"));
+        logger.info("DR authentication: user="+user + " authMethod=" + authMethod + " hostnameVerify=" + hostnameVerify);
 			
 	}
-	
+    private String getCred( ) {
+        String pwd = "";
+        AafDecrypt decryptor = new AafDecrypt();    
+        pwd = decryptor.decrypt(encPwd);
+        return user + ":" + pwd;    
+    }
+    
 	public boolean makeFeedConnection() {
 		return makeConnection( provURL );
 	}
@@ -123,9 +150,20 @@ public class DrProvConnection extends BaseLoggingClass {
 	private boolean makeConnection( String pURL ) {
 	
 		try {
+			HostnameVerifier hostnameVerifier = new HostnameVerifier() {
+				@Override
+				public boolean verify( String hostname, SSLSession session ) {
+					return true;
+				}
+			
+			};
 			URL u = new URL( pURL );
 			uc = (HttpsURLConnection) u.openConnection();
 			uc.setInstanceFollowRedirects(false);
+            if ( ! hostnameVerify ) {
+				HttpsURLConnection ucs = (HttpsURLConnection) uc;
+				ucs.setHostnameVerifier(hostnameVerifier);
+			}
 			logger.info( "successful connect to " + pURL );
 			return(true);
 		} catch (Exception e) {
@@ -153,7 +191,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 
 	public  String doPostFeed( Feed postFeed, ApiError err ) {
-
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		byte[] postData = postFeed.getBytes();
 		logger.info( "post fields=" + Arrays.toString(postData) );
 		String responsemessage = null;
@@ -161,6 +199,12 @@ public class DrProvConnection extends BaseLoggingClass {
 
 		try {
 			logger.info( "uc=" + uc );
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("POST");
 			uc.setRequestProperty("Content-Type", feedContentType);
 			uc.setRequestProperty( "charset", "utf-8");
@@ -252,11 +296,17 @@ public class DrProvConnection extends BaseLoggingClass {
 	// the POST for /internal/route/ingress doesn't return any data, so needs a different function
 	// the POST for /internal/route/egress doesn't return any data, so needs a different function	
 	public int doXgressPost( ApiError err ) {
-		
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		String responsemessage = null;
 		int rc = -1;
 
 		try {
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("POST");
 
 
@@ -308,13 +358,19 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 	public String doPostDr_Sub( DR_Sub postSub, ApiError err ) {
 		logger.info( "entry: doPostDr_Sub() "  );
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		byte[] postData = postSub.getBytes(provApi );
 		logger.info( "post fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
-	
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("POST");
 		
 			uc.setRequestProperty("Content-Type", subContentType );
@@ -390,6 +446,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 
 	public String doPutFeed(Feed putFeed, ApiError err) {
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		byte[] postData = putFeed.getBytes();
 		logger.info( "post fields=" + Arrays.toString(postData) );
 		String responsemessage = null;
@@ -397,6 +454,12 @@ public class DrProvConnection extends BaseLoggingClass {
 
 		try {
 			logger.info( "uc=" + uc );
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("PUT");
 			uc.setRequestProperty("Content-Type", feedContentType );
 			uc.setRequestProperty( "charset", "utf-8");
@@ -492,12 +555,19 @@ public class DrProvConnection extends BaseLoggingClass {
 	}
 	public String doPutDr_Sub(DR_Sub postSub, ApiError err) {
 		logger.info( "entry: doPutDr_Sub() "  );
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		byte[] postData = postSub.getBytes(provApi);
 		logger.info( "post fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 	
 			uc.setRequestMethod("PUT");
 		
@@ -577,13 +647,19 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 	public String doGetNodes( ApiError err ) {
 		logger.info( "entry: doGetNodes() "  );
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		//byte[] postData = postSub.getBytes();
 		//logger.info( "get fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
-	
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("GET");
 			int rc = -1;
 			
@@ -658,13 +734,19 @@ public class DrProvConnection extends BaseLoggingClass {
 	}
 	public String doPutNodes( ApiError err ) {
 		logger.info( "entry: doPutNodes() "  );
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		//byte[] postData = nodeList.getBytes();
 		//logger.info( "get fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
-	
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("PUT");
 		
 			//uc.setRequestProperty("Content-Type", subContentType );
@@ -738,11 +820,18 @@ public class DrProvConnection extends BaseLoggingClass {
 	public String doDeleteFeed(Feed putFeed, ApiError err) {
 		//byte[] postData = putFeed.getBytes();
 		//logger.info( "post fields=" + postData.toString() );
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
 			logger.info( "uc=" + uc );
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("DELETE");
 			uc.setRequestProperty("Content-Type", feedContentType );
 			uc.setRequestProperty( "charset", "utf-8");
@@ -843,13 +932,19 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 	public String doDeleteDr_Sub(DR_Sub delSub, ApiError err) {
 		logger.info( "entry: doDeleteDr_Sub() "  );
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 		byte[] postData = delSub.getBytes(provApi);
 		logger.info( "post fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
-	
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("DELETE");
 		
 			uc.setRequestProperty("Content-Type", subContentType);
@@ -987,12 +1082,18 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 	public String doGetDump( ApiError err ) {
 		logger.info( "entry: doGetDump() "  );
+		String auth =  "Basic " + Base64.encodeBase64String(feedMgrCred.getBytes());
 
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
-	
+			if ( authMethod.equalsIgnoreCase("basicAuth") ) {
+				uc.setRequestProperty("Authorization", auth);
+				logger.info( "Authenticating with " + auth );
+			} else if ( authMethod.equalsIgnoreCase("cert")) {
+				logger.error( "DR.authentication set for client certificate.  Not supported yet.");
+			}
 			uc.setRequestMethod("GET");
 			int rc = -1;
 			
