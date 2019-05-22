@@ -63,6 +63,7 @@ public class TopicResource extends BaseLoggingClass {
 	private TopicService mr_topicService = new TopicService();
 	private ResponseBuilder responseBuilder = new ResponseBuilder();
 	private RequiredChecker checker = new RequiredChecker();
+	static final String UNSUPPORTED_PUT_MSG = "Method /PUT not supported for /topics";
 	
 	public TopicResource() {
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
@@ -157,7 +158,7 @@ public class TopicResource extends BaseLoggingClass {
 		ApiError apiError = new ApiError();
 
 		apiError.setCode(Status.BAD_REQUEST.getStatusCode());
-		apiError.setMessage( "Method /PUT not supported for /topics");
+		apiError.setMessage(UNSUPPORTED_PUT_MSG);
 		
 		return responseBuilder.error(apiError);
 	}

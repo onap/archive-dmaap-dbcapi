@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,189 +19,338 @@
  */
 package org.onap.dmaap.dbcapi.resources;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
+import java.util.List;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.jetty.http.HttpStatus;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
+import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
-import org.onap.dmaap.dbcapi.model.Dmaap;
+import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
+import org.onap.dmaap.dbcapi.model.FqtnType;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
+import org.onap.dmaap.dbcapi.model.ReplicationType;
 import org.onap.dmaap.dbcapi.model.Topic;
 import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
 
+public class TopicResourceTest {
 
-public class TopicResourceTest extends JerseyTest {
+    private static final DmaapObjectFactory DMAAP_OBJECT_FACTORY = new DmaapObjectFactory();
+    private static final String TOPICS_TARGET = "topics";
 
-	static DmaapObjectFactory factory = new DmaapObjectFactory();
+    private static FastJerseyTestContainer testContainer;
 
-	@Override
-	protected Application configure() {
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        //TODO: init is still needed here to assure that dmaap is not null
+        DatabaseClass.getDmaap().init(DMAAP_OBJECT_FACTORY.genDmaap());
 
-		return new ResourceConfig()
-				.register( TopicResource.class )
-				.register( MR_ClusterResource.class )
-				.register( DcaeLocationResource.class )
-				.register( DmaapResource.class );
-	}
+        testContainer = new FastJerseyTestContainer(new ResourceConfig()
+            .register(TopicResource.class));
+        testContainer.init();
+    }
 
-	private static final String  fmt = "%24s: %s%n";
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        testContainer.destroy();
+    }
 
-	private boolean is2xx(int val ) {
-		if ( val >= 200 && val < 300 ) {
-			return true;
-		}
-		return false;
-	}
+    @Before
+    public void setUpClusterAndLocation() {
+        DatabaseClass.clearDatabase();
 
-	@Before
-	public void preTest() throws Exception {
-		DatabaseClass.clearDatabase();
-		try {
+        DcaeLocation centralDcaeLoc = DMAAP_OBJECT_FACTORY.genDcaeLocation("central");
+        centralDcaeLoc.setStatus(DmaapObject_Status.VALID);
+        DatabaseClass.getDcaeLocations().put(centralDcaeLoc.getDcaeLocationName(), centralDcaeLoc);
 
-			Dmaap dmaap = factory.genDmaap();
-			Entity<Dmaap> reqEntity = Entity.entity( dmaap, MediaType.APPLICATION_JSON );
-			Response resp = target( "dmaap").request().post( reqEntity, Response.class );
-			System.out.println( "POST dmaap resp=" + resp.getStatus() );
-			assertTrue( is2xx( resp.getStatus()) );
-		
-		}catch (Exception e ) {
-		}
-		try {
-			DcaeLocation loc = factory.genDcaeLocation( "central" );
-			Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
-			Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
-			System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ));
-			if ( resp.getStatus() != 409 ) {
-				assertTrue( is2xx( resp.getStatus())  );
-			}
-		} catch (Exception e ) {
-		}
-		try {
-			MR_Cluster cluster = factory.genMR_Cluster( "central" );
-			Entity<MR_Cluster> reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
-			Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
-			System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-			if (resp.getStatus() != 409 ) {
-				assertTrue( is2xx( resp.getStatus()) );
-			}	
-		} catch (Exception e ) {
-			
-		}
+        MR_Cluster cluster = DMAAP_OBJECT_FACTORY.genMR_Cluster("central");
+        cluster.setStatus(DmaapObject_Status.VALID);
+        DatabaseClass.getMr_clusters().put(cluster.getDcaeLocationName(), cluster);
+    }
 
-	}
-	/*  may conflict with test framework! 
-	@After
-	public void tearDown() throws Exception {
-	}
-*/
+    @Test
+    public void getTopics_shouldReturnEmptyList_whenNoTopicsInDataBase() {
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().get(Response.class);
 
+        //then
+        assertEquals(HttpStatus.OK_200, resp.getStatus());
+        assertTrue(resp.hasEntity());
 
-	@Test
-	public void GetTest() {
-		Response resp = target( "topics").request().get( Response.class );
-		System.out.println( "GET feed resp=" + resp.getStatus() );
+        List<Topic> topics = resp.readEntity(new GenericType<List<Topic>>() {
+        });
+        assertTrue(topics.isEmpty());
+    }
 
-		assertTrue( resp.getStatus() == 200 );
-	}
-	
+    @Test
+    public void getTopics_shouldReturnTopicsRegisteredInDataBase() {
+        //given
+        Topic topic1 = DMAAP_OBJECT_FACTORY.genSimpleTopic("testTopic1");
+        Topic topic2 = DMAAP_OBJECT_FACTORY.genSimpleTopic("testTopic2");
+        DatabaseClass.getTopics().put(topic1.getFqtn(), topic1);
+        DatabaseClass.getTopics().put(topic2.getFqtn(), topic2);
 
-	@Test
-	public void PostTest() {
-		Topic topic = factory.genSimpleTopic( "test1" );
-		Entity<Topic> reqEntity = Entity.entity( topic, MediaType.APPLICATION_JSON );
-		Response resp = target( "topics").request().post( reqEntity, Response.class );
-		System.out.println( "POST Topic resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		if (resp.getStatus() != 409 ) {
-			assertTrue( resp.getStatus() == 201);
-		}
-		resp = target( "topics").
-				path( topic.genFqtn() ).request().get( Response.class );
-		System.out.println( "GET Topic resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-	
-		assertTrue( resp.getStatus() == 200 );
-		
-	}
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().get(Response.class);
 
+        //then
+        assertEquals(HttpStatus.OK_200, resp.getStatus());
+        assertTrue(resp.hasEntity());
 
-	@Test
-	public void PutTest() {
+        List<Topic> topics = resp.readEntity(new GenericType<List<Topic>>() {
+        });
+        assertEquals(2, topics.size());
+        assertTrue(topics.contains(topic1));
+        assertTrue(topics.contains(topic2));
+    }
 
-		Topic topic = factory.genSimpleTopic( "test2" );
-		Entity<Topic> reqEntity = Entity.entity( topic, MediaType.APPLICATION_JSON );
-		Response resp = target( "topics").request().post( reqEntity, Response.class );
-		String json = resp.readEntity(String.class);
-		System.out.println( "POST Topic resp=" + resp.getStatus() + " " + json );
-		if (resp.getStatus() != 409 ) {
-			assertTrue( resp.getStatus() == 201);
-		}
+    @Test
+    public void getTopics_shouldReturnValidationError_whenTopicNameIsInvalid() {
+        //given
+        String topicName = "wrong Topic Name";
 
-		
-		// now change a field
-		topic.setOwner( "newbody" );
-		reqEntity = Entity.entity( topic, MediaType.APPLICATION_JSON );
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).path(topicName).request().get(Response.class);
 
-		// update with incorrect key
-		resp = target( "topics")
-					.path( "org.onap.dmaap.notATopic" )
-					.request()
-					.put( reqEntity, Response.class );
-		
-		System.out.println( "PUT Topic resp=" + resp.getStatus() + " expect 400" );
-		assertTrue( resp.getStatus() == 400 );
+        //then
+        assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("topicName", errorObj.getFields());
+    }
 
-		// update with correct key
-		topic = new Topic( json );
-		reqEntity = Entity.entity( topic, MediaType.APPLICATION_JSON );
-		resp = target( "topics")
-					.path( topic.getFqtn())
-					.request()
-					.put( reqEntity, Response.class );
-		System.out.println( "PUT Topic resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
-		assertTrue( resp.getStatus() == 400 );  // PUT is not allowed even with the right key
-	}
+    @Test
+    public void getTopic_shouldReturnError_whenRequestedTopicNotFound() {
+        //given
+        String topicName = "notExistingTopic";
 
-	@Test
-	public void DelTest() {
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).path(topicName).request().get(Response.class);
 
-		Topic topic = factory.genSimpleTopic( "test3" );
-		topic.setFqtn( "org.onap.unittest.test3" );
-		
-		Response resp = target( "topics").
-				path( topic.getFqtn() ).
-				request().
-				delete( Response.class );
+        //then
+        assertEquals(HttpStatus.NOT_FOUND_404, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("fqtn", errorObj.getFields());
+    }
 
-		// confirm topic is not there 
-		System.out.println( "DELETE Topic resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 404 );
-		
-		// now, add it
-		Entity<Topic> reqEntity = Entity.entity( topic, MediaType.APPLICATION_JSON );
-		resp = target( "topics").request().post( reqEntity, Response.class );
-		String json = resp.readEntity( String.class );
-		System.out.println( "POST Topic resp=" + resp.getStatus() + " " + json );
-		assertTrue( resp.getStatus() == 201 );
-		
-		topic = new Topic( json );
-		// now really delete it 
-		 resp = target( "topics").
-				path( topic.getFqtn()).
-				request().
-				delete( Response.class );
-		System.out.println( "DELETE Topic resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 204 );
+    @Test
+    public void getTopic_shouldReturnTopicInformation_whenRequestedTopicExists() {
+        //given
+        Topic topic1 = DMAAP_OBJECT_FACTORY.genSimpleTopic("testTopic1");
+        DatabaseClass.getTopics().put(topic1.getFqtn(), topic1);
 
-	}
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).path(topic1.getFqtn()).request().get(Response.class);
+
+        //then
+        assertEquals(HttpStatus.OK_200, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        Topic retrievedTopic = resp.readEntity(Topic.class);
+        assertEquals(topic1, retrievedTopic);
+    }
 
 
+    @Test
+    public void deleteTopic_shouldReturnError_whenTopicNotFound() {
+        //given
+        String topicName = "notExisting";
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).path(topicName).request().delete(Response.class);
+
+        //then
+        assertEquals(HttpStatus.NOT_FOUND_404, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("fqtn", errorObj.getFields());
+    }
+
+    @Test
+    public void deleteTopic_shouldDeleteTopicFromDataBase_whenFound() {
+        //given
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("testTopic");
+        DatabaseClass.getTopics().put(topic.getFqtn(), topic);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).path(topic.getFqtn()).request().delete(Response.class);
+
+        //then
+        assertEquals(HttpStatus.NO_CONTENT_204, resp.getStatus());
+        assertFalse(resp.hasEntity());
+    }
+
+    @Test
+    public void addTopic_shouldReturnValidationError_whenTopicNameIsInvalid() {
+        //given
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("wrong topic name with spaces");
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("topicName", errorObj.getFields());
+    }
+
+    @Test
+    public void addTopic_shouldReturnValidationError_whenTopicDescriptionNotProvided() {
+        //given
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        topic.setTopicDescription(null);
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("topicDescription", errorObj.getFields());
+    }
+
+    @Test
+    public void addTopic_shouldReturnValidationError_whenTopicOwnerNotProvided() {
+        //given
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        topic.setOwner(null);
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("owner", errorObj.getFields());
+    }
+
+    @Test
+    public void addTopic_shouldReturnError_whenTopicAlreadyExist() {
+        //given
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        DatabaseClass.getTopics().put(topic.getFqtn(), topic);
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.CONFLICT_409, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("fqtn", errorObj.getFields());
+    }
+
+    @Test
+    public void addTopic_shouldReturnExistingTopic_whenTopicAlreadyExist_andUseExistingQueryParamUsed() {
+        //given
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        DatabaseClass.getTopics().put(topic.getFqtn(), topic);
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).queryParam("useExisting", true).request()
+            .post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.CREATED_201, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        assertEquals(topic, resp.readEntity(Topic.class));
+    }
+
+    @Test
+    public void addTopic_shouldReturnError_whenAddingTopicWithInvalidGlobalMRclusterHostname() {
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        topic.setReplicationCase(ReplicationType.REPLICATION_CENTRAL_TO_GLOBAL);
+        topic.setGlobalMrURL("some.invalid.Glob$al.M@R.ur)l");
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR_500, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals("globalMrURL", errorObj.getFields());
+    }
+
+    @Test
+    public void addTopic_shouldAddTopicWithDefaultOptionalValues_whenNotProvided() {
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.CREATED_201, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        Topic createdTopic = resp.readEntity(Topic.class);
+        assertEquals(topic, createdTopic);
+        assertEquals(FqtnType.FQTN_LEGACY_FORMAT, createdTopic.getFqtnStyle());
+        assertEquals("2", createdTopic.getPartitionCount());
+        assertEquals("1", createdTopic.getReplicationCount());
+    }
+
+    @Test
+    public void addTopic_shouldAddTopicWithOriginalOptionalValues_whenProvided() {
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        topic.setFqtnStyle(FqtnType.FQTN_PROJECTID_FORMAT);
+        topic.setFqtn(topic.genFqtn());
+        topic.setPartitionCount("6");
+        topic.setReplicationCount("9");
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).request().post(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.CREATED_201, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        Topic createdTopic = resp.readEntity(Topic.class);
+        assertEquals(topic, createdTopic);
+        assertEquals(FqtnType.FQTN_PROJECTID_FORMAT, createdTopic.getFqtnStyle());
+        assertEquals("6", createdTopic.getPartitionCount());
+        assertEquals("9", createdTopic.getReplicationCount());
+    }
+
+    @Test
+    public void updateTopic_shouldReturnError_withInformationThatItIsNotSupported() {
+        //given
+        Topic topic = DMAAP_OBJECT_FACTORY.genSimpleTopic("topicName");
+        DatabaseClass.getTopics().put(topic.getFqtn(), topic);
+        topic.setOwner("newOwner");
+        Entity<Topic> requestedEntity = Entity.entity(topic, MediaType.APPLICATION_JSON);
+
+        //when
+        Response resp = testContainer.target(TOPICS_TARGET).path(topic.getFqtn()).request()
+            .put(requestedEntity, Response.class);
+
+        //then
+        assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+        assertTrue(resp.hasEntity());
+        ApiError errorObj = resp.readEntity(ApiError.class);
+        assertEquals(TopicResource.UNSUPPORTED_PUT_MSG, errorObj.getMessage());
+    }
 
 }
 

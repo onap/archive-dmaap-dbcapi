@@ -20,6 +20,7 @@
 
 package org.onap.dmaap.dbcapi.model;
 
+import com.google.common.base.Objects;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
@@ -329,5 +330,26 @@ public class Topic extends DmaapObject  {
 	@ApiModelProperty( hidden=true )
 	public byte[] getBytes() {
 		return toProvJSON().getBytes(StandardCharsets.UTF_8);
+	}
+
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		Topic topic = (Topic) o;
+		return Objects.equal(fqtn, topic.fqtn) &&
+			Objects.equal(topicName, topic.topicName) &&
+			Objects.equal(tnxEnabled, topic.tnxEnabled) &&
+			Objects.equal(owner, topic.owner);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(fqtn, topicName, tnxEnabled, owner);
 	}
 }
