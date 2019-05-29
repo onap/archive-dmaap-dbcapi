@@ -54,10 +54,10 @@ import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class MR_ClientService extends BaseLoggingClass{
 
+	private static final String MR_CLIENT_ID = "mrClientId";
 	private int deleteLevel;
 	private Map<String, MR_Client> mr_clients = DatabaseClass.getMr_clients();
 	private Map<String, MR_Cluster> clusters = DatabaseClass.getMr_clusters();
-	private Map<String, Topic> topics = DatabaseClass.getTopics();
 	private Map<String, DcaeLocation> locations = DatabaseClass.getDcaeLocations();
 	private DmaapService dmaap = new DmaapService();
 	private String centralCname;
@@ -68,16 +68,12 @@ public class MR_ClientService extends BaseLoggingClass{
 		centralCname = p.getProperty("MR.CentralCname", "MRcname.not.set");
 		deleteLevel = Integer.valueOf(p.getProperty("MR.ClientDeleteLevel", "0" ));
 	}
-	
-	public Map<String, MR_Client> getMR_Clients() {			
-		return mr_clients;
-	}
 		
 	public List<MR_Client> getAllMr_Clients() {
-		return new ArrayList<MR_Client>(mr_clients.values());
+		return new ArrayList<>(mr_clients.values());
 	}
 	
-	public ArrayList<MR_Client> getAllMrClients(String fqtn) {
+	List<MR_Client> getAllMrClients(String fqtn) {
 		ArrayList<MR_Client> results = new ArrayList<>();
 		for (Map.Entry<String, MR_Client> entry : mr_clients.entrySet())
 		{
@@ -89,8 +85,8 @@ public class MR_ClientService extends BaseLoggingClass{
 		return results;
 	}	
 
-	public ArrayList<MR_Client> getClientsByLocation(String location) {
-		ArrayList<MR_Client> results = new ArrayList<MR_Client>();
+	List<MR_Client> getClientsByLocation(String location) {
+		List<MR_Client> results = new ArrayList<>();
 		for (Map.Entry<String, MR_Client> entry : mr_clients.entrySet())
 		{
 			MR_Client client = entry.getValue();
@@ -100,26 +96,14 @@ public class MR_ClientService extends BaseLoggingClass{
 		}
 		return results;
 	}	
-	
-	public void refreshClients( String location ) {
-		ApiError err = new ApiError();
-		ArrayList<MR_Client> clients = getClientsByLocation( location );
-		for( MR_Client client : clients ) {
-			Topic topic = topics.get(client.getFqtn());
-			if ( topic != null ) {
-				addMr_Client( client, topic, err);
-			}
-			
-			
-		}
-	}
+
 	
 	public MR_Client getMr_Client( String key, ApiError apiError ) {			
 		MR_Client c =  mr_clients.get( key );
 		if ( c == null ) {
 			apiError.setCode(Status.NOT_FOUND.getStatusCode());
-			apiError.setFields( "mrClientId");
-			apiError.setMessage("mrClientId " + key + " not found" );
+			apiError.setFields(MR_CLIENT_ID);
+			apiError.setMessage(MR_CLIENT_ID+ " " + key + " not found" );
 		} else {
 			apiError.setCode(200);
 		}
@@ -183,7 +167,6 @@ public class MR_ClientService extends BaseLoggingClass{
 		} else {
 			logger.warn( "Client references a dcaeLocation that doesn't exist:" + client.getDcaeLocationName());
 			client.setStatus( DmaapObject_Status.STAGED);
-			//return null;
 		}
 
 		mr_clients.put( client.getMrClientId(), client );
@@ -198,7 +181,7 @@ public class MR_ClientService extends BaseLoggingClass{
 		MrProvConnection prov = new MrProvConnection();
 		logger.info( "POST topic " + topic.getFqtn() + " to cluster " + cluster.getFqdn() + " in loc " + cluster.getDcaeLocationName());
 		if ( prov.makeTopicConnection(cluster)) {
-			String resp = prov.doPostTopic(topic, err);
+			prov.doPostTopic(topic, err);
 			logger.info( "response code: " + err.getCode() );
 			if ( err.is2xx() || err.getCode() == 409 ) {
 				return DmaapObject_Status.VALID;
@@ -271,7 +254,7 @@ public class MR_ClientService extends BaseLoggingClass{
 		MR_Client c =  mr_clients.get( client.getMrClientId());
 		if ( c == null ) {
 			apiError.setCode(Status.NOT_FOUND.getStatusCode());
-			apiError.setFields( "mrClientId");
+			apiError.setFields(MR_CLIENT_ID);
 			apiError.setMessage("mrClientId " + client.getMrClientId() + " not found" );
 		} else {
 			apiError.setCode(200);
@@ -284,20 +267,20 @@ public class MR_ClientService extends BaseLoggingClass{
 		MR_Client client =  mr_clients.get( key );
 		if ( client == null ) {
 			apiError.setCode(Status.NOT_FOUND.getStatusCode());
-			apiError.setFields( "mrClientId");
+			apiError.setFields(MR_CLIENT_ID);
 			apiError.setMessage("mrClientId " + key + " not found" );
 			return;
 		} else {
 			apiError.setCode(200);
 		}
 		
-		if ( updateTopicView == true ) {
+		if (updateTopicView) {
 
 			TopicService topics = new TopicService();
 			
 			Topic t = topics.getTopic(client.getFqtn(), apiError );
 			if ( t != null ) {	
-				ArrayList<MR_Client> tc = t.getClients();
+				List<MR_Client> tc = t.getClients();
 				for( MR_Client c: tc) {
 					if ( c.getMrClientId().equals(client.getMrClientId())) {
 						tc.remove(c);
@@ -310,7 +293,6 @@ public class MR_ClientService extends BaseLoggingClass{
 
 		}
 
-		
 		// remove from AAF
 		if ( deleteLevel >= 2 ) {
 			revokeClientPerms( client, apiError );
@@ -322,8 +304,6 @@ public class MR_ClientService extends BaseLoggingClass{
 		if ( deleteLevel >= 1 ) {
 			mr_clients.remove(key);
 		}
-
-		return;
 	}
 	
 }

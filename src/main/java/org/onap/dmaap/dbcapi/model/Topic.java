@@ -24,6 +24,8 @@ import com.google.common.base.Objects;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
 import org.json.simple.*;
 import org.json.simple.parser.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -70,7 +72,7 @@ public class Topic extends DmaapObject  {
 	private	String	subscriberRole;
 
 	@ApiModelProperty( value="an array of `MR_Client` objects associated to this `Topic`")
-	private	ArrayList<MR_Client> clients;
+	private	List<MR_Client> clients;
 
 
 	
@@ -229,11 +231,11 @@ public class Topic extends DmaapObject  {
 	}
 
 
-	public void setClients(ArrayList<MR_Client> clients) {
+	public void setClients(List<MR_Client> clients) {
 		this.clients = clients;
 	}
 
-	public ArrayList<MR_Client> getClients() {
+	public List<MR_Client> getClients() {
 		return clients;
 	}
 

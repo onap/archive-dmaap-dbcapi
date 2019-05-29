@@ -108,9 +108,9 @@ public class MR_ClientServiceTest {
 	public void test4() {
 		List<MR_Client> l = cls.getAllMr_Clients();
 
-		ArrayList<MR_Client> al = cls.getAllMrClients( "foo" );
+		List<MR_Client> al = cls.getAllMrClients( "foo" );
 
-		ArrayList<MR_Client> al2 = cls.getClientsByLocation( "central" );
+		List<MR_Client> al2 = cls.getClientsByLocation( "central" );
 	}
 
 	@Test
