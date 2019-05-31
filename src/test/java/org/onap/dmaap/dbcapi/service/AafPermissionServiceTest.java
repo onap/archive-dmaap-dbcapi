@@ -39,6 +39,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status.INVALID;
+import static org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status.VALID;
 
 @RunWith(JUnitParamsRunner.class)
 public class AafPermissionServiceTest {
@@ -70,87 +72,87 @@ public class AafPermissionServiceTest {
     @Test
     @Parameters({"201", "409"})
     public void shouldAssignClientToRole(int aafServiceReturnedCode) {
-        ApiError apiError = new ApiError();
         AafUserRole userRole = new AafUserRole(IDENTITY, ROLE);
         given(aafService.addUserRole(userRole)).willReturn(aafServiceReturnedCode);
 
-        aafPermissionService.assignIdentityToRole(mrClient, ROLE, apiError);
+        ApiError apiError = aafPermissionService.assignClientToRole(mrClient, ROLE);
 
         then(aafService).should().addUserRole(userRole);
+        then(mrClient).should().setStatus(VALID);
         assertOkStatus(apiError);
     }
 
     @Test
     public void shouldReturnErrorStatusWhenClientWasNotAssignedToRole() {
-        ApiError apiError = new ApiError();
         AafUserRole userRole = new AafUserRole(IDENTITY, ROLE);
         given(aafService.addUserRole(userRole)).willReturn(INTERNAL_SERVER_ERROR);
 
-        aafPermissionService.assignIdentityToRole(mrClient, ROLE, apiError);
+        ApiError apiError = aafPermissionService.assignClientToRole(mrClient, ROLE);
 
+        then(mrClient).should().setStatus(INVALID);
         assertErrorStatus(apiError, INTERNAL_SERVER_ERROR);
     }
 
     @Test
     @Parameters({"201", "409"})
     public void shouldGrantActionPermissionForClientRole(int aafServiceReturnedCode) {
-        ApiError apiError = new ApiError();
         DmaapGrant grant = new DmaapGrant(new DmaapPerm(TOPIC_PERM, ":topic." + FQTN, PUB_ACTION), ROLE);
         given(mrClient.getClientRole()).willReturn(ROLE);
         given(aafService.addGrant(grant)).willReturn(aafServiceReturnedCode);
 
-        aafPermissionService.grantClientRolePerms(mrClient, apiError);
+        ApiError apiError = aafPermissionService.grantClientRolePerms(mrClient);
 
         then(aafService).should().addGrant(grant);
+        then(mrClient).should().setStatus(VALID);
         assertOkStatus(apiError);
     }
 
     @Test
     public void shouldReturnErrorStatusWhenPermissionWasNotGrantToRole() {
-        ApiError apiError = new ApiError();
         DmaapGrant grant = new DmaapGrant(new DmaapPerm(TOPIC_PERM, ":topic." + FQTN, PUB_ACTION), ROLE);
         given(mrClient.getClientRole()).willReturn(ROLE);
         given(aafService.addGrant(grant)).willReturn(INTERNAL_SERVER_ERROR);
 
-        aafPermissionService.grantClientRolePerms(mrClient, apiError);
+        ApiError apiError = aafPermissionService.grantClientRolePerms(mrClient);
 
+        then(mrClient).should().setStatus(INVALID);
         assertErrorStatus(apiError, INTERNAL_SERVER_ERROR);
     }
 
     @Test
     public void shouldReturnOkStatusWhenClientRoleIsNull() {
-        ApiError apiError = new ApiError();
         given(mrClient.getClientRole()).willReturn(null);
 
-        aafPermissionService.grantClientRolePerms(mrClient, apiError);
+        ApiError apiError = aafPermissionService.grantClientRolePerms(mrClient);
 
         verifyZeroInteractions(aafService);
+        then(mrClient).should().setStatus(VALID);
         assertOkStatus(apiError);
     }
 
     @Test
     @Parameters({"200", "404"})
     public void shouldRevokeActionPermissionForClientRole(int aafServiceReturnedCode) {
-        ApiError apiError = new ApiError();
         DmaapGrant grant = new DmaapGrant(new DmaapPerm(TOPIC_PERM, ":topic." + FQTN, PUB_ACTION), ROLE);
         given(mrClient.getClientRole()).willReturn(ROLE);
         given(aafService.delGrant(grant)).willReturn(aafServiceReturnedCode);
 
-        aafPermissionService.revokeClientPerms(mrClient, apiError);
+        ApiError apiError = aafPermissionService.revokeClientPerms(mrClient);
 
         then(aafService).should().delGrant(grant);
+        then(mrClient).should().setStatus(VALID);
         assertOkStatus(apiError);
     }
 
     @Test
     public void shouldReturnErrorStatusWhenPermissionWasNotRevokedFromRole() {
-        ApiError apiError = new ApiError();
         DmaapGrant grant = new DmaapGrant(new DmaapPerm(TOPIC_PERM, ":topic." + FQTN, PUB_ACTION), ROLE);
         given(mrClient.getClientRole()).willReturn(ROLE);
         given(aafService.delGrant(grant)).willReturn(INTERNAL_SERVER_ERROR);
 
-        aafPermissionService.revokeClientPerms(mrClient, apiError);
+        ApiError apiError = aafPermissionService.revokeClientPerms(mrClient);
 
+        then(mrClient).should().setStatus(INVALID);
         assertErrorStatus(apiError, INTERNAL_SERVER_ERROR);
     }
 

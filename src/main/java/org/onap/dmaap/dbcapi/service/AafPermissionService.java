@@ -29,8 +29,11 @@ import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
 import org.onap.dmaap.dbcapi.model.MR_Client;
 
+import static java.lang.String.format;
+
 public class AafPermissionService extends BaseLoggingClass {
 
+    private static final String INSTANCE_PREFIX = ":topic.";
     private final AafService aafService;
     private final DmaapService dmaapService;
 
@@ -43,91 +46,96 @@ public class AafPermissionService extends BaseLoggingClass {
         this.dmaapService = dmaapService;
     }
 
-    void assignIdentityToRole(MR_Client client, String role, ApiError err) {
-        okStatus(err);
+    ApiError assignClientToRole(MR_Client client, String role) {
         AafUserRole ur = new AafUserRole(client.getClientIdentity(), role);
-        client.setStatus(DmaapObject_Status.VALID);
         int rc = aafService.addUserRole(ur);
         if (rc != 201 && rc != 409) {
-            client.setStatus(DmaapObject_Status.INVALID);
-            assignClientToRoleError(err, rc, client.getClientIdentity(), role);
+            return handleErrorStatus(rc, client,
+                    format("Failed to add user %s to role %s", client.getClientIdentity(), role));
         }
+        return handleOkStatus(client);
     }
 
-    void grantClientRolePerms(MR_Client client, ApiError err) {
+    ApiError grantClientRolePerms(MR_Client client) {
+        try {
+            String instance = INSTANCE_PREFIX + client.getFqtn();
 
-        okStatus(err);
-        String instance = ":topic." + client.getFqtn();
-        client.setStatus(DmaapObject_Status.VALID);
-
-        for (String action : client.getAction()) {
-            if (client.getClientRole() != null) {
-                int rc = grantPermForClientRole(client.getClientRole(), instance, action);
-                if (rc != 201 && rc != 409) {
-                    client.setStatus(DmaapObject_Status.INVALID);
-                    grantPermsError(err, rc, dmaapService.getTopicPerm(), instance, action, client.getClientRole());
-                }
-
-            } else {
-                logger.warn("No Grant of " + permissionFullName(dmaapService.getTopicPerm(), instance, action) + " because role is null ");
+            for (String action : client.getAction()) {
+                grantPermForClientRole(client.getClientRole(), instance, action);
             }
+
+        } catch (PermissionServiceException e) {
+            return handleErrorStatus(e.getCode(), client, e.getMessage());
         }
+        return handleOkStatus(client);
     }
 
-    void revokeClientPerms(MR_Client client, ApiError err) {
-        okStatus(err);
-        String instance = ":topic." + client.getFqtn();
-        client.setStatus(DmaapObject_Status.VALID);
+    ApiError revokeClientPerms(MR_Client client) {
+        try {
+            String instance = INSTANCE_PREFIX + client.getFqtn();
 
-        for (String action : client.getAction()) {
-
-            int rc = revokePermForClientRole(client.getClientRole(), instance, action);
-
-            if (rc != 200 && rc != 404) {
-                client.setStatus(DmaapObject_Status.INVALID);
-                revokePermsError(err, rc, dmaapService.getTopicPerm(), instance, action, client.getClientRole());
+            for (String action : client.getAction()) {
+                revokePermForClientRole(client.getClientRole(), instance, action);
             }
-        }
 
+        } catch (PermissionServiceException e) {
+            return handleErrorStatus(e.getCode(), client, e.getMessage());
+        }
+        return handleOkStatus(client);
     }
 
-    private int grantPermForClientRole(String clientRole, String instance, String action) {
+    private void grantPermForClientRole(String clientRole, String instance, String action) throws PermissionServiceException {
+        if (clientRole != null) {
+            DmaapPerm perm = new DmaapPerm(dmaapService.getTopicPerm(), instance, action);
+            DmaapGrant g = new DmaapGrant(perm, clientRole);
+            int code = aafService.addGrant(g);
+            if (code != 201 && code != 409) {
+                throw new PermissionServiceException(code, format("Grant of %s|%s|%s failed for %s",
+                        dmaapService.getTopicPerm(), instance, action, clientRole));
+            }
+        } else {
+            logger.warn("No Grant of {}|{}|{} because role is null ", dmaapService.getTopicPerm(), instance, action);
+        }
+    }
+
+    private void revokePermForClientRole(String clientRole, String instance, String action) throws PermissionServiceException {
         DmaapPerm perm = new DmaapPerm(dmaapService.getTopicPerm(), instance, action);
         DmaapGrant g = new DmaapGrant(perm, clientRole);
-        return aafService.addGrant(g);
+        int code = aafService.delGrant(g);
+        if (code != 200 && code != 404) {
+            throw new PermissionServiceException(code, format("Revoke of %s|%s|%s failed for %s",
+                    dmaapService.getTopicPerm(), instance, action, clientRole));
+        }
     }
 
-    private int revokePermForClientRole(String clientRole, String instance, String action) {
-        DmaapPerm perm = new DmaapPerm(dmaapService.getTopicPerm(), instance, action);
-        DmaapGrant g = new DmaapGrant(perm, clientRole);
-        return aafService.delGrant(g);
+    private ApiError handleErrorStatus(int code, MR_Client client, String message) {
+        ApiError apiError = new ApiError(code, message);
+        client.setStatus(DmaapObject_Status.INVALID);
+        logger.warn(apiError.getMessage());
+        return apiError;
     }
 
-    private void assignClientToRoleError(ApiError err, int code, String clientIdentity, String role) {
-        err.setCode(code);
-        err.setMessage("Failed to add user " + clientIdentity + "  to " + role);
-        logger.warn(err.getMessage());
+    private ApiError handleOkStatus(MR_Client client) {
+        client.setStatus(DmaapObject_Status.VALID);
+        return new ApiError(200, "OK");
     }
 
-    private void grantPermsError(ApiError err, int code, String permission, String instance, String action, String role) {
-        err.setCode(code);
-        err.setMessage("Grant of " + permissionFullName(permission, instance, action) + " failed for " + role);
-        logger.warn(err.getMessage());
-    }
+    private class PermissionServiceException extends Exception {
+        private final int code;
+        private final String message;
 
-    private void revokePermsError(ApiError err, int code, String permission, String instance, String action, String role) {
-        err.setCode(code);
-        err.setMessage("Revoke of " + permissionFullName(permission, instance, action) + " failed for " + role);
-        logger.warn(err.getMessage());
-    }
+        PermissionServiceException(int code, String message) {
+            this.code = code;
+            this.message = message;
+        }
 
-    private String permissionFullName(String permission, String instance, String action) {
-        return permission + "|" + instance + "|" + action;
-    }
+        public int getCode() {
+            return code;
+        }
 
-    private void okStatus(ApiError err) {
-        err.setCode(200);
-        err.setMessage("OK");
+        @Override
+        public String getMessage() {
+            return message;
+        }
     }
-
 }
