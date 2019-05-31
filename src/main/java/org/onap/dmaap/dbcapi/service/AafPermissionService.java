@@ -57,25 +57,19 @@ public class AafPermissionService extends BaseLoggingClass {
     }
 
     ApiError grantClientRolePerms(MR_Client client) {
-        try {
-            String instance = INSTANCE_PREFIX + client.getFqtn();
-
-            for (String action : client.getAction()) {
-                grantPermForClientRole(client.getClientRole(), instance, action);
-            }
-
-        } catch (PermissionServiceException e) {
-            return handleErrorStatus(e.getCode(), client, e.getMessage());
-        }
-        return handleOkStatus(client);
+        return forEachClientAction(client, this::grantPermForClientRole);
     }
 
     ApiError revokeClientPerms(MR_Client client) {
+        return forEachClientAction(client, this::revokePermForClientRole);
+    }
+
+    private ApiError forEachClientAction(MR_Client client, PermissionUpdate permissionUpdate) {
         try {
             String instance = INSTANCE_PREFIX + client.getFqtn();
 
             for (String action : client.getAction()) {
-                revokePermForClientRole(client.getClientRole(), instance, action);
+                permissionUpdate.execute(client.getClientRole(), instance, action);
             }
 
         } catch (PermissionServiceException e) {
@@ -137,5 +131,10 @@ public class AafPermissionService extends BaseLoggingClass {
         public String getMessage() {
             return message;
         }
+    }
+
+    @FunctionalInterface
+    interface PermissionUpdate {
+        void execute(String clientRole, String instance, String action) throws PermissionServiceException;
     }
 }
