@@ -22,6 +22,8 @@ package org.onap.dmaap.dbcapi.aaf;
 
 import org.apache.log4j.Logger;
 
+import java.util.Objects;
+
 
 public class AafRole extends AafObject  {
 	static final Logger logger = Logger.getLogger(AafRole.class);
@@ -59,8 +61,18 @@ public class AafRole extends AafObject  {
 			
 		return postJSON;
 	}
-	
-	
-	
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		AafRole aafRole = (AafRole) o;
+		return Objects.equals(namespace, aafRole.namespace) &&
+				Objects.equals(role, aafRole.role);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(namespace, role);
+	}
 }
