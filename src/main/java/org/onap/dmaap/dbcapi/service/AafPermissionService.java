@@ -21,6 +21,7 @@
 package org.onap.dmaap.dbcapi.service;
 
 import org.onap.dmaap.dbcapi.aaf.AafService;
+import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
 import org.onap.dmaap.dbcapi.aaf.AafUserRole;
 import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
@@ -38,7 +39,7 @@ public class AafPermissionService extends BaseLoggingClass {
     private final DmaapService dmaapService;
 
     public AafPermissionService() {
-        this(new AafService(AafService.ServiceType.AAF_TopicMgr), new DmaapService());
+        this(new AafServiceImpl(AafService.ServiceType.AAF_TopicMgr), new DmaapService());
     }
 
     AafPermissionService(AafService aafService, DmaapService dmaapService) {

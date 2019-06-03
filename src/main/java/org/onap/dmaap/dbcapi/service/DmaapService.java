@@ -24,6 +24,7 @@ package org.onap.dmaap.dbcapi.service;
 
 import java.util.ArrayList;
 import org.onap.dmaap.dbcapi.aaf.AafService;
+import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
 import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
@@ -85,7 +86,7 @@ public class DmaapService  extends BaseLoggingClass  {
 			nd.setLastMod();
 			dmaapholder.update(nd);
 			
-			AafService aaf = new AafService( ServiceType.AAF_Admin);
+			AafService aaf = new AafServiceImpl( ServiceType.AAF_Admin);
 			ApiPolicy apiPolicy = new ApiPolicy();
 			if ( apiPolicy.isPermissionClassSet() ) {
 				ApiPerms p = new ApiPerms();
@@ -134,7 +135,7 @@ public class DmaapService  extends BaseLoggingClass  {
 				ApiPerms p = new ApiPerms();
 				p.setEnvMap();
 			}
-			AafService aaf = new AafService( ServiceType.AAF_Admin);
+			AafService aaf = new AafServiceImpl( ServiceType.AAF_Admin);
 			if ( multiSite ) {
 				anythingWrong = setTopicMgtPerms(  nd,  aaf ) || createMmaTopic();
 			}

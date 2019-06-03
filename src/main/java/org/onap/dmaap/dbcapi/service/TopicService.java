@@ -26,6 +26,7 @@ import org.onap.dmaap.dbcapi.aaf.AafNamespace;
 import org.onap.dmaap.dbcapi.aaf.AafRole;
 import org.onap.dmaap.dbcapi.aaf.AafService;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
+import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
 import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
@@ -146,7 +147,7 @@ public class TopicService extends BaseLoggingClass {
         }
 
         // establish AAF Connection using TopicMgr identity
-        AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
+        AafService aaf = new AafServiceImpl(ServiceType.AAF_TopicMgr);
 
         AafRole pubRole = null;
         AafRole subRole = null;

@@ -26,6 +26,7 @@ import com.att.eelf.configuration.EELFLogger;
 import com.att.eelf.configuration.EELFManager;
 
 import org.onap.dmaap.dbcapi.aaf.AafService;
+import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
 import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
@@ -89,7 +90,7 @@ public  class ApiPerms extends BaseLoggingClass {
 			DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 			String api = p.getProperty("ApiNamespace", "apiNamespace.not.set");
 
-			AafService aaf = new AafService(ServiceType.AAF_Admin);
+			AafService aaf = new AafServiceImpl(ServiceType.AAF_Admin);
 			
 			for ( int i = 0; i < pmap.length ; i++ ) {
 				String uri = new String( api + "." + pmap[i].getUri());

@@ -24,6 +24,7 @@ package org.onap.dmaap.dbcapi.service;
 
 import org.onap.dmaap.dbcapi.aaf.AafService;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
+import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
 import org.onap.dmaap.dbcapi.aaf.AafUserRole;
 import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
@@ -180,7 +181,7 @@ public class MR_ClientService extends BaseLoggingClass {
     }
 
     private void grantClientRolePerms(MR_Client client, ApiError err) {
-        AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
+        AafService aaf = new AafServiceImpl(ServiceType.AAF_TopicMgr);
 
         String instance = ":topic." + client.getFqtn();
         client.setStatus(DmaapObject_Status.VALID);
@@ -205,7 +206,7 @@ public class MR_ClientService extends BaseLoggingClass {
     }
 
     private void assignIdentityToRole(MR_Client client, String role, ApiError err) {
-        AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
+        AafService aaf = new AafServiceImpl(ServiceType.AAF_TopicMgr);
 
         AafUserRole ur = new AafUserRole(client.getClientIdentity(), role);
         int rc = aaf.addUserRole(ur);
@@ -221,7 +222,7 @@ public class MR_ClientService extends BaseLoggingClass {
     }
 
     private void revokeClientPerms(MR_Client client, ApiError err) {
-        AafService aaf = new AafService(ServiceType.AAF_TopicMgr);
+        AafService aaf = new AafServiceImpl(ServiceType.AAF_TopicMgr);
 
         String instance = ":topic." + client.getFqtn();
         client.setStatus(DmaapObject_Status.VALID);
