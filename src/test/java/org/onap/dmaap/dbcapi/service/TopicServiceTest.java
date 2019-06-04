@@ -48,6 +48,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.onap.dmaap.dbcapi.model.ReplicationType.REPLICATION_GLOBAL_TO_FQDN;
 
@@ -67,10 +68,13 @@ public class TopicServiceTest {
     private DcaeLocationService locations;
     @Mock
     private MirrorMakerService bridge;
+    @Mock
+    private AafTopicSetupService aafTopicSetupService;
 
     @Before
     public void setUp() throws Exception {
         given(dmaapConfig.getProperty("MR.globalHost", "global.host.not.set")).willReturn(GLOBAL_MR_HOST);
+        given(aafTopicSetupService.aafTopicSetup(any(Topic.class))).willReturn(new ApiError(200, "OK"));
         createTopicService();
     }
 
@@ -78,7 +82,7 @@ public class TopicServiceTest {
     public void getTopics_shouldReturnTopicsReceivedDuringServiceCreation() {
 
         ImmutableMap<String, Topic> topics = ImmutableMap.of(TOPIC_FQTN, new Topic());
-        topicService = new TopicService(topics, clientService, dmaapConfig, clusters, locations, bridge);
+        topicService = new TopicService(topics, clientService, dmaapConfig, clusters, locations, bridge, aafTopicSetupService);
 
         assertEquals(topics, topicService.getTopics());
     }
@@ -217,7 +221,7 @@ public class TopicServiceTest {
     private void createTopicService() {
         Map<String, Topic> mrTopics = new HashMap<>();
         mrTopics.put(TOPIC_FQTN, createTopic(TOPIC_FQTN));
-        topicService = new TopicService(mrTopics, clientService, dmaapConfig, clusters, locations, bridge);
+        topicService = new TopicService(mrTopics, clientService, dmaapConfig, clusters, locations, bridge, aafTopicSetupService);
     }
 
     private Topic createTopic(String fqtn) {

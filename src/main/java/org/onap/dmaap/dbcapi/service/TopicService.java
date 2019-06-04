@@ -22,13 +22,8 @@
 
 package org.onap.dmaap.dbcapi.service;
 
-import org.onap.dmaap.dbcapi.aaf.AafNamespace;
-import org.onap.dmaap.dbcapi.aaf.AafRole;
-import org.onap.dmaap.dbcapi.aaf.AafService;
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
 import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
-import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
-import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
@@ -65,26 +60,29 @@ public class TopicService extends BaseLoggingClass {
     private MR_ClusterService clusters;
     private DcaeLocationService locations;
     private MirrorMakerService bridge;
+    private AafTopicSetupService aafTopicSetupService;
 
     private static String centralCname;
-    private static boolean createTopicRoles;
     private boolean strictGraph = true;
     private boolean mmPerMR;
 
 
     public TopicService() {
         this(DatabaseClass.getTopics(), new MR_ClientService(), (DmaapConfig) DmaapConfig.getConfig(),
-                new MR_ClusterService(), new DcaeLocationService(), new MirrorMakerService());
+                new MR_ClusterService(), new DcaeLocationService(), new MirrorMakerService(),
+                new AafTopicSetupService(
+                        new AafServiceImpl(ServiceType.AAF_TopicMgr),
+                        dmaapSvc,
+                        "true".equalsIgnoreCase(DmaapConfig.getConfig().getProperty("aaf.CreateTopicRoles", "true"))));
 
     }
 
     TopicService(Map<String, Topic> mr_topics, MR_ClientService clientService, DmaapConfig p,
-                 MR_ClusterService clusters, DcaeLocationService locations, MirrorMakerService bridge) {
+                 MR_ClusterService clusters, DcaeLocationService locations, MirrorMakerService bridge, AafTopicSetupService aafTopicSetupService) {
         this.mr_topics = mr_topics;
         this.clientService = clientService;
         defaultGlobalMrHost = p.getProperty("MR.globalHost", "global.host.not.set");
         centralCname = p.getProperty("MR.CentralCname");
-        createTopicRoles = "true".equalsIgnoreCase(p.getProperty("aaf.CreateTopicRoles", "true"));
         String unit_test = p.getProperty("UnitTest", "No");
         if ("Yes".equals(unit_test)) {
             strictGraph = false;
@@ -92,11 +90,11 @@ public class TopicService extends BaseLoggingClass {
         mmPerMR = "true".equalsIgnoreCase(p.getProperty("MirrorMakerPerMR", "true"));
         logger.info("TopicService properties: CentralCname=" + centralCname +
                 "   defaultGlobarlMrHost=" + defaultGlobalMrHost +
-                " createTopicRoles=" + createTopicRoles +
                 " mmPerMR=" + mmPerMR);
         this.clusters = clusters;
         this.locations = locations;
         this.bridge = bridge;
+        this.aafTopicSetupService = aafTopicSetupService;
     }
 
     public Map<String, Topic> getTopics() {
@@ -121,7 +119,6 @@ public class TopicService extends BaseLoggingClass {
         return topics;
     }
 
-
     public Topic getTopic(String key, ApiError apiError) {
         logger.info("getTopic: key=" + key);
         Topic t = mr_topics.get(key);
@@ -134,103 +131,6 @@ public class TopicService extends BaseLoggingClass {
         t.setClients(clientService.getAllMrClients(key));
         apiError.setCode(Status.OK.getStatusCode());
         return t;
-    }
-
-    private void aafTopicSetup(Topic topic, ApiError err) {
-
-        String nsr = dmaapSvc.getDmaap().getTopicNsRoot();
-        if (nsr == null) {
-            err.setCode(500);
-            err.setMessage("Unable to establish AAF namespace root: (check /dmaap object)");
-            err.setFields("topicNsRoot");
-            return;
-        }
-
-        // establish AAF Connection using TopicMgr identity
-        AafService aaf = new AafServiceImpl(ServiceType.AAF_TopicMgr);
-
-        AafRole pubRole = null;
-        AafRole subRole = null;
-
-        // creating Topic Roles was not an original feature.
-        // For backwards compatibility, only do this if the feature is enabled.
-        // Also, if the namespace of the topic is a foreign namespace, (i.e. not the same as our root ns)
-        // then we likely don't have permission to create sub-ns and Roles so don't try.
-        if (createTopicRoles && topic.getFqtn().startsWith(nsr)) {
-            // create AAF namespace for this topic
-            AafNamespace ns = new AafNamespace(topic.getFqtn(), aaf.getIdentity());
-            {
-                int rc = aaf.addNamespace(ns);
-                if (rc != 201 && rc != 409) {
-                    err.setCode(500);
-                    err.setMessage("Unexpected response from AAF:" + rc);
-                    err.setFields("namespace:" + topic.getFqtn() + " identity=" + aaf.getIdentity());
-                    return;
-                }
-            }
-
-            // create AAF Roles for MR clients of this topic
-            String rn = "publisher";
-            pubRole = new AafRole(topic.getFqtn(), rn);
-            int rc = aaf.addRole(pubRole);
-            if (rc != 201 && rc != 409) {
-                err.setCode(500);
-                err.setMessage("Unexpected response from AAF:" + rc);
-                err.setFields("topic:" + topic.getFqtn() + " role=" + rn);
-                return;
-            }
-            topic.setPublisherRole(pubRole.getFullyQualifiedRole());
-
-            rn = "subscriber";
-            subRole = new AafRole(topic.getFqtn(), rn);
-            rc = aaf.addRole(subRole);
-            if (rc != 201 && rc != 409) {
-                err.setCode(500);
-                err.setMessage("Unexpected response from AAF:" + rc);
-                err.setFields("topic:" + topic.getFqtn() + " role=" + rn);
-                return;
-            }
-            topic.setSubscriberRole(subRole.getFullyQualifiedRole());
-        }
-
-        // create AAF perms checked by MR
-        String instance = ":topic." + topic.getFqtn();
-        String[] actions = {"pub", "sub", "view"};
-        String t = dmaapSvc.getTopicPerm();
-        for (String action : actions) {
-            DmaapPerm perm = new DmaapPerm(t, instance, action);
-            int rc = aaf.addPerm(perm);
-            if (rc != 201 && rc != 409) {
-                err.setCode(500);
-                err.setMessage("Unexpected response from AAF:" + rc);
-                err.setFields("t=" + t + " instance=" + instance + " action=" + action);
-                return;
-            }
-            if (createTopicRoles) {
-                // Grant perms to our default Roles
-                if (action.equals("pub") || action.equals("view")) {
-                    DmaapGrant g = new DmaapGrant(perm, pubRole.getFullyQualifiedRole());
-                    rc = aaf.addGrant(g);
-                    if (rc != 201 && rc != 409) {
-                        err.setCode(rc);
-                        err.setMessage("Grant of " + perm.toString() + " failed for " + pubRole.getFullyQualifiedRole());
-                        logger.warn(err.getMessage());
-                        return;
-                    }
-                }
-                if (action.equals("sub") || action.equals("view")) {
-                    DmaapGrant g = new DmaapGrant(perm, subRole.getFullyQualifiedRole());
-                    rc = aaf.addGrant(g);
-                    if (rc != 201 && rc != 409) {
-                        err.setCode(rc);
-                        err.setMessage("Grant of " + perm.toString() + " failed for " + subRole.getFullyQualifiedRole());
-                        logger.warn(err.getMessage());
-                        return;
-                    }
-                }
-            }
-
-        }
     }
 
     public Topic addTopic(Topic topic, ApiError err, Boolean useExisting) {
@@ -255,7 +155,8 @@ public class TopicService extends BaseLoggingClass {
 
         topic.setFqtn(nFqtn);
 
-        aafTopicSetup(topic, err);
+        ApiError topicSetupError = aafTopicSetupService.aafTopicSetup(topic);
+        updateApiError(err, topicSetupError);
         if (err.getCode() >= 400) {
             return null;
         }
@@ -581,6 +482,7 @@ public class TopicService extends BaseLoggingClass {
      * The following method is a modification of that original logic, to preserve some backwards compatibility,
      * i.e. to be used when no ReplicationType is specified.
      */
+
     public ReplicationType reviewTopic(Topic topic) {
 
 
@@ -613,4 +515,9 @@ public class TopicService extends BaseLoggingClass {
         return ReplicationType.REPLICATION_NONE;
     }
 
+    private void updateApiError(ApiError err, ApiError topicSetupError) {
+        err.setCode(topicSetupError.getCode());
+        err.setMessage(topicSetupError.getMessage());
+        err.setFields(topicSetupError.getFields());
+    }
 }
