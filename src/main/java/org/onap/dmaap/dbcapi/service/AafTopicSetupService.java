@@ -78,6 +78,21 @@ class AafTopicSetupService extends BaseLoggingClass {
     }
 
     ApiError aafTopicCleanup(Topic topic) {
+        try {
+
+            String instance = ":topic." + topic.getFqtn();
+            String topicPerm = dmaapService.getTopicPerm();
+            removePermission(topicPerm, instance, "pub");
+            removePermission(topicPerm, instance, "sub");
+            removePermission(topicPerm, instance, "view");
+
+            if (createTopicRoles && topic.getFqtn().startsWith(getTopicsNsRoot())) {
+                removeNamespace(topic);
+            }
+
+        } catch (TopicSetupException ex) {
+            return new ApiError(ex.getCode(), ex.getMessage(), ex.getFields());
+        }
         return okStatus();
     }
 
@@ -122,15 +137,34 @@ class AafTopicSetupService extends BaseLoggingClass {
     }
 
     private AafRole createRole(Topic topic, String roleName) throws TopicSetupException {
-        int rc;
         AafRole role = new AafRole(topic.getFqtn(), roleName);
-        rc = aafService.addRole(role);
+        int rc = aafService.addRole(role);
         if (rc != 201 && rc != 409) {
             throw new TopicSetupException(500,
                     format("Unexpected response from AAF: %d topic=%s role=%s",
                             rc, topic.getFqtn(), roleName));
         }
         return role;
+    }
+
+    private void removePermission(String permission, String instance, String action) throws TopicSetupException {
+        DmaapPerm perm = new DmaapPerm(permission, instance, action);
+        int rc = aafService.delPerm(perm);
+        if (rc != 200 && rc != 404) {
+            throw new TopicSetupException(500,
+                    format("Unexpected response from AAF: %d permission=%s instance=%s action=%s",
+                            rc, perm, instance, action));
+        }
+    }
+
+    private void removeNamespace(Topic topic) throws TopicSetupException {
+        AafNamespace ns = new AafNamespace(topic.getFqtn(), aafService.getIdentity());
+        int rc = aafService.delNamespace(ns);
+        if (rc != 200 && rc != 404) {
+            throw new TopicSetupException(500,
+                    format("Unexpected response from AAF: %d namespace=%s identity=%s",
+                            rc, topic.getFqtn(), aafService.getIdentity()));
+        }
     }
 
     private ApiError okStatus() {

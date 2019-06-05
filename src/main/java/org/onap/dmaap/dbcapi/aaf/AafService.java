@@ -33,6 +33,8 @@ public interface AafService {
 
     int addPerm(DmaapPerm perm);
 
+    int delPerm(DmaapPerm perm);
+
     int addGrant(DmaapGrant grant);
 
     int addUserRole(AafUserRole ur);
@@ -41,6 +43,7 @@ public interface AafService {
 
     int addRole(AafRole role);
 
-
     int addNamespace(AafNamespace ns);
+
+    int delNamespace(AafNamespace ns);
 }

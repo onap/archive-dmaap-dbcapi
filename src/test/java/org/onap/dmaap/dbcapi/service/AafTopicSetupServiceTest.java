@@ -40,6 +40,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 
@@ -49,6 +50,7 @@ public class AafTopicSetupServiceTest {
     private static final int INTERNAL_SERVER_ERROR = 500;
     private static final int NOT_FOUND = 404;
     private static final int CREATED = 201;
+    private static final int OK = 200;
     private static final String TOPIC_NS_ROOT = "org.onap.dmaap.mr";
     private static final String TOPIC_PERM = "org.onap.dmaap.mr.topic";
     private static final String TOPIC_FQTN = "org.onap.dmaap.mr.sample_topic";
@@ -164,7 +166,7 @@ public class AafTopicSetupServiceTest {
         aafService.shouldAddPerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "pub"));
         aafService.shouldAddPerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "sub"));
         aafService.shouldAddPerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "view"));
-        aafService.shouldHaveNoRolesAndGrants();
+        aafService.shouldHaveNoNamespaceRolesAndGrantsAdded();
     }
 
     @Test
@@ -176,7 +178,7 @@ public class AafTopicSetupServiceTest {
         aafService.shouldAddPerm(new DmaapPerm(TOPIC_PERM, ":topic." + topicFqtn, "pub"));
         aafService.shouldAddPerm(new DmaapPerm(TOPIC_PERM, ":topic." + topicFqtn, "sub"));
         aafService.shouldAddPerm(new DmaapPerm(TOPIC_PERM, ":topic." + topicFqtn, "view"));
-        aafService.shouldHaveNoRolesAndGrants();
+        aafService.shouldHaveNoNamespaceRolesAndGrantsAdded();
     }
 
     @Test
@@ -226,6 +228,72 @@ public class AafTopicSetupServiceTest {
         assertErrorStatus(apiError, NOT_FOUND);
     }
 
+    @Test
+    @Parameters({"200", "404"})
+    public void shouldremovePublisherSubscriberViewerPermissions(int aafServiceReturnedCode) {
+        aafService.givenReturnCode(aafServiceReturnedCode);
+
+        aafTopicSetupService.aafTopicCleanup(givenTopic(TOPIC_FQTN));
+
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "pub"));
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "sub"));
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "view"));
+    }
+
+    @Test
+    @Parameters({"200", "404"})
+    public void shouldRemoveNamespace(int aafServiceReturnedCode) {
+        aafService.givenReturnCode(aafServiceReturnedCode);
+        Topic topic = givenTopic(TOPIC_FQTN);
+
+        aafTopicSetupService.aafTopicCleanup(topic);
+
+        AafNamespace namespace = new AafNamespace(TOPIC_FQTN, IDENTITY);
+        aafService.shouldRemoveNamespace(namespace);
+    }
+
+    @Test
+    public void shouldRemoveOnlyPermissionsWhenCreateTopicRolesIsFalse() {
+        aafTopicSetupService = new AafTopicSetupService(aafService, dmaapService, false);
+
+        aafTopicSetupService.aafTopicCleanup(givenTopic(TOPIC_FQTN));
+
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "pub"));
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "sub"));
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + TOPIC_FQTN, "view"));
+        aafService.shouldNotRemoveNamespace();
+    }
+
+    @Test
+    public void shouldRemoveOnlyPermissionsWhenTopicFqtnDoesntStartWithNsRoot() {
+
+        String topicFqtn = "sample_topic";
+        aafTopicSetupService.aafTopicCleanup(givenTopic(topicFqtn));
+
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + topicFqtn, "pub"));
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + topicFqtn, "sub"));
+        aafService.shouldRemovePerm(new DmaapPerm(TOPIC_PERM, ":topic." + topicFqtn, "view"));
+        aafService.shouldNotRemoveNamespace();
+    }
+
+    @Test
+    public void shouldHandleExceptionWhenPermissionRemovalWasFailed() {
+        aafService.givenRemovePermStatus(INTERNAL_SERVER_ERROR);
+
+        ApiError apiError = aafTopicSetupService.aafTopicCleanup(givenTopic(TOPIC_FQTN));
+
+        assertErrorStatus(apiError, INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void shouldHandleExceptionWhenNamespaceRemovalWasFailed() {
+        aafService.givenRemoveNamespaceStatus(INTERNAL_SERVER_ERROR);
+
+        ApiError apiError = aafTopicSetupService.aafTopicCleanup(givenTopic(TOPIC_FQTN));
+
+        assertErrorStatus(apiError, INTERNAL_SERVER_ERROR);
+    }
+
     private Topic givenTopic(String topicFqtn) {
         Topic topic = new Topic();
         topic.setFqtn(topicFqtn);
@@ -243,14 +311,18 @@ public class AafTopicSetupServiceTest {
 
     private class AafServiceStub implements AafService {
 
-        private AafNamespace namespace;
-        private List<DmaapPerm> perms = newArrayList();
-        private List<AafRole> roles = newArrayList();
-        private List<DmaapGrant> grants = newArrayList();
+        private AafNamespace addedNamespace;
+        private AafNamespace removedNamespace;
+        private List<DmaapPerm> addedPerms = newArrayList();
+        private List<DmaapPerm> removedPerms = newArrayList();
+        private List<AafRole> addedRoles = newArrayList();
+        private List<DmaapGrant> addedGrants = newArrayList();
         private int addNamespaceStatus = CREATED;
         private int addGrantStatus = CREATED;
         private int addRoleStatus = CREATED;
         private int addPermStatus = CREATED;
+        private int removePermStatus = OK;
+        private int removeNamespaceStatus = OK;
 
         @Override
         public String getIdentity() {
@@ -259,13 +331,19 @@ public class AafTopicSetupServiceTest {
 
         @Override
         public int addPerm(DmaapPerm perm) {
-            this.perms.add(perm);
+            this.addedPerms.add(perm);
             return addPermStatus;
         }
 
         @Override
+        public int delPerm(DmaapPerm perm) {
+            removedPerms.add(perm);
+            return removePermStatus;
+        }
+
+        @Override
         public int addGrant(DmaapGrant grant) {
-            grants.add(grant);
+            addedGrants.add(grant);
             return addGrantStatus;
         }
 
@@ -281,14 +359,20 @@ public class AafTopicSetupServiceTest {
 
         @Override
         public int addRole(AafRole role) {
-            this.roles.add(role);
+            this.addedRoles.add(role);
             return addRoleStatus;
         }
 
         @Override
         public int addNamespace(AafNamespace namespace) {
-            this.namespace = namespace;
+            this.addedNamespace = namespace;
             return addNamespaceStatus;
+        }
+
+        @Override
+        public int delNamespace(AafNamespace namespace) {
+            this.removedNamespace = namespace;
+            return removeNamespaceStatus;
         }
 
         void givenReturnCode(int status) {
@@ -296,10 +380,16 @@ public class AafTopicSetupServiceTest {
             this.addGrantStatus = status;
             this.addRoleStatus = status;
             this.addPermStatus = status;
+            this.removePermStatus = status;
+            this.removeNamespaceStatus = status;
         }
 
         void givenAddNamespaceStatus(int addNamespaceStatus) {
             this.addNamespaceStatus = addNamespaceStatus;
+        }
+
+        void givenRemoveNamespaceStatus(int removeNamespaceStatus) {
+            this.removeNamespaceStatus = removeNamespaceStatus;
         }
 
         void givenAddGrantStatus(int addGrantStatus) {
@@ -314,25 +404,43 @@ public class AafTopicSetupServiceTest {
             this.addPermStatus = addPermStatus;
         }
 
+        void givenRemovePermStatus(int removePermStatus) {
+            this.removePermStatus = removePermStatus;
+        }
+
         void shouldAddPerm(DmaapPerm perm) {
-            assertTrue(perms.contains(perm));
+            assertTrue(addedPerms.contains(perm));
+        }
+
+        void shouldRemovePerm(DmaapPerm perm) {
+            assertTrue(removedPerms.contains(perm));
         }
 
         void shouldAddNamespace(AafNamespace namespace) {
-            assertEquals(namespace, this.namespace);
+            assertEquals(namespace, this.addedNamespace);
+        }
+
+        void shouldRemoveNamespace(AafNamespace namespace) {
+            assertEquals(namespace, this.removedNamespace);
         }
 
         void shouldAddRole(AafRole role) {
-            assertTrue(roles.contains(role));
+            assertTrue(addedRoles.contains(role));
         }
 
         void shouldAddGrant(DmaapGrant grant) {
-            assertTrue(grants.contains(grant));
+            assertTrue(addedGrants.contains(grant));
         }
 
-        void shouldHaveNoRolesAndGrants() {
-            assertTrue(this.grants.isEmpty());
-            assertTrue(this.roles.isEmpty());
+        void shouldHaveNoNamespaceRolesAndGrantsAdded() {
+            assertNull(this.addedNamespace);
+            assertTrue(this.addedGrants.isEmpty());
+            assertTrue(this.addedRoles.isEmpty());
         }
+
+        void shouldNotRemoveNamespace() {
+            assertNull(this.removedNamespace);
+        }
+
     }
 }

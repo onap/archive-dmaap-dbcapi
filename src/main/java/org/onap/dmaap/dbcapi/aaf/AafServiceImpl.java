@@ -106,6 +106,11 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
         return doPost(perm, "authz/perm", 201);
     }
 
+    @Override
+    public int delPerm(DmaapPerm perm) {
+        return 200;
+    }
+
     public int addGrant(DmaapGrant grant) {
         logger.info("entry: addGrant() ");
         return doPost(grant, "authz/role/perm", 201);
@@ -158,6 +163,11 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
     public int addNamespace(AafNamespace ns) {
         logger.info("entry: addNamespace() ");
         return doPost(ns, "authz/ns", 201);
+    }
+
+    @Override
+    public int delNamespace(AafNamespace ns) {
+        return 200;
     }
 
 
