@@ -22,58 +22,19 @@ package org.onap.dmaap.dbcapi.aaf;
 
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
-import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 public class AafServiceImpl extends BaseLoggingClass implements AafService {
 
-    private AafConnection aaf;
-    private AafService.ServiceType ctype;
-    private String aafURL;
+    private String aafUrl;
     private String identity;
-    private boolean useAAF = false;
+    private boolean useAAF;
+    private AafConnection aafConnection;
 
-    public AafServiceImpl(AafService.ServiceType t) {
-        DmaapConfig p = (DmaapConfig) DmaapConfig.getConfig();
-        aafURL = p.getProperty("aaf.URL", "https://authentication.domain.netset.com:8100/proxy/");
-        initAafService(t);
-    }
-
-    private void initAafService(AafService.ServiceType t) {
-        DmaapConfig p = (DmaapConfig) DmaapConfig.getConfig();
-        useAAF = "true".equalsIgnoreCase(p.getProperty("UseAAF", "false"));
-        logger.info("AafService initAafService: useAAF=" + useAAF);
-
-        ctype = t;
-        aaf = new AafConnection(getCred(true));
-    }
-
-    private String getCred(boolean wPwd) {
-        String mechIdProperty;
-        String secretProperty;
-        DmaapConfig p = (DmaapConfig) DmaapConfig.getConfig();
-        AafDecrypt decryptor = new AafDecrypt();
-
-        if (ctype == AafService.ServiceType.AAF_Admin) {
-            mechIdProperty = "aaf.AdminUser";
-            secretProperty = "aaf.AdminPassword";
-        } else if (ctype == AafService.ServiceType.AAF_TopicMgr) {
-            mechIdProperty = "aaf.TopicMgrUser";
-            secretProperty = "aaf.TopicMgrPassword";
-        } else {
-            logger.error("Unexpected case for AAF credential type: " + ctype);
-            return null;
-        }
-        identity = p.getProperty(mechIdProperty, "noMechId@domain.netset.com");
-
-        String encPwd = p.getProperty(secretProperty, "notSet");
-
-        String pwd = decryptor.decrypt(encPwd);
-
-        if (wPwd) {
-            return identity + ":" + pwd;
-        } else {
-            return identity;
-        }
+    AafServiceImpl(boolean useAaf, String aafUrl, String identity, AafConnection aafConnection) {
+        this.useAAF = useAaf;
+        this.aafUrl = aafUrl;
+        this.identity = identity;
+        this.aafConnection = aafConnection;
     }
 
     @Override
@@ -130,18 +91,18 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
     private int doPost(AafObject obj, String uri, int expect) {
         int rc;
         logger.info("entry: doPost() ");
-        String pURL = aafURL + uri;
+        String pURL = aafUrl + uri;
         logger.info("doPost: useAAF=" + useAAF);
         if (useAAF) {
             logger.info("doPost: " + obj.toJSON());
-            rc = aaf.postAaf(obj, pURL);
+            rc = aafConnection.postAaf(obj, pURL);
         } else {
             rc = expect;
         }
         switch (rc) {
             case 401:
             case 403:
-                errorLogger.error(DmaapbcLogMessageEnum.AAF_CREDENTIAL_ERROR, getCred(false));
+                errorLogger.error(DmaapbcLogMessageEnum.AAF_CREDENTIAL_ERROR, identity);
                 break;
             case 409:
                 logger.warn("Object for " + uri + " already exists. Possible conflict.");
@@ -160,17 +121,17 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
 
     private int doDelete(AafObject obj, String uri, int expect) {
         int rc;
-        String pURL = aafURL + uri;
+        String pURL = aafUrl + uri;
         if (useAAF) {
             logger.info("doDelete: " + obj.toJSON());
-            rc = aaf.delAaf(obj, pURL);
+            rc = aafConnection.delAaf(obj, pURL);
         } else {
             rc = expect;
         }
         switch (rc) {
             case 401:
             case 403:
-                errorLogger.error(DmaapbcLogMessageEnum.AAF_CREDENTIAL_ERROR, getCred(false));
+                errorLogger.error(DmaapbcLogMessageEnum.AAF_CREDENTIAL_ERROR, identity);
                 break;
             case 404:
                 logger.warn("Object not found...ignore");
@@ -185,4 +146,13 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
 
         return rc;
     }
+
+    String getAafUrl() {
+        return aafUrl;
+    }
+
+    boolean isUseAAF() {
+        return useAAF;
+    }
+
 }

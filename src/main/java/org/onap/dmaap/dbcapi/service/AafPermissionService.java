@@ -21,7 +21,6 @@
 package org.onap.dmaap.dbcapi.service;
 
 import org.onap.dmaap.dbcapi.aaf.AafService;
-import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
 import org.onap.dmaap.dbcapi.aaf.AafUserRole;
 import org.onap.dmaap.dbcapi.aaf.DmaapGrant;
 import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
@@ -32,15 +31,11 @@ import org.onap.dmaap.dbcapi.model.MR_Client;
 
 import static java.lang.String.format;
 
-public class AafPermissionService extends BaseLoggingClass {
+class AafPermissionService extends BaseLoggingClass {
 
     private static final String INSTANCE_PREFIX = ":topic.";
     private final AafService aafService;
     private final DmaapService dmaapService;
-
-    public AafPermissionService() {
-        this(new AafServiceImpl(AafService.ServiceType.AAF_TopicMgr), new DmaapService());
-    }
 
     AafPermissionService(AafService aafService, DmaapService dmaapService) {
         this.aafService = aafService;

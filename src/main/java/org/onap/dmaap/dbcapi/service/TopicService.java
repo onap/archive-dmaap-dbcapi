@@ -23,7 +23,7 @@
 package org.onap.dmaap.dbcapi.service;
 
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
-import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
+import org.onap.dmaap.dbcapi.aaf.AafServiceFactory;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
@@ -71,7 +71,7 @@ public class TopicService extends BaseLoggingClass {
         this(DatabaseClass.getTopics(), new MR_ClientService(), (DmaapConfig) DmaapConfig.getConfig(),
                 new MR_ClusterService(), new DcaeLocationService(), new MirrorMakerService(),
                 new AafTopicSetupService(
-                        new AafServiceImpl(ServiceType.AAF_TopicMgr),
+                        new AafServiceFactory().initAafService(ServiceType.AAF_TopicMgr),
                         dmaapSvc,
                         "true".equalsIgnoreCase(DmaapConfig.getConfig().getProperty("aaf.CreateTopicRoles", "true"))));
 

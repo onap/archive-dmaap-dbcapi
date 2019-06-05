@@ -23,7 +23,7 @@
 package org.onap.dmaap.dbcapi.service;
 
 import org.onap.dmaap.dbcapi.aaf.AafService.ServiceType;
-import org.onap.dmaap.dbcapi.aaf.AafServiceImpl;
+import org.onap.dmaap.dbcapi.aaf.AafServiceFactory;
 import org.onap.dmaap.dbcapi.client.MrProvConnection;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
@@ -49,7 +49,7 @@ public class MR_ClientService extends BaseLoggingClass {
     private Map<String, DcaeLocation> locations = DatabaseClass.getDcaeLocations();
     private DmaapService dmaap = new DmaapService();
     private AafPermissionService aafPermissionService =
-            new AafPermissionService(new AafServiceImpl(ServiceType.AAF_TopicMgr), dmaap);
+            new AafPermissionService(new AafServiceFactory().initAafService(ServiceType.AAF_TopicMgr), dmaap);
     private String centralCname;
 
     public MR_ClientService() {
@@ -84,7 +84,6 @@ public class MR_ClientService extends BaseLoggingClass {
         }
         return results;
     }
-
 
     public MR_Client getMr_Client(String key, ApiError apiError) {
         MR_Client c = mr_clients.get(key);
