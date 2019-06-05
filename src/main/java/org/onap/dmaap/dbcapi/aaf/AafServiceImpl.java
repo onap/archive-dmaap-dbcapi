@@ -25,10 +25,12 @@ import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 
 public class AafServiceImpl extends BaseLoggingClass implements AafService {
 
-    private String aafUrl;
-    private String identity;
-    private boolean useAAF;
-    private AafConnection aafConnection;
+    private static final int CREATED = 201;
+    private static final int OK = 200;
+    private final String aafUrl;
+    private final String identity;
+    private final boolean useAAF;
+    private final AafConnection aafConnection;
 
     AafServiceImpl(boolean useAaf, String aafUrl, String identity, AafConnection aafConnection) {
         this.useAAF = useAaf;
@@ -45,47 +47,47 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
     @Override
     public int addPerm(DmaapPerm perm) {
         logger.info("entry: addPerm() ");
-        return doPost(perm, "authz/perm", 201);
+        return doPost(perm, "authz/perm", CREATED);
     }
 
     @Override
     public int delPerm(DmaapPerm perm) {
-        return 200;
+        return OK;
     }
 
     @Override
     public int addGrant(DmaapGrant grant) {
         logger.info("entry: addGrant() ");
-        return doPost(grant, "authz/role/perm", 201);
+        return doPost(grant, "authz/role/perm", CREATED);
     }
 
     @Override
     public int addUserRole(AafUserRole ur) {
         logger.info("entry: addUserRole() ");
-        return doPost(ur, "authz/userRole", 201);
+        return doPost(ur, "authz/userRole", CREATED);
     }
 
     @Override
     public int delGrant(DmaapGrant grant) {
         logger.info("entry: delGrant() ");
-        return doDelete(grant, "authz/role/:" + grant.getRole() + "/perm", 200);
+        return doDelete(grant, "authz/role/:" + grant.getRole() + "/perm", OK);
     }
 
     @Override
     public int addRole(AafRole role) {
         logger.info("entry: addRole() ");
-        return doPost(role, "authz/role", 201);
+        return doPost(role, "authz/role", CREATED);
     }
 
     @Override
     public int addNamespace(AafNamespace ns) {
         logger.info("entry: addNamespace() ");
-        return doPost(ns, "authz/ns", 201);
+        return doPost(ns, "authz/ns", CREATED);
     }
 
     @Override
     public int delNamespace(AafNamespace ns) {
-        return 200;
+        return OK;
     }
 
     private int doPost(AafObject obj, String uri, int expect) {
@@ -136,7 +138,7 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
             case 404:
                 logger.warn("Object not found...ignore");
                 break;
-            case 200:
+            case OK:
                 logger.info("expected response");
                 break;
             default:
