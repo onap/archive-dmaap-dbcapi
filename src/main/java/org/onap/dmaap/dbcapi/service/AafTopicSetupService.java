@@ -72,6 +72,7 @@ class AafTopicSetupService extends BaseLoggingClass {
             }
 
         } catch (TopicSetupException ex) {
+            logger.error("Exception in topic setup {}", ex.getMessage());
             return new ApiError(ex.getCode(), ex.getMessage(), ex.getFields());
         }
         return okStatus();
