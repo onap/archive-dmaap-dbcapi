@@ -71,9 +71,10 @@ class AafTopicSetupService extends BaseLoggingClass {
                 grantPermToRole(subRole, viewPerm);
             }
 
-        } catch (TopicSetupException ex) {
-            return new ApiError(ex.getCode(), ex.getMessage(), ex.getFields());
-        }
+		} catch (TopicSetupException ex) {
+			logger.error("Exception in topic setup", ex.getMessage());
+			return new ApiError(ex.getCode(), ex.getMessage(), ex.getFields());
+		}
         return okStatus();
     }
 
