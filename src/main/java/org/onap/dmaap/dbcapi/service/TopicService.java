@@ -246,11 +246,16 @@ public class TopicService extends BaseLoggingClass {
             apiError.setFields("fqtn");
             return null;
         }
+
+        ApiError topicSetupError = aafTopicSetupService.aafTopicCleanup(topic);
+        updateApiError(apiError, topicSetupError);
+        if (apiError.getCode() >= 400) {
+            return null;
+        }
+
         ArrayList<MR_Client> clients = new ArrayList<MR_Client>(clientService.getAllMrClients(pubId));
         for (Iterator<MR_Client> it = clients.iterator(); it.hasNext(); ) {
             MR_Client c = it.next();
-
-
             clientService.removeMr_Client(c.getMrClientId(), false, apiError);
             if (!apiError.is2xx()) {
                 return null;

@@ -42,12 +42,16 @@ import java.util.Map;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.google.common.collect.Lists.newArrayList;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.OK;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.onap.dmaap.dbcapi.model.ReplicationType.REPLICATION_GLOBAL_TO_FQDN;
@@ -75,6 +79,7 @@ public class TopicServiceTest {
     public void setUp() throws Exception {
         given(dmaapConfig.getProperty("MR.globalHost", "global.host.not.set")).willReturn(GLOBAL_MR_HOST);
         given(aafTopicSetupService.aafTopicSetup(any(Topic.class))).willReturn(new ApiError(200, "OK"));
+        given(aafTopicSetupService.aafTopicCleanup(any(Topic.class))).willReturn(new ApiError(200, "OK"));
         createTopicService();
     }
 
@@ -129,7 +134,7 @@ public class TopicServiceTest {
         Topic topic = topicService.getTopic(TOPIC_FQTN, apiError);
 
         assertThat(topic, hasCorrectFqtn(TOPIC_FQTN));
-        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+        assertEquals(OK.getStatusCode(), apiError.getCode());
     }
 
     @Test
@@ -151,7 +156,7 @@ public class TopicServiceTest {
         Topic topic = topicService.getTopic("not_existing", apiError);
 
         assertNull(topic);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), apiError.getCode());
+        assertEquals(NOT_FOUND.getStatusCode(), apiError.getCode());
     }
 
     @Test
@@ -162,7 +167,7 @@ public class TopicServiceTest {
         Topic addedTopic = topicService.addTopic(newTopic, apiError, true);
 
         assertSame(newTopic, addedTopic);
-        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+        assertEquals(OK.getStatusCode(), apiError.getCode());
         assertNotNull(topicService.getTopic(addedTopic.getFqtn(), new ApiError()));
     }
 
@@ -187,7 +192,7 @@ public class TopicServiceTest {
         Topic secondAddedTopic = topicService.addTopic(addedTopic, apiError, true);
 
         assertSame(addedTopic, secondAddedTopic);
-        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+        assertEquals(OK.getStatusCode(), apiError.getCode());
         assertNotNull(topicService.getTopic(secondAddedTopic.getFqtn(), new ApiError()));
     }
 
@@ -200,7 +205,7 @@ public class TopicServiceTest {
         ApiError apiError = new ApiError();
         Topic addedTopic = topicService.addTopic(newTopic, apiError, true);
 
-        assertEquals(Response.Status.OK.getStatusCode(), apiError.getCode());
+        assertEquals(OK.getStatusCode(), apiError.getCode());
         assertEquals(GLOBAL_MR_HOST, addedTopic.getGlobalMrURL());
     }
 
@@ -216,6 +221,63 @@ public class TopicServiceTest {
 
         assertEquals(500, apiError.getCode());
         assertNull(addedTopic);
+    }
+
+    @Test
+    public void removeTopic_shouldFailIfTopicDoesNotExist() {
+        ApiError apiError = new ApiError();
+
+        Topic removedTopic = topicService.removeTopic("not_existing_fqtn", apiError);
+
+        assertNull(removedTopic);
+        assertEquals(NOT_FOUND.getStatusCode(), apiError.getCode());
+        assertTrue(topicService.getTopics().containsKey(TOPIC_FQTN));
+    }
+
+    @Test
+    public void removeTopic_shouldExecuteAafCleanup() {
+        ApiError apiError = new ApiError();
+
+        Topic removedTopic = topicService.removeTopic(TOPIC_FQTN, apiError);
+
+        then(aafTopicSetupService).should().aafTopicCleanup(removedTopic);
+        assertEquals(OK.getStatusCode(), apiError.getCode());
+    }
+
+    @Test
+    public void removeTopic_shouldRemoveEachMrClientAssignedToTopic() {
+        ApiError apiError = new ApiError();
+        MR_Client mrClient = new MR_Client();
+        mrClient.setMrClientId("mrClientId");
+
+        given(clientService.getAllMrClients(TOPIC_FQTN)).willReturn(newArrayList(mrClient));
+
+        topicService.removeTopic(TOPIC_FQTN, apiError);
+
+        then(clientService).should().removeMr_Client(mrClient.getMrClientId(), false, apiError);
+        assertEquals(OK.getStatusCode(), apiError.getCode());
+    }
+
+    @Test
+    public void removeTopic_shouldRemoveTopicFromCache() {
+        ApiError apiError = new ApiError();
+
+        topicService.removeTopic(TOPIC_FQTN, apiError);
+
+        assertTrue(topicService.getTopics().isEmpty());
+        assertEquals(OK.getStatusCode(), apiError.getCode());
+    }
+
+    @Test
+    public void removeTopic_shouldFailIfAafCleanupWasFailed() {
+        ApiError apiError = new ApiError();
+        given(aafTopicSetupService.aafTopicCleanup(any(Topic.class))).willReturn(new ApiError(404, "sth went wrong"));
+
+        Topic removedTopic = topicService.removeTopic(TOPIC_FQTN, apiError);
+
+        assertNull(removedTopic);
+        assertEquals(404, apiError.getCode());
+        assertTrue(topicService.getTopics().containsKey(TOPIC_FQTN));
     }
 
     private void createTopicService() {

@@ -77,6 +77,10 @@ class AafTopicSetupService extends BaseLoggingClass {
         return okStatus();
     }
 
+    ApiError aafTopicCleanup(Topic topic) {
+        return okStatus();
+    }
+
     private String getTopicsNsRoot() throws TopicSetupException {
         String nsr = dmaapService.getDmaap().getTopicNsRoot();
         if (nsr == null) {
