@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e4e14116_a245c446",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/service/AafTopicSetupService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 2729
+      },
+      "writtenOn": "2019-06-06T09:07:30Z",
+      "side": 1,
+      "message": "You\u0027re risking here NumberFormatException if the value given in config is not parsable to int. As this is quite easy to provide wrong configuration I wonder if it\u0027s not better to handle this case? (Return deafult 0 value, or return ApiError)",
+      "revId": "f0779c3fa7fe8e80848ce9fa709a1e16afcd59ae",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
