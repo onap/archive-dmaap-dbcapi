@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Tomasz Kaminski <tomasz.kaminski@nokia.com>
+Code-Review+1: Pawel Kasperkiewicz <pawel.kasperkiewicz@nokia.com>
+Code-Review+2: Dominic Lunanuova <dgl@research.att.com>
+Submitted-by: Dominic Lunanuova <dgl@research.att.com>
+Submitted-at: Thu, 06 Jun 2019 17:08:00 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/dmaap/dbcapi/+/89473
+Project: dmaap/dbcapi
+Branch: refs/heads/master
