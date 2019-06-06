@@ -16,6 +16,24 @@
       "revId": "f0779c3fa7fe8e80848ce9fa709a1e16afcd59ae",
       "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "2d55fe5b_15865c4a",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/service/AafTopicSetupService.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 180,
+      "author": {
+        "id": 4401
+      },
+      "writtenOn": "2019-06-06T10:23:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e4e14116_a245c446",
+      "revId": "f0779c3fa7fe8e80848ce9fa709a1e16afcd59ae",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
     }
   ]
 }
