@@ -39,8 +39,6 @@ public interface AafService {
 
     int addUserRole(AafUserRole ur);
 
-    int delGrant(DmaapGrant grant);
-
     int addRole(AafRole role);
 
     int addNamespace(AafNamespace ns);

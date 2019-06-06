@@ -130,32 +130,6 @@ public class AafPermissionServiceTest {
         assertOkStatus(apiError);
     }
 
-    @Test
-    @Parameters({"200", "404"})
-    public void shouldRevokeActionPermissionForClientRole(int aafServiceReturnedCode) {
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm(TOPIC_PERM, ":topic." + FQTN, PUB_ACTION), ROLE);
-        given(mrClient.getClientRole()).willReturn(ROLE);
-        given(aafService.delGrant(grant)).willReturn(aafServiceReturnedCode);
-
-        ApiError apiError = aafPermissionService.revokeClientPerms(mrClient);
-
-        then(aafService).should().delGrant(grant);
-        then(mrClient).should().setStatus(VALID);
-        assertOkStatus(apiError);
-    }
-
-    @Test
-    public void shouldReturnErrorStatusWhenPermissionWasNotRevokedFromRole() {
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm(TOPIC_PERM, ":topic." + FQTN, PUB_ACTION), ROLE);
-        given(mrClient.getClientRole()).willReturn(ROLE);
-        given(aafService.delGrant(grant)).willReturn(INTERNAL_SERVER_ERROR);
-
-        ApiError apiError = aafPermissionService.revokeClientPerms(mrClient);
-
-        then(mrClient).should().setStatus(INVALID);
-        assertErrorStatus(apiError, INTERNAL_SERVER_ERROR);
-    }
-
     private void assertErrorStatus(ApiError apiError, int code) {
         assertEquals(code, apiError.getCode());
     }

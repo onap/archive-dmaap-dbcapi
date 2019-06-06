@@ -72,9 +72,7 @@ public class TopicService extends BaseLoggingClass {
                 new MR_ClusterService(), new DcaeLocationService(), new MirrorMakerService(),
                 new AafTopicSetupService(
                         new AafServiceFactory().initAafService(ServiceType.AAF_TopicMgr),
-                        dmaapSvc,
-                        "true".equalsIgnoreCase(DmaapConfig.getConfig().getProperty("aaf.CreateTopicRoles", "true"))));
-
+                        dmaapSvc, (DmaapConfig) DmaapConfig.getConfig()));
     }
 
     TopicService(Map<String, Topic> mr_topics, MR_ClientService clientService, DmaapConfig p,

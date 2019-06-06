@@ -74,12 +74,6 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
     }
 
     @Override
-    public int delGrant(DmaapGrant grant) {
-        logger.info("entry: delGrant() ");
-        return doDelete(grant, "authz/role/:" + grant.getRole() + "/perm", OK);
-    }
-
-    @Override
     public int addRole(AafRole role) {
         logger.info("entry: addRole() ");
         return doPost(role, "authz/role", CREATED);
