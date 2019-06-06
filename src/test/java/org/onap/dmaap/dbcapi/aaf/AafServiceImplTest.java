@@ -114,16 +114,6 @@ public class AafServiceImplTest {
     }
 
     @Test
-    public void shouldDeleteDmaapGrant() {
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm("perm", "type", "action"), "roles");
-
-        int status = aafService.delGrant(grant);
-
-        then(aafConnection).should().delAaf(grant, AAF_URL + "authz/role/:" + grant.getRole() + "/perm");
-        assertEquals(OK, status);
-    }
-
-    @Test
     public void shouldNotConnectToAafDuringCreate() {
         aafService = new AafServiceImpl(false, AAF_URL, IDENTITY, aafConnection);
         DmaapPerm perm = new DmaapPerm("perm", "type", "action");
@@ -135,34 +125,12 @@ public class AafServiceImplTest {
     }
 
     @Test
-    public void shouldNotConnectToAafDuringDelete() {
-        aafService = new AafServiceImpl(false, AAF_URL, IDENTITY, aafConnection);
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm("perm", "type", "action"), "roles");
-
-        int status = aafService.delGrant(grant);
-
-        verifyZeroInteractions(aafConnection);
-        assertEquals(OK, status);
-    }
-
-    @Test
     @Parameters({"401", "403", "409", "200", "500"})
     public void shouldHandleCredentialErrorDuringCreate(int aafServiceReturnedCode) {
         given(aafConnection.postAaf(any(AafObject.class), anyString())).willReturn(aafServiceReturnedCode);
         DmaapPerm perm = new DmaapPerm("perm", "type", "action");
 
         int status = aafService.addPerm(perm);
-
-        assertEquals(aafServiceReturnedCode, status);
-    }
-
-    @Test
-    @Parameters({"401", "403", "404", "200", "500"})
-    public void shouldHandleCredentialErrorDuringDelete(int aafServiceReturnedCode) {
-        given(aafConnection.delAaf(any(AafObject.class), anyString())).willReturn(aafServiceReturnedCode);
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm("perm", "type", "action"), "roles");
-
-        int status = aafService.delGrant(grant);
 
         assertEquals(aafServiceReturnedCode, status);
     }

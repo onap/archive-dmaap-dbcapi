@@ -35,6 +35,7 @@ import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.model.Topic;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 import java.util.List;
 
@@ -58,6 +59,8 @@ public class AafTopicSetupServiceTest {
     private AafServiceStub aafService = new AafServiceStub();
     @Mock
     private DmaapService dmaapService;
+    @Mock
+    private DmaapConfig dmaapConfig;
     private AafTopicSetupService aafTopicSetupService;
 
     @Before
@@ -67,7 +70,9 @@ public class AafTopicSetupServiceTest {
         dmaap.setTopicNsRoot(TOPIC_NS_ROOT);
         given(dmaapService.getDmaap()).willReturn(dmaap);
         given(dmaapService.getTopicPerm()).willReturn(TOPIC_PERM);
-        aafTopicSetupService = new AafTopicSetupService(aafService, dmaapService, true);
+        given(dmaapConfig.getProperty("aaf.CreateTopicRoles", "true")).willReturn("true");
+        given(dmaapConfig.getProperty("MR.ClientDeleteLevel", "0")).willReturn("2");
+        aafTopicSetupService = new AafTopicSetupService(aafService, dmaapService, dmaapConfig);
     }
 
     @Test
@@ -159,7 +164,7 @@ public class AafTopicSetupServiceTest {
 
     @Test
     public void shouldCreateOnlyPermissionsWhenCreateTopicRolesIsFalse() {
-        aafTopicSetupService = new AafTopicSetupService(aafService, dmaapService, false);
+        given(dmaapConfig.getProperty("aaf.CreateTopicRoles", "true")).willReturn("false");
 
         aafTopicSetupService.aafTopicSetup(givenTopic(TOPIC_FQTN));
 
@@ -254,7 +259,7 @@ public class AafTopicSetupServiceTest {
 
     @Test
     public void shouldRemoveOnlyPermissionsWhenCreateTopicRolesIsFalse() {
-        aafTopicSetupService = new AafTopicSetupService(aafService, dmaapService, false);
+        given(dmaapConfig.getProperty("aaf.CreateTopicRoles", "true")).willReturn("false");
 
         aafTopicSetupService.aafTopicCleanup(givenTopic(TOPIC_FQTN));
 
@@ -292,6 +297,16 @@ public class AafTopicSetupServiceTest {
         ApiError apiError = aafTopicSetupService.aafTopicCleanup(givenTopic(TOPIC_FQTN));
 
         assertErrorStatus(apiError, INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void shouldNotPerformCleanupWhenDeletelevelIsLessThanTwo() {
+        given(dmaapConfig.getProperty("MR.ClientDeleteLevel", "0")).willReturn("0");
+
+        ApiError apiError = aafTopicSetupService.aafTopicCleanup(givenTopic(TOPIC_FQTN));
+
+        aafService.shouldNotPerformCleanup();
+        assertOkStatus(apiError);
     }
 
     private Topic givenTopic(String topicFqtn) {
@@ -349,11 +364,6 @@ public class AafTopicSetupServiceTest {
 
         @Override
         public int addUserRole(AafUserRole ur) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public int delGrant(DmaapGrant grant) {
             throw new UnsupportedOperationException();
         }
 
@@ -442,5 +452,9 @@ public class AafTopicSetupServiceTest {
             assertNull(this.removedNamespace);
         }
 
+        void shouldNotPerformCleanup() {
+            shouldNotRemoveNamespace();
+            assertTrue(removedPerms.isEmpty());
+        }
     }
 }
