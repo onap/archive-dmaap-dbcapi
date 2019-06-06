@@ -23,10 +23,13 @@ package org.onap.dmaap.dbcapi.aaf;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 
+import static java.lang.String.format;
+
 public class AafServiceImpl extends BaseLoggingClass implements AafService {
 
     private static final int CREATED = 201;
     private static final int OK = 200;
+    private static final String FORCE = "?force=true";
     private final String aafUrl;
     private final String identity;
     private final boolean useAAF;
@@ -51,8 +54,11 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
     }
 
     @Override
-    public int delPerm(DmaapPerm perm) {
-        return OK;
+    public int delPerm(DmaapPerm perm, boolean force) {
+        logger.info("entry: delPerm()");
+        return doDelete(new AafEmpty(), format(
+                "authz/perm/%s/%s/%s%s",
+                perm.getPermission(), perm.getPtype(), perm.getAction(), force ? FORCE : ""), OK);
     }
 
     @Override
@@ -86,8 +92,11 @@ public class AafServiceImpl extends BaseLoggingClass implements AafService {
     }
 
     @Override
-    public int delNamespace(AafNamespace ns) {
-        return OK;
+    public int delNamespace(AafNamespace ns, boolean force) {
+        logger.info("entry: delNamespace()");
+        return doDelete(new AafEmpty(), format(
+                "authz/ns/%s%s",
+                ns.getName(), force ? FORCE : ""), OK);
     }
 
     private int doPost(AafObject obj, String uri, int expect) {

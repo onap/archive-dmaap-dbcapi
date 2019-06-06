@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2017 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,30 +20,9 @@
 
 package org.onap.dmaap.dbcapi.aaf;
 
-/*
- * this service uses the AAF REST API endpoints to provision values in AAF
- */
-public interface AafService {
-    enum ServiceType {
-        AAF_Admin,
-        AAF_TopicMgr
+class AafEmpty extends AafObject {
+    @Override
+    String toJSON() {
+        return "";
     }
-
-    String getIdentity();
-
-    int addPerm(DmaapPerm perm);
-
-    int delPerm(DmaapPerm perm, boolean force);
-
-    int addGrant(DmaapGrant grant);
-
-    int addUserRole(AafUserRole ur);
-
-    int delGrant(DmaapGrant grant);
-
-    int addRole(AafRole role);
-
-    int addNamespace(AafNamespace ns);
-
-    int delNamespace(AafNamespace ns, boolean force);
 }

@@ -33,6 +33,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(JUnitParamsRunner.class)
@@ -164,5 +165,45 @@ public class AafServiceImplTest {
         int status = aafService.delGrant(grant);
 
         assertEquals(aafServiceReturnedCode, status);
+    }
+
+    @Test
+    public void shouldDeletePermission() {
+        DmaapPerm perm = new DmaapPerm("permName", "type", "action");
+
+        int status = aafService.delPerm(perm, false);
+
+        then(aafConnection).should().delAaf(any(AafEmpty.class), eq(AAF_URL + "authz/perm/permName/type/action"));
+        assertEquals(OK, status);
+    }
+
+    @Test
+    public void shouldDeletePermissionWithForce() {
+        DmaapPerm perm = new DmaapPerm("permName", "type", "action");
+
+        int status = aafService.delPerm(perm, true);
+
+        then(aafConnection).should().delAaf(any(AafEmpty.class), eq(AAF_URL + "authz/perm/permName/type/action?force=true"));
+        assertEquals(OK, status);
+    }
+
+    @Test
+    public void shouldDeleteNamespace() {
+        AafNamespace ns = new AafNamespace("nsName", "ident");
+
+        int status = aafService.delNamespace(ns, false);
+
+        then(aafConnection).should().delAaf(any(AafEmpty.class), eq(AAF_URL + "authz/ns/nsName"));
+        assertEquals(OK, status);
+    }
+
+    @Test
+    public void shouldDeleteNamespaceWithForce() {
+        AafNamespace ns = new AafNamespace("nsName", "ident");
+
+        int status = aafService.delNamespace(ns, true);
+
+        then(aafConnection).should().delAaf(any(AafEmpty.class), eq(AAF_URL + "authz/ns/nsName?force=true"));
+        assertEquals(OK, status);
     }
 }
