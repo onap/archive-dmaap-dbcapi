@@ -114,16 +114,6 @@ public class AafServiceImplTest {
     }
 
     @Test
-    public void shouldDeleteDmaapGrant() {
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm("perm", "type", "action"), "roles");
-
-        int status = aafService.delGrant(grant);
-
-        then(aafConnection).should().delAaf(grant, AAF_URL + "authz/role/:" + grant.getRole() + "/perm");
-        assertEquals(OK, status);
-    }
-
-    @Test
     public void shouldNotConnectToAafDuringCreate() {
         aafService = new AafServiceImpl(false, AAF_URL, IDENTITY, aafConnection);
         DmaapPerm perm = new DmaapPerm("perm", "type", "action");
@@ -132,17 +122,6 @@ public class AafServiceImplTest {
 
         verifyZeroInteractions(aafConnection);
         assertEquals(CREATED, status);
-    }
-
-    @Test
-    public void shouldNotConnectToAafDuringDelete() {
-        aafService = new AafServiceImpl(false, AAF_URL, IDENTITY, aafConnection);
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm("perm", "type", "action"), "roles");
-
-        int status = aafService.delGrant(grant);
-
-        verifyZeroInteractions(aafConnection);
-        assertEquals(OK, status);
     }
 
     @Test
@@ -160,9 +139,9 @@ public class AafServiceImplTest {
     @Parameters({"401", "403", "404", "200", "500"})
     public void shouldHandleErrorDuringDelete(int aafServiceReturnedCode) {
         given(aafConnection.delAaf(any(AafObject.class), anyString())).willReturn(aafServiceReturnedCode);
-        DmaapGrant grant = new DmaapGrant(new DmaapPerm("perm", "type", "action"), "roles");
+        DmaapPerm perm = new DmaapPerm("perm", "type", "action");
 
-        int status = aafService.delGrant(grant);
+        int status = aafService.delPerm(perm, false);
 
         assertEquals(aafServiceReturnedCode, status);
     }
@@ -204,6 +183,26 @@ public class AafServiceImplTest {
         int status = aafService.delNamespace(ns, true);
 
         then(aafConnection).should().delAaf(any(AafEmpty.class), eq(AAF_URL + "authz/ns/nsName?force=true"));
+        assertEquals(OK, status);
+    }
+
+    @Test
+    public void shouldReturnExpectedCodeDuringPostWhenUseAffIsSetToFalse() {
+        aafService = new AafServiceImpl(false, AAF_URL, IDENTITY, aafConnection);
+        DmaapPerm perm = new DmaapPerm("perm", "type", "action");
+
+        int status = aafService.addPerm(perm);
+
+        assertEquals(CREATED, status);
+    }
+
+    @Test
+    public void shouldReturnExpectedCodeDuringDeleteWhenUseAffIsSetToFalse() {
+        aafService = new AafServiceImpl(false, AAF_URL, IDENTITY, aafConnection);
+        DmaapPerm perm = new DmaapPerm("perm", "type", "action");
+
+        int status = aafService.delPerm(perm, false);
+
         assertEquals(OK, status);
     }
 }

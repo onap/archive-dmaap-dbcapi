@@ -220,13 +220,6 @@ public class MR_ClientService extends BaseLoggingClass {
 
         }
 
-        // remove from AAF
-        if (deleteLevel >= 2) {
-            updateApiError(apiError, aafPermissionService.revokeClientPerms(client));
-            if (!apiError.is2xx()) {
-                return;
-            }
-        }
         // remove from DB
         if (deleteLevel >= 1) {
             mr_clients.remove(key);

@@ -56,10 +56,6 @@ class AafPermissionService extends BaseLoggingClass {
         return forEachClientAction(client, this::grantPermForClientRole);
     }
 
-    ApiError revokeClientPerms(MR_Client client) {
-        return forEachClientAction(client, this::revokePermForClientRole);
-    }
-
     private ApiError forEachClientAction(MR_Client client, PermissionUpdate permissionUpdate) {
         try {
             String instance = INSTANCE_PREFIX + client.getFqtn();
@@ -85,16 +81,6 @@ class AafPermissionService extends BaseLoggingClass {
             }
         } else {
             logger.warn("No Grant of {}|{}|{} because role is null ", dmaapService.getTopicPerm(), instance, action);
-        }
-    }
-
-    private void revokePermForClientRole(String clientRole, String instance, String action) throws PermissionServiceException {
-        DmaapPerm perm = new DmaapPerm(dmaapService.getTopicPerm(), instance, action);
-        DmaapGrant g = new DmaapGrant(perm, clientRole);
-        int code = aafService.delGrant(g);
-        if (code != 200 && code != 404) {
-            throw new PermissionServiceException(code, format("Revoke of %s|%s|%s failed for %s",
-                    dmaapService.getTopicPerm(), instance, action, clientRole));
         }
     }
 

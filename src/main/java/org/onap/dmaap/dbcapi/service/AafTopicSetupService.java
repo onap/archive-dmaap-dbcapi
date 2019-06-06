@@ -27,19 +27,21 @@ import org.onap.dmaap.dbcapi.aaf.DmaapPerm;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.Topic;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 import static java.lang.String.format;
+import static org.apache.commons.lang3.StringUtils.isNumeric;
 
 class AafTopicSetupService extends BaseLoggingClass {
 
     private final AafService aafService;
     private final DmaapService dmaapService;
-    private final boolean createTopicRoles;
+    private final DmaapConfig dmaapConfig;
 
-    AafTopicSetupService(AafService aafService, DmaapService dmaapService, boolean createTopicRoles) {
+    AafTopicSetupService(AafService aafService, DmaapService dmaapService, DmaapConfig dmaapConfig) {
         this.aafService = aafService;
         this.dmaapService = dmaapService;
-        this.createTopicRoles = createTopicRoles;
+        this.dmaapConfig = dmaapConfig;
     }
 
     ApiError aafTopicSetup(Topic topic) {
@@ -55,7 +57,7 @@ class AafTopicSetupService extends BaseLoggingClass {
             // For backwards compatibility, only do this if the feature is enabled.
             // Also, if the namespace of the topic is a foreign namespace, (i.e. not the same as our root ns)
             // then we likely don't have permission to create sub-ns and Roles so don't try.
-            if (createTopicRoles && topic.getFqtn().startsWith(getTopicsNsRoot())) {
+            if (createTopicRoles() && topic.getFqtn().startsWith(getTopicsNsRoot())) {
                 createNamespace(topic);
 
                 AafRole pubRole = createRole(topic, "publisher");
@@ -79,17 +81,17 @@ class AafTopicSetupService extends BaseLoggingClass {
 
     ApiError aafTopicCleanup(Topic topic) {
         try {
+            if (performCleanup()) {
+                String instance = ":topic." + topic.getFqtn();
+                String topicPerm = dmaapService.getTopicPerm();
+                removePermission(topicPerm, instance, "pub");
+                removePermission(topicPerm, instance, "sub");
+                removePermission(topicPerm, instance, "view");
 
-            String instance = ":topic." + topic.getFqtn();
-            String topicPerm = dmaapService.getTopicPerm();
-            removePermission(topicPerm, instance, "pub");
-            removePermission(topicPerm, instance, "sub");
-            removePermission(topicPerm, instance, "view");
-
-            if (createTopicRoles && topic.getFqtn().startsWith(getTopicsNsRoot())) {
-                removeNamespace(topic);
+                if (createTopicRoles() && topic.getFqtn().startsWith(getTopicsNsRoot())) {
+                    removeNamespace(topic);
+                }
             }
-
         } catch (TopicSetupException ex) {
             return new ApiError(ex.getCode(), ex.getMessage(), ex.getFields());
         }
@@ -171,7 +173,20 @@ class AafTopicSetupService extends BaseLoggingClass {
         return new ApiError(200, "OK");
     }
 
+    private boolean createTopicRoles() {
+        return "true".equalsIgnoreCase(dmaapConfig.getProperty("aaf.CreateTopicRoles", "true"));
+    }
+
+    private boolean performCleanup() {
+        String deleteLevel = dmaapConfig.getProperty("MR.ClientDeleteLevel", "0");
+        if (!isNumeric(deleteLevel)) {
+            return false;
+        }
+        return Integer.valueOf(deleteLevel) >= 2;
+    }
+
     private class TopicSetupException extends Exception {
+
         private final int code;
         private final String message;
         private final String fields;
