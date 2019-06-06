@@ -336,7 +336,7 @@ public class AafTopicSetupServiceTest {
         }
 
         @Override
-        public int delPerm(DmaapPerm perm) {
+        public int delPerm(DmaapPerm perm, boolean force) {
             removedPerms.add(perm);
             return removePermStatus;
         }
@@ -370,7 +370,7 @@ public class AafTopicSetupServiceTest {
         }
 
         @Override
-        public int delNamespace(AafNamespace namespace) {
+        public int delNamespace(AafNamespace namespace, boolean force) {
             this.removedNamespace = namespace;
             return removeNamespaceStatus;
         }

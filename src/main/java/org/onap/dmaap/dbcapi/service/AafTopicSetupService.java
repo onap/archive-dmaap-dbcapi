@@ -149,7 +149,7 @@ class AafTopicSetupService extends BaseLoggingClass {
 
     private void removePermission(String permission, String instance, String action) throws TopicSetupException {
         DmaapPerm perm = new DmaapPerm(permission, instance, action);
-        int rc = aafService.delPerm(perm);
+        int rc = aafService.delPerm(perm, true);
         if (rc != 200 && rc != 404) {
             throw new TopicSetupException(500,
                     format("Unexpected response from AAF: %d permission=%s instance=%s action=%s",
@@ -159,7 +159,7 @@ class AafTopicSetupService extends BaseLoggingClass {
 
     private void removeNamespace(Topic topic) throws TopicSetupException {
         AafNamespace ns = new AafNamespace(topic.getFqtn(), aafService.getIdentity());
-        int rc = aafService.delNamespace(ns);
+        int rc = aafService.delNamespace(ns, true);
         if (rc != 200 && rc != 404) {
             throw new TopicSetupException(500,
                     format("Unexpected response from AAF: %d namespace=%s identity=%s",
