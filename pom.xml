@@ -28,7 +28,7 @@
 	<parent>
 		<groupId>org.onap.oparent</groupId>
 		<artifactId>oparent</artifactId>
-		<version>1.2.2</version>
+		<version>2.0.0</version>
 		<relativePath/>
 	</parent>
 	<build>
@@ -124,17 +124,6 @@
 			</plugin>
 
 			<!-- for Staging -->
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>ecomp-staging</serverId>
-                    <nexusUrl>${nexusproxy}</nexusUrl>
-                    <stagingProfileId>176c31dfe190a</stagingProfileId>
-                </configuration>
-            </plugin>
 
 
 		<!-- for Distribution Managment -->
@@ -393,7 +382,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jettyVersion>9.4.12.RC2</jettyVersion> 
 		<eelf.version>1.0.0</eelf.version>
-		<artifact.version>1.0.29-SNAPSHOT</artifact.version>
+		<artifact.version>1.0.30-SNAPSHOT</artifact.version>
 		<junit.version>4.12</junit.version>
 		<!-- SONAR -->
 		<jacoco.version>0.7.7.201606060606</jacoco.version>
