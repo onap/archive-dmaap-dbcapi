@@ -64,11 +64,11 @@ public class MR_Client extends DmaapObject {
 		this.clientRole = cR;
 		int i = 0;
 		
-		if ( this.action == null ) {
+		if (a != null) {
 			this.action = new String[a.length];
-		}
-		for( String aa : a ) {
-			this.action[i++] = new String( aa );
+			for (String aa : a) {
+				this.action[i++] = new String(aa);
+			}
 		}
 		this.setStatus( DmaapObject_Status.NEW );
 		this.mrClientId = DatabaseClass.getNextClientId();

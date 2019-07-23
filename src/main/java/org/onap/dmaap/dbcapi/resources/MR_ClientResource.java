@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,8 +24,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
-import java.util.List;
+import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
+import org.onap.dmaap.dbcapi.model.ApiError;
+import org.onap.dmaap.dbcapi.model.MR_Client;
+import org.onap.dmaap.dbcapi.model.MR_Cluster;
+import org.onap.dmaap.dbcapi.model.Topic;
+import org.onap.dmaap.dbcapi.service.MR_ClientService;
+import org.onap.dmaap.dbcapi.service.MR_ClusterService;
+import org.onap.dmaap.dbcapi.service.TopicService;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -39,15 +45,7 @@ import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
-import org.onap.dmaap.dbcapi.model.ApiError;
-import org.onap.dmaap.dbcapi.model.MR_Client;
-import org.onap.dmaap.dbcapi.model.MR_Cluster;
-import org.onap.dmaap.dbcapi.model.Topic;
-import org.onap.dmaap.dbcapi.service.MR_ClientService;
-import org.onap.dmaap.dbcapi.service.MR_ClusterService;
-import org.onap.dmaap.dbcapi.service.TopicService;
+import java.util.List;
 
 import static javax.ws.rs.core.Response.Status.NO_CONTENT;
 
@@ -118,15 +116,7 @@ public class MR_ClientResource extends BaseLoggingClass {
 			logger.warn(apiError.toString());
 			return responseBuilder.error(apiError);
 		}
-		String url = cluster.getFqdn();
-		if ( url == null || url.isEmpty() ) {
 
-			apiError.setCode(Status.BAD_REQUEST.getStatusCode());
-			apiError.setMessage("FQDN not set for dcaeLocation " + client.getDcaeLocationName() );
-			apiError.setFields("fqdn");
-			logger.warn(apiError.toString());
-			return responseBuilder.error(apiError);
-		}
 		TopicService topics = new TopicService();
 
 		Topic t = topics.getTopic(client.getFqtn(), apiError);
@@ -189,12 +179,6 @@ public class MR_ClientResource extends BaseLoggingClass {
 	public Response deleteMr_Client(@PathParam("subId") String id){
 		ApiError apiError = new ApiError();
 
-		try {
-			checker.required( "clientId", id);
-		} catch ( RequiredFieldException rfe ) {
-			logger.debug( rfe.getApiError().toString() );
-			return responseBuilder.error(rfe.getApiError());
-		}
 		mr_clientService.removeMr_Client(id, true, apiError);
 		if (apiError.is2xx()) {
 			return responseBuilder.success(NO_CONTENT.getStatusCode(), null);
@@ -212,15 +196,9 @@ public class MR_ClientResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	@Path("/{subId}")
-	public Response test(@PathParam("subId") String id) {
+	public Response getMr_Client(@PathParam("subId") String id) {
 		ApiError apiError = new ApiError();
 
-		try {
-			checker.required( "clientId", id);
-		} catch ( RequiredFieldException rfe ) {
-			logger.debug( rfe.getApiError().toString() );
-			return responseBuilder.error(rfe.getApiError());
-		}
 		MR_Client nClient =  mr_clientService.getMr_Client(id, apiError);
 		if (apiError.is2xx()) {
 			return responseBuilder.success(nClient);
