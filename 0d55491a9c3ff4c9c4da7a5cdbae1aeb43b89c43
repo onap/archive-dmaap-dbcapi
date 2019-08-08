@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "24e4edb9_5f83b7b5",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/service/AafTopicSetupService.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 2493
+      },
+      "writtenOn": "2019-08-08T05:35:40Z",
+      "side": 1,
+      "message": "Please remove tabs and format it.",
+      "revId": "0d55491a9c3ff4c9c4da7a5cdbae1aeb43b89c43",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
