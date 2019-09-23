@@ -2,7 +2,7 @@
  * ============LICENSE_START=======================================================
  * org.onap.dmaap
  * ================================================================================
- * Copyright (C) 2018 AT&T Intellectual Property. All rights reserved.
+ * Copyright (C) 2019 Nokia Intellectual Property. All rights reserved.
  * ================================================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,166 +19,266 @@
  */
 package org.onap.dmaap.dbcapi.resources;
 
+import static javax.ws.rs.client.Entity.entity;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
-
+import org.eclipse.jetty.http.HttpStatus;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.test.JerseyTest;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onap.dmaap.dbcapi.database.DatabaseClass;
+import org.onap.dmaap.dbcapi.model.ApiError;
 import org.onap.dmaap.dbcapi.model.DcaeLocation;
+import org.onap.dmaap.dbcapi.model.DmaapObject.DmaapObject_Status;
 import org.onap.dmaap.dbcapi.model.MR_Cluster;
 import org.onap.dmaap.dbcapi.testframework.DmaapObjectFactory;
 
+public class MR_ClusterResourceTest {
 
-public class MR_ClusterResourceTest extends JerseyTest {
+	private static final DmaapObjectFactory DMAAP_OBJECT_FACTORY = new DmaapObjectFactory();
+	private static FastJerseyTestContainer testContainer;
+	private static final String MR_CLUSTERS_TARGET = "mr_clusters";
 
-	static DmaapObjectFactory factory = new DmaapObjectFactory();
+	@BeforeClass
+	public static void setUpClass() throws Exception {
+		DatabaseClass.getDmaap().init(DMAAP_OBJECT_FACTORY.genDmaap());
 
-	@Override
-	protected Application configure() {
-
-		return new ResourceConfig()
-				.register( MR_ClusterResource.class )
-				.register( DcaeLocationResource.class );
+		testContainer = new FastJerseyTestContainer(new ResourceConfig()
+			.register(MR_ClusterResource.class).register(DcaeLocationResource.class));
+		testContainer.init();
 	}
 
-	private static final String  fmt = "%24s: %s%n";
+	@AfterClass
+	public static void tearDownClass() throws Exception {
+		testContainer.destroy();
+        /*TODO: Cannot cleanup yet until still other Resources tests depends on the static DB content
 
-
-
+        DatabaseClass.getDmaap().remove();
+        DatabaseClass.clearDatabase();*/
+	}
 
 	@Before
-	public void init() throws Exception {
+	public void setUpClusterAndLocation() {
 		DatabaseClass.clearDatabase();
 	}
-/*
-	@After
-	public void tearDown() throws Exception {
-	}
-*/
-
 
 	@Test
-	public void GetTest() {
-		Response resp = target( "mr_clusters").request().get( Response.class );
-		System.out.println( "GET MR_Cluster resp=" + resp.getStatus() );
+	public void getMrClusters_shouldReturnEmptyList_whenNoMrClustersInDataBase() {
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).request().get(Response.class);
 
-		assertTrue( resp.getStatus() == 200 );
-	}
-	@Test
-	public void PostTest() {
-		MR_Cluster cluster = factory.genMR_Cluster( "central" );
-		Entity<MR_Cluster> reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
-		Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
-		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		if (resp.getStatus() != 409 ) {
-			assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300);
-		}
-		resp = target( "mr_clusters").
-				path( cluster.getDcaeLocationName()).request().get( Response.class );
-		System.out.println( "GET MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-	
-		assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300 );
-		
+		//then
+		assertEquals(HttpStatus.OK_200, resp.getStatus());
+		assertTrue(resp.hasEntity());
+
+		List<MR_Cluster> mrClusters = resp.readEntity(new GenericType<List<MR_Cluster>>() {
+		});
+		assertTrue(mrClusters.isEmpty());
 	}
 
 	@Test
-	public void PutTest() {
+	public void addMrCluster_shouldReturnValidationError_whenDcaeLocationNameNotProvided() {
+		//given
+		Entity<MR_Cluster> requestEntity = entity(new MR_Cluster(), APPLICATION_JSON);
 
-		try {
-			DcaeLocation loc = factory.genDcaeLocation( "central" );
-			Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
-			Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
-			System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ));
-			if ( resp.getStatus() != 409 ) {
-				assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300 );
-			}
-		} catch (Exception e ) {
-		}
-		
-		String h[] = {"host4", "host5", "host6" };
-		MR_Cluster cluster = factory.genMR_Cluster( "central" );
-		Entity<MR_Cluster> reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
-		Response resp = target( "mr_clusters").request().post( reqEntity, Response.class );
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).request().post(requestEntity, Response.class);
 
-		// first, add it 
-		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		if( resp.getStatus() != 409 ) {
-			assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300 );
-		}
-
-		// now change a field
-
-		reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
-
-		// update with incorrect key
-		resp = target( "mr_clusters")
-					.path( "invalidLocationNam" )
-					.request()
-					.put( reqEntity, Response.class );
-		System.out.println( "PUT MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
-		assertTrue( resp.getStatus() == 404 );
-
-		// update with correct key
-		resp = target( "mr_clusters")
-					.path( cluster.getDcaeLocationName())
-					.request()
-					.put( reqEntity, Response.class );
-		System.out.println( "PUT MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity(String.class));
-		assertTrue( resp.getStatus() >= 200 && resp.getStatus() < 300 );
+		//then
+		assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		ApiError errorObj = resp.readEntity(ApiError.class);
+		assertEquals("dcaeLocationName", errorObj.getFields());
 	}
 
 	@Test
-	public void DelTest() {
+	public void addMrCluster_shouldReturnValidationError_whenFqdnNotProvided() {
+		//given
+		MR_Cluster mr_cluster = new MR_Cluster();
+		mr_cluster.setDcaeLocationName("central-cloud");
+		Entity<MR_Cluster> requestEntity = entity(mr_cluster, APPLICATION_JSON);
 
-		try {
-			DcaeLocation loc = factory.genDcaeLocation( "edge" );
-			Entity<DcaeLocation> reqEntity = Entity.entity( loc, MediaType.APPLICATION_JSON );
-			Response resp = target( "dcaeLocations").request().post( reqEntity, Response.class );
-			System.out.println( "POST dcaeLocation resp=" + resp.getStatus() + " " + resp.readEntity( String.class ));
-			if ( resp.getStatus() != 409 ) {
-				assertTrue( resp.getStatus() == 201 );
-			}
-		} catch (Exception e ) {
-		}
-		
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).request().post(requestEntity, Response.class);
 
-		MR_Cluster cluster = factory.genMR_Cluster( "edge" );
-
-		Response resp = target( "mr_clusters").
-				path( cluster.getDcaeLocationName()).
-				request().
-				delete( Response.class );
-
-		// confirm cluster is not there 
-		System.out.println( "DELETE MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 404 );
-		
-		// now, add it
-		Entity<MR_Cluster> reqEntity = Entity.entity( cluster, MediaType.APPLICATION_JSON );
-		 resp = target( "mr_clusters").request().post( reqEntity, Response.class );
-
-		
-		System.out.println( "POST MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 201 || resp.getStatus() == 200 );
-	
-		// now really delete it 
-		 resp = target( "mr_clusters").
-				path( cluster.getDcaeLocationName()).
-				request().
-				delete( Response.class );
-		System.out.println( "DELETE MR_Cluster resp=" + resp.getStatus() + " " + resp.readEntity( String.class ) );
-		assertTrue( resp.getStatus() == 204 );
-
+		//then
+		assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		ApiError errorObj = resp.readEntity(ApiError.class);
+		assertEquals("fqdn", errorObj.getFields());
 	}
 
+	@Test
+	public void addMrCluster_shouldAddMrClusterToDatabase() {
+		//given
+		MR_Cluster mrCluster = DMAAP_OBJECT_FACTORY.genMR_Cluster("edge");
+		Entity<MR_Cluster> requestEntity = entity(mrCluster, APPLICATION_JSON);
 
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).request().post(requestEntity, Response.class);
+
+		//then
+		assertEquals(HttpStatus.CREATED_201, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		MR_Cluster respEntity = resp.readEntity(MR_Cluster.class);
+		assertTrue(respEntity.isStatusValid());
+	}
+
+	@Test
+	public void addMrCluster_shouldReturnInvalidMrCluster_whenClusterCannotBeAddedToDatabase() {
+		//given
+		MR_Cluster mrCluster = DMAAP_OBJECT_FACTORY.genMR_Cluster("central");
+		Entity<MR_Cluster> requestEntity = entity(mrCluster, APPLICATION_JSON);
+		prepareDcaeLocationForCentralCluster();
+
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).request().post(requestEntity, Response.class);
+
+		//then
+		assertEquals(HttpStatus.OK_200, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		MR_Cluster respEntity = resp.readEntity(MR_Cluster.class);
+		assertFalse(respEntity.isStatusValid());
+	}
+
+	private void prepareDcaeLocationForCentralCluster() {
+		DcaeLocation centralDcaeLoc = DMAAP_OBJECT_FACTORY.genDcaeLocation("central");
+		centralDcaeLoc.setStatus(DmaapObject_Status.VALID);
+		DatabaseClass.getDcaeLocations().put(centralDcaeLoc.getDcaeLocationName(), centralDcaeLoc);
+	}
+
+	@Test
+	public void updateMrCluster_shouldReturnValidationError_whenDcaeLocationNameNotProvided() {
+		//given
+		Entity<MR_Cluster> requestEntity = entity(new MR_Cluster(), APPLICATION_JSON);
+
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).path("clusterId")
+			.request().put(requestEntity, Response.class);
+
+		//then
+		assertEquals(HttpStatus.BAD_REQUEST_400, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		ApiError errorObj = resp.readEntity(ApiError.class);
+		assertEquals("dcaeLocationName", errorObj.getFields());
+	}
+
+	@Test
+	public void updateMrCluster_shouldReturnApiError_whenMrClusterWithGivenIdNotFound() {
+		//given
+		MR_Cluster mr_cluster = new MR_Cluster();
+		mr_cluster.setDcaeLocationName("central-cloud");
+		Entity<MR_Cluster> requestEntity = entity(mr_cluster, APPLICATION_JSON);
+
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).path("notExistingMrCluster")
+			.request().put(requestEntity, Response.class);
+
+		//then
+		assertEquals(HttpStatus.NOT_FOUND_404, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		ApiError errorObj = resp.readEntity(ApiError.class);
+		assertEquals("dcaeLocationName", errorObj.getFields());
+	}
+
+	@Test
+	public void updateMrCluster_shouldUpdateClusterInDatabase() {
+		//given
+		String newReplicationGroup = "someNewReplicationGroup";
+		prepareDcaeLocationForEdgeCluster();
+		String clusterId = provideExistingEdgeMRClusterId();
+		MR_Cluster changedMrCluster = DMAAP_OBJECT_FACTORY.genMR_Cluster("edge");
+		changedMrCluster.setReplicationGroup(newReplicationGroup);
+		Entity<MR_Cluster> requestEntity = entity(changedMrCluster, APPLICATION_JSON);
+
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).path(clusterId)
+			.request().put(requestEntity, Response.class);
+
+		//then
+		assertEquals(HttpStatus.CREATED_201, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		MR_Cluster respEntity = resp.readEntity(MR_Cluster.class);
+		assertTrue(respEntity.isStatusValid());
+		assertEquals(newReplicationGroup, respEntity.getReplicationGroup());
+	}
+
+	private void prepareDcaeLocationForEdgeCluster() {
+		DcaeLocation edgeDcaeLoc = DMAAP_OBJECT_FACTORY.genDcaeLocation("edge");
+		edgeDcaeLoc.setStatus(DmaapObject_Status.VALID);
+		DatabaseClass.getDcaeLocations().put(edgeDcaeLoc.getDcaeLocationName(), edgeDcaeLoc);
+	}
+
+	private String provideExistingEdgeMRClusterId() {
+		MR_Cluster cluster = DMAAP_OBJECT_FACTORY.genMR_Cluster("edge");
+		cluster.setStatus(DmaapObject_Status.VALID);
+		DatabaseClass.getMr_clusters().put(cluster.getDcaeLocationName(), cluster);
+		return cluster.getDcaeLocationName();
+	}
+
+	@Test
+	public void deleteMr_Cluster_shouldReturnApiError_whenTryingToDeleteNotExistingMrCluster() {
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).path("notExistingClusterId")
+			.request().delete(Response.class);
+
+		//then
+		assertEquals(HttpStatus.NOT_FOUND_404, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		ApiError errorObj = resp.readEntity(ApiError.class);
+		assertEquals("dcaeLocationName", errorObj.getFields());
+	}
+
+	@Test
+	public void deleteMr_Cluster_shouldRemoveMrClusterFromDatabase() {
+		//given
+		String clusterId = provideExistingEdgeMRClusterId();
+
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).path(clusterId)
+			.request().delete(Response.class);
+
+		//then
+		assertEquals(HttpStatus.NO_CONTENT_204, resp.getStatus());
+		assertFalse(resp.hasEntity());
+	}
+
+	@Test
+	public void getMr_Cluster_shouldReturnApiError_whenTryingToGetNotExistingMrCluster() {
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).path("notExistingClusterId")
+			.request().get(Response.class);
+
+		//then
+		assertEquals(HttpStatus.OK_200, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		ApiError errorObj = resp.readEntity(ApiError.class);
+		assertEquals("dcaeLocationName", errorObj.getFields());
+	}
+
+	@Test
+	public void getMr_Cluster_shouldReturnExistingMrCluster() {
+		//given
+		String clusterId = provideExistingEdgeMRClusterId();
+
+		//when
+		Response resp = testContainer.target(MR_CLUSTERS_TARGET).path(clusterId)
+			.request().get(Response.class);
+
+		//then
+		assertEquals(HttpStatus.CREATED_201, resp.getStatus());
+		assertTrue(resp.hasEntity());
+		MR_Cluster mrCluster = resp.readEntity(MR_Cluster.class);
+		assertEquals(clusterId, mrCluster.getDcaeLocationName());
+	}
 
 }
-
