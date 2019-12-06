@@ -69,6 +69,13 @@ public class DmaapService  extends BaseLoggingClass  {
 				" multisite=" + multiSite +
 				" noEnvironmentPrefix=" + noEnvironmentPrefix
 				);
+
+		Dmaap dmaap = dmaapholder.get();
+		logger.info( "DmaapService object values: " +
+				" dmaapName=" + dmaap.getDmaapName() +
+				" drProvURL=" + dmaap.getDrProvUrl() +
+				" version="+ dmaap.getVersion()
+				);
 		
 	}
 	

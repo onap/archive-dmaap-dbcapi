@@ -57,7 +57,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	public DrProvConnection() {
 		provURL = new DmaapService().getDmaap().getDrProvUrl();
 		if ( provURL.length() < 1 ) {
-			errorLogger.error( DmaapbcLogMessageEnum.PREREQ_DMAAP_OBJECT, "getDrProvUrl");
+			errorLogger.error( DmaapbcLogMessageEnum.PREREQ_DMAAP_OBJECT, "DmaapService().getDmaap().getDrProvUrl()");
 		}
 		DmaapConfig p = (DmaapConfig)DmaapConfig.getConfig();
 		provApi = p.getProperty( "DR.provApi", "ONAP" );
@@ -457,9 +457,15 @@ public class DrProvConnection extends BaseLoggingClass {
             }
             
 		} catch (ConnectException ce) {
-			errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
-            err.setCode( 500 );
-        	err.setMessage("Backend connection refused");
+			if ( unit_test.equals( "Yes" ) ) {
+				err.setCode(200);
+				err.setMessage( "simulated response");
+				logger.info( "artificial 200 response from doPutFeed because unit_test =" + unit_test );
+			} else {
+				errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage());
+				err.setCode(500);
+				err.setMessage("Backend connection refused");
+			}
 		} catch (SocketException se) {
 			errorLogger.error( DmaapbcLogMessageEnum.SOCKET_EXCEPTION, se.getMessage(), "response from Prov server" );
 			err.setCode( 500 );
@@ -635,11 +641,16 @@ public class DrProvConnection extends BaseLoggingClass {
             
 
 		} catch (ConnectException ce) {
-	
-            errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
-            err.setCode( 500 );
-        	err.setMessage("Backend connection refused");
-        	logger.error(ce.getMessage(), ce);
+			if ( unit_test.equals( "Yes" ) ) {
+				err.setCode(200);
+				err.setMessage( "simulated response");
+				logger.info( "artificial 200 response from doGetNodes because unit_test =" + unit_test );
+			} else {
+				errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage());
+				err.setCode(500);
+				err.setMessage("Backend connection refused");
+				logger.error(ce.getMessage(), ce);
+			}
 		} catch (Exception e) {
          	if ( unit_test.equals( "Yes" ) ) {
     				err.setCode(200);

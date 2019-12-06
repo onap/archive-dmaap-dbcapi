@@ -27,7 +27,6 @@ import io.swagger.annotations.ApiResponses;
 
 import java.util.List;
 
-import javax.jws.WebParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -90,7 +89,7 @@ public class FeedResource extends BaseLoggingClass {
 	    @ApiResponse( code = 400, message = "Error", response = ApiError.class )
 	})
 	public Response addFeed( 
-			@WebParam(name = "feed") Feed feed,
+			Feed feed,
 			@QueryParam("useExisting") String useExisting) {
 
 		ApiError apiError = new ApiError();
@@ -146,7 +145,7 @@ public class FeedResource extends BaseLoggingClass {
 	@Path("/{id}")
 	public Response updateFeed( 
 			@PathParam("id") String id,
-			@WebParam(name = "feed") Feed feed) {
+			Feed feed) {
 
 		FeedService feedService = new FeedService();
 		ApiError apiError = new ApiError();
