@@ -77,7 +77,8 @@ public class DR_PubResource extends BaseLoggingClass {
         };
         return responseBuilder.success(list);
 	}
-	
+
+
 	@POST
 	@ApiOperation( value = "return DR_Pub details", 
 	notes = "create a DR Publisher in the specified environment.", 

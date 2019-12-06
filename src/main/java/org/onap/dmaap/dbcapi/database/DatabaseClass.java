@@ -161,6 +161,8 @@ public class DatabaseClass extends BaseLoggingClass {
             public void init(Dmaap val) {
                 if (dmaap == null) {
                     dmaap = val;
+                } else {
+                    update(val);
                 }
             }
 
