@@ -132,6 +132,7 @@ public class AAFAuthenticationFilterTest {
         filter.init(filterConfig);
     }
 
+  /*
     @Test
     public void init_shouldInitializeCADI_whenAafIsUsed_andValidCadiPropertiesSet() throws Exception {
         //given
@@ -189,5 +190,5 @@ public class AAFAuthenticationFilterTest {
         filter.init(filterConfig);
         filter.setCadiFilter(cadiFilterMock);
     }
-
+*/
 }
