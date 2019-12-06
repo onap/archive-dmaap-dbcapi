@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import com.sun.security.auth.UserPrincipal;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.http.HttpServletRequest;
@@ -47,7 +48,6 @@ import org.onap.dmaap.dbcapi.model.Dmaap;
 import org.onap.dmaap.dbcapi.service.DmaapService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
 import org.onap.dmaap.dbcapi.util.PermissionBuilder;
-import sun.security.acl.PrincipalImpl;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AAFAuthorizationFilterTest {
@@ -162,7 +162,7 @@ public class AAFAuthorizationFilterTest {
     }
 
     private void configureServletRequest(String permission, String user, boolean isUserInRole) {
-        when(servletRequest.getUserPrincipal()).thenReturn(new PrincipalImpl(user));
+        when(servletRequest.getUserPrincipal()).thenReturn(new UserPrincipal(user));
         when(servletRequest.isUserInRole(permission)).thenReturn(isUserInRole);
     }
 

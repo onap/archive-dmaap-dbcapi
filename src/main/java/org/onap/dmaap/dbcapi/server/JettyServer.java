@@ -24,6 +24,8 @@ package org.onap.dmaap.dbcapi.server;
 
 import com.google.common.collect.Sets;
 import javax.servlet.DispatcherType;
+
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -71,7 +73,7 @@ public class JettyServer extends BaseLoggingClass {
 
             HttpConfiguration https_config = new HttpConfiguration(http_config);
             https_config.addCustomizer(new SecureRequestCustomizer());
-            SslContextFactory sslContextFactory = new SslContextFactory();
+            SslContextFactory sslContextFactory = new SslContextFactory.Server();
             sslContextFactory.setWantClientAuth(true);
 
             setUpKeystore(params, sslContextFactory);
@@ -79,25 +81,20 @@ public class JettyServer extends BaseLoggingClass {
 
             if (sslPort != 0) {
                 try (ServerConnector sslConnector = new ServerConnector(server,
-                    new SslConnectionFactory(sslContextFactory, "http/1.1"),
+                    new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
                     new HttpConnectionFactory(https_config))) {
                     sslConnector.setPort(sslPort);
-                    if (allowHttp) {
-                        logger.info("Starting httpConnector on port " + httpPort);
-                        logger.info("Starting sslConnector on port " + sslPort + " for https");
-                        server.setConnectors(new Connector[]{httpConnector, sslConnector});
-                    } else {
-                        logger.info("NOT starting httpConnector because HttpAllowed param is " + allowHttp);
-                        logger.info("Starting sslConnector on port " + sslPort + " for https");
-                        server.setConnectors(new Connector[]{sslConnector});
-                    }
+                    server.addConnector(sslConnector);
+                    serverLogger.info("Starting sslConnector on port " + sslPort + " for https");
                 }
             } else {
-                serverLogger.info("NOT starting sslConnector on port " + sslPort + " for https");
-                if (allowHttp) {
-                    serverLogger.info("Starting httpConnector on port " + httpPort);
-                    server.setConnectors(new Connector[]{httpConnector});
-                }
+                serverLogger.info("NOT starting sslConnector because InHttpsPort param is " + sslPort );
+            }
+            if (allowHttp) {
+                serverLogger.info("Starting httpConnector on port " + httpPort);
+                server.addConnector(httpConnector);
+            } else {
+                serverLogger.info("NOT starting httpConnector because HttpAllowed param is " + allowHttp);
             }
         }
 
