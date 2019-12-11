@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "b7d9e9de_29862801",
+        "filename": ".classpath",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 4405
+      },
+      "writtenOn": "2019-12-11T23:41:02Z",
+      "side": 1,
+      "message": "Might need to add .classpath to your gitignore file.",
+      "range": {
+        "startLine": 8,
+        "startChar": 6,
+        "endLine": 12,
+        "endChar": 14
+      },
+      "revId": "12c02e57dee44aadef7dbdf920276ef7b52a2b49",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": false
+    }
+  ]
+}
