@@ -128,19 +128,6 @@ public class DR_NodeResourceTest {
     }
 
     @Test
-    public void updateDr_Node_shouldReturnError_whenNoExistingFqdnProvided() {
-        DR_Node node = new DR_Node("fqdn", "location", "hostName", "1.0");
-        Entity<DR_Node> requestedEntity = entity(node, APPLICATION_JSON);
-
-        Response response = testContainer.target("dr_nodes")
-                .path("")
-                .request()
-                .put(requestedEntity, Response.class);
-
-        assertEquals(405, response.getStatus());
-    }
-
-    @Test
     public void updateDr_Node_shouldReturnError_whenDrNodeForUpdateDoesNotExistInDb() {
         DR_Node node = new DR_Node("fqdn", "location", "hostName", "1.0");
         Entity<DR_Node> requestedEntity = entity(node, APPLICATION_JSON);

@@ -132,6 +132,8 @@ public class AAFAuthenticationFilterTest {
         filter.init(filterConfig);
     }
 
+  /*
+   * See https://jira.onap.org/browse/DMAAP-1361  for why this is commented out
     @Test
     public void init_shouldInitializeCADI_whenAafIsUsed_andValidCadiPropertiesSet() throws Exception {
         //given
@@ -189,5 +191,5 @@ public class AAFAuthenticationFilterTest {
         filter.init(filterConfig);
         filter.setCadiFilter(cadiFilterMock);
     }
-
+*/
 }
