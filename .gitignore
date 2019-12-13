@@ -1,6 +1,6 @@
 debug-logs/
 logs/
-target/\
+target/
 .classpath
 
 /bin/
