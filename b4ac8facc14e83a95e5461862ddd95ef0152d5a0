@@ -1,0 +1,9 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Jessica Wagantall <jwagantall@linuxfoundation.org>
+Code-Review+2: Dominic Lunanuova <dgl@research.att.com>
+Code-Review+2: sunil unnava <su622b@att.com>
+Submitted-by: Dominic Lunanuova <dgl@research.att.com>
+Submitted-at: Fri, 10 Jan 2020 14:28:23 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/dmaap/dbcapi/+/100153
+Project: dmaap/dbcapi
+Branch: refs/heads/master
