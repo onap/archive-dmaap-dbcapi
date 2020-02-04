@@ -58,10 +58,19 @@ public class ConnectionFactory	{
 		Properties p = DmaapConfig.getConfig();
 		host = p.getProperty("DB.host", "dcae-pstg-write-ftl.domain.notset.com");
 		dbname = p.getProperty("DB.name", "dmaap");
-		dbuser = p.getProperty("DB.user", "dmaap_admin");
-		dbcr = p.getProperty("DB.cred", "test234-ftl");
+		dbuser = getValue(p, "DB.user", "dmaap_admin");
+		dbcr = getValue(p, "DB.cred", "test234-ftl");
 		schema = p.getProperty("DB.schema", "public");
 	}
+
+	private static String getValue(final Properties props, final String value, final String defaultValue) {
+		String prop = props.getProperty(value, defaultValue);
+		if (prop != null && prop.matches("[$][{].*[}]$")) {
+			return System.getenv(prop.substring(2, prop.length() - 1));
+		}
+		return prop;
+	}
+
 	public static ConnectionFactory getDefaultInstance() {
 		return(instance);
 	}
