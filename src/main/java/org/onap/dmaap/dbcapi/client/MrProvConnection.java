@@ -76,15 +76,24 @@ public class MrProvConnection extends BaseLoggingClass{
     
     
     public boolean makeTopicConnection( MR_Cluster cluster ) {
-        logger.info( "connect to cluster: " + cluster.getDcaeLocationName());
-    
+        boolean rc = false;
+    	logger.info( "connect to cluster: " + cluster.getDcaeLocationName());
+        
 
         provURL = cluster.getTopicProtocol() + "://" + cluster.getFqdn() + ":" + cluster.getTopicPort() + "/topics/create";
 
         if ( cluster.getTopicProtocol().equals( "https" ) ) {
-            return makeSecureConnection( provURL );
+            rc = makeSecureConnection( provURL );
+        } else {
+        	rc = makeConnection( provURL );
         }
-        return makeConnection( provURL );
+      	if ( rc  && unit_test.equals( "Yes" ) ) {
+      		// set timeouts low so we don't hold up unit tests in build process
+            uc.setReadTimeout(5);
+            uc.setConnectTimeout(5);   		
+      	}
+      	return rc;
+        
     }
 
     private boolean makeSecureConnection( String pURL ) {
