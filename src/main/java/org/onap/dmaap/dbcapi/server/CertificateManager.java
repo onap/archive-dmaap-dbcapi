@@ -53,6 +53,12 @@ public abstract class CertificateManager extends BaseLoggingClass{
 	private cmAttribute	trustStore;
 	protected boolean ready;
 
+	CertificateManager() {
+		keyStore = new cmAttribute();
+		trustStore = new cmAttribute();
+		ready = false;
+	}
+
 	public boolean isReady() {
 		return ready;
 	}

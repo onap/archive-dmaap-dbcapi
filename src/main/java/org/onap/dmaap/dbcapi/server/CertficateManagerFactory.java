@@ -39,7 +39,7 @@ public class CertficateManagerFactory extends BaseLoggingClass {
 
     public CertificateManager initCertificateManager() {
         boolean useCadi = "cadi".equalsIgnoreCase(dmaapConfig.getProperty("CertificateManagement", "legacy"));
-        logger.info("CertificateManagerFactory: useCadi=", useCadi);
+        logger.info("CertificateManagerFactory: useCadi=" + useCadi);
         
         if ( useCadi ) {
         	return new CadiCertificateManager( dmaapConfig );
