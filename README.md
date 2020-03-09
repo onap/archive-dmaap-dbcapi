@@ -57,9 +57,9 @@ The table below lists all the settings, default values (if not set), and shows a
 |-|-|-|-|
 | Property | Description | Default | ONAP Kubernetes Setting | 
 |-|-|-|-|
-|UseAAF                | Flag for whether AAF authz API is to be used            | false                                  | false |
+|UseAAF                | Flag for whether AAF authz API is to be used            | false                                  | true |
 |-|-|-|-|
-|csit                  | Flag for stubbing out many southbound calls in a CSIT environment | No                           | No |
+|UnitTest              | Indicates stub out some Southbound API for Unit Test
 |-|-|-|-|
 |DR.provhost           | FQDN of Data Router Provisioning Server (deprecated - now set via API) | notSet                  | dcae-drps.domain.not.set |
 |-|-|-|-|
@@ -98,7 +98,7 @@ The table below lists all the settings, default values (if not set), and shows a
 |-|-|-|-|
 |MR.projectID          | Value for some constructs of fully qualified topic names | 99999                                 | ONAP |
 |-|-|-|-|
-|MR.hostnameVerify     | Indicates if we want to relax hostname verification on SSL connection  | true                                 | false |
+|MR.hostnameVerify     | Indicates if we want hostname verification on SSL connection  | true                                 | false |
 |-|-|-|-|
 |MR.authentication     | Authentication method used when connecting to MR | none                                 | basicAuth |
 |                      | none = no creds sent (default)                   |  |  |
@@ -118,7 +118,6 @@ The table below lists all the settings, default values (if not set), and shows a
 |aaf.AdminPassword     | AAF credential of AdminUser                             | notSet                                 | demo123456! |
 |-|-|-|-|
 |aaf.NsOwnerIdentity     | AAF Identity to be used as topic Namespace owner      | notSet                                 | aaf_admin@people.osaaf.org |
-|topicNsRoot           | AAF namespace value used to create FQTN                 | org.onap.dcae.dmaap                    | org.onap.dcae.dmaap | 
 |-|-|-|-|
 |CredentialCodeKeyfile | location of the codec keyfile used to decrypt passwords | LocalKey                               | etc/LocalKey |
 |                      | in this properties file before they are passed to AAF   | LocalKey                               | etc/LocalKey |
@@ -151,8 +150,6 @@ The table below lists all the settings, default values (if not set), and shows a
 |-|-|-|-|
 |IntHttpsPort          | Internal port for https service (0 if no cert is avail) | 443                                    | 8443 |
 |-|-|-|-|
-|ExtHttpsPort          | Externally advertised port for https service (deprecated)| 443                                   | 443 |
-|-|-|-|-|
 |KeyStoreType          | Format of Java keystore                                 | jks                                    | jks |
 |-|-|-|-|
 |KeyStoreFile          | Path to java keystore                                   | etc/keystore                           | etc/keystore |
@@ -167,6 +164,11 @@ The table below lists all the settings, default values (if not set), and shows a
 |-|-|-|-|
 |TrustStorePassword    | Password for Trust Store                                |                                        | <provided by Certificate Authority> |
 |-|-|-|-|
-|QuiesceFile           | Path to file which signals needs to queiesce            |                                        | etc/SHUTDOWN |
+|QuiesceFile (deprecated)| Path to file which signals needs to queiesce            |                                        | etc/SHUTDOWN |
 |-|-|-|-|
-
+|csit (deprecated)     | Flag for stubbing out many southbound calls in a CSIT environment | No                           | No |
+|-|-|-|-|
+|topicNsRoot (deprecated)| AAF namespace value used to create FQTN                 | org.onap.dcae.dmaap                    | org.onap.dcae.dmaap | 
+|-|-|-|-|
+|ExtHttpsPort (deprecated)| Externally advertised port for https service (deprecated)| 443                                   | 443 |
+|-|-|-|-|
