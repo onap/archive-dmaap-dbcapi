@@ -177,18 +177,6 @@
 				</execution>
 			</executions>
 		</plugin>
- <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>3.0.0-M4</version>
-	<configuration>
-		<useSystemClassLoader>false</useSystemClassLoader>
-		<forkCount>0</forkCount>
-		<argLine>
-			--illegal-access=permit
-		</argLine>
-	</configuration>
-  </plugin>
 
 		 <plugin>
                     <groupId>org.jacoco</groupId>
@@ -212,6 +200,17 @@
                         </execution>
                     </executions>
                 </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.12.4</version>
+				<configuration>
+					<excludes>
+						<!-- exclude until junits updated <exclude>**/DME2*.java</exclude> -->
+					</excludes>
+					<!-- <skipTests>true</skipTests> -->
+				</configuration>
+			</plugin> 
 
 		</plugins>
 		<pluginManagement>
@@ -454,7 +453,7 @@
 		<sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**</sonar.exclusions>
 
 		<!-- for Distribution Management -->
-		<sitePath>/content/sites/site/org/onap/dmaap/buscontroller/${artifact.version}/${project.version}</sitePath>
+		<sitePath>/content/sites/site/org/onap/dmaap/dbcapi/${artifact.version}/${project.version}</sitePath>
 		<nexusproxy>https://nexus.onap.org</nexusproxy>
 	</properties>
 	<description>Data Movement as a Platform (DMaaP) Bus Controller provides a REST API for other DCAE infrastructure components to provision DMaaP resources.  A DMaaP resource is a Data Router Feed or a Message Router Topic, and their associated publishers and subscribers.</description>
