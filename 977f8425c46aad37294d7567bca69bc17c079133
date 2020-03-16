@@ -1,0 +1,8 @@
+Verified+1: ONAP Jobbuilder <onap-jobbuilder@jenkins.onap.org>
+Code-Review+1: Dominic Lunanuova <dgl@research.att.com>
+Code-Review+2: sunil unnava <su622b@att.com>
+Submitted-by: sunil unnava <su622b@att.com>
+Submitted-at: Mon, 16 Mar 2020 21:10:08 +0000
+Reviewed-on: https://gerrit.onap.org/r/c/dmaap/dbcapi/+/103767
+Project: dmaap/dbcapi
+Branch: refs/heads/master
