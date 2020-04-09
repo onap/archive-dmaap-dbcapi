@@ -1,5 +1,6 @@
 DMaaP Bus Controller REST API 1.1.0
 ===================================
+.. _offeredapis:
 
 .. toctree::
     :maxdepth: 3
