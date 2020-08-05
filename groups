@@ -1,4 +1,5 @@
 # UUID                                                                       	Group Name
 #
+22eb1a458f3f7de36d62077355331c989771a59b                                     	saml/onap-gerrit-dmaap-dbcapi-committers
 daebbf523be390041a1a9c0e340a6d833aae5043                                     	GitHub Replication
 ldap:cn=onap-gerrit-dmaap-dbcapi-committers,ou=Groups,dc=freestandards,dc=org	ldap/onap-gerrit-dmaap-dbcapi-committers
