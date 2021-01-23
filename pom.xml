@@ -19,442 +19,474 @@
   ============LICENSE_END============================================
   ECOMP is a trademark and service mark of AT&T Intellectual Property.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.onap.dmaap.dbcapi</groupId>
-	<artifactId>dbcapi</artifactId>
-	<version>${artifact.version}</version>
-	<name>dmaap-dbcapi</name>
-	<parent>
-		<groupId>org.onap.oparent</groupId>
-		<artifactId>oparent</artifactId>
-		<version>2.1.0</version>
-		<relativePath/>
-	</parent>
-	<build>
-		<finalName>dbcapi</finalName>
-		<resources>
-			<resource>
-				<directory>src/main/java/org/onap/dmaap/dbcapi/logging</directory>
-			</resource>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-		</resources>
-		<plugins>
-			<!-- reference: https://tech.homeaway.com/development/2016/06/02/generating-swagger-spec.html -->
-			<plugin>
-				<groupId>com.github.kongchen</groupId>
-				<artifactId>swagger-maven-plugin</artifactId>
-				<version>3.1.5</version>
-				<configuration>
-					<apiSources>
-						<apiSource>
-							<springmvc>false</springmvc>
-							<locations>
-								<location>org.onap.dmaap.dbcapi.resources</location>
-							</locations>
-							<schemes>
-								<scheme>http</scheme>
-								<scheme>https</scheme>
-							</schemes>
-							<host>www.[host]:[port]</host>
-							<basePath>/webapi</basePath>
-							<info>
-								<title>DMaaP Bus Controller REST API</title>
-								<version>1.1.0</version>
-								<description>
-									provides an API for OpenDCAE components which need to provision
-									underlying DMaaP technologies (Data Router and Message Router).
-									Primary clients for this API are anticipated to be the OpenDCAE
-									Controller, OpenDCAE Orchestrator, OpenDCAE Inventory and the
-									ECOMP Portal.
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-									Objects managed by DMaaP are deployed in a dcaeLocation which is a
-									unique identifier for an OpenStack tenant for a dcaeLayer,
-									opendcae-central (aka ecomp) or opendcae-local-ntc (aka edge).
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.onap.dmaap.dbcapi</groupId>
+    <artifactId>dbcapi</artifactId>
+    <version>${artifact.version}</version>
+    <name>dmaap-dbcapi</name>
 
-									A dcaeEnvironment (e.g. FTL or prod) has a single DMaaP. A
-									DMaaP is managed by a one or more stateless DMaaP Bus
-									Controller(s), though Bus Controller relies on PGaaS for
-									persistence. Each DMaaP has a single instance of Data Router,
-									which has 1 or more DR_Nodes deployed at each dcaeLocation. DR
-									Clients of type DR_Pub generally publish to a DR_Node that is
-									local to its dcaeLocation. Routing for a Feed is determined by
-									the dcaelocation of its DR_Sub clients.
+    <parent>
+        <groupId>org.onap.oparent</groupId>
+        <artifactId>oparent</artifactId>
+        <version>3.2.0</version>
+        <relativePath/>
+    </parent>
 
-									A DMaaP may have many Message Router instances. Each instance is
-									deployed as an MR_Cluster. One MR_Cluster is deployed at each
-									dcaeLocation. MR_Clients generally communicate to the
-									MR_Cluster at the same dcaeLocation. Replication of messages
-									between MR_Clusters is accomplished by MR Bridge, which is
-									provioned by DMaaP Bus Controller based on Topic attributes.
+    <description>Data Movement as a Platform (DMaaP) Bus Controller provides a REST API for other
+        DCAE infrastructure components to provision DMaaP resources. A DMaaP resource is a Data
+        Router Feed or a Message Router Topic, and their associated publishers and subscribers.
+    </description>
 
-									Therefore, the role of DMaaP Bus Controller is to support other
-									DCAE infrastructure components to dynamically provision DMaaP
-									services on behalf of DMaaP clients, and to assist in any
-									management or discovery activity of its clients.
+    <properties>
+        <swagger.version>1.5.19</swagger.version>
+        <log4j.version>2.13.3</log4j.version>
+        <jackson.version>2.9.5</jackson.version>
+        <jersey.version>2.29</jersey.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jettyVersion>9.4.36.v20210114</jettyVersion>
+        <eelf.version>1.0.0</eelf.version>
+        <artifact.version>2.0.3-SNAPSHOT</artifact.version>
+        <junit.version>4.12</junit.version>
+        <!-- SONAR -->
+        <sonar.language>java</sonar.language>
+        <sonar.skip>false</sonar.skip>
+        <sonar.surefire.reportsPath>${project.build.directory}/surefire-reports
+        </sonar.surefire.reportsPath>
+        <sonar.coverage.jacoco.xmlReportPaths>
+            ${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml
+        </sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.projectVersion>${project.version}</sonar.projectVersion>
+        <sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**
+        </sonar.exclusions>
 
-									A convention of this API is to return JSON responses per
-									OpenStack style.
-								</description>
-								<termsOfService>
-									http://www.apache.org/licenses/LICENSE-2.0
-								</termsOfService>
-								<contact>
-									<url>http://www.onap.org</url>
-								</contact>
-								<license>
-									<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-									<name>Licensed under the Apache License, Version 2.0</name>
-								</license>
-							</info>
-							<swaggerDirectory>target/generated-sources/</swaggerDirectory>
-						</apiSource>
-					</apiSources>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>compile</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+        <!-- for Distribution Management -->
+        <sitePath>/content/sites/site/org/onap/dmaap/dbcapi/${artifact.version}/${project.version}
+        </sitePath>
+        <nexusproxy>https://nexus.onap.org</nexusproxy>
+    </properties>
 
-			<!-- for Staging -->
+    <distributionManagement>
+        <site>
+            <id>ecomp-site</id>
+            <url>dav:${nexusproxy}${sitePath}</url>
+        </site>
+    </distributionManagement>
 
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-compiler-plugin</artifactId>
-			<version>3.8.0</version>
-			<configuration>
-				<release>11</release>
-			</configuration>
-		</plugin>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>${jersey.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
-		<!-- for Distribution Managment -->
-		<plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-site-plugin</artifactId>
-		  <version>3.6</version>
-		  <dependencies>
-			<dependency>
-			  <groupId>org.apache.maven.wagon</groupId>
-			  <artifactId>wagon-webdav-jackrabbit</artifactId>
-			  <version>2.10</version>
-			</dependency>
-		  </dependencies>
-		</plugin>
-
-		<!-- prevent SNAPSHOT dependencies -->
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-enforcer-plugin</artifactId>
-			<executions>
-				<execution>
-					<id>enforce-no-snapshots</id>
-					<goals>
-						<goal>enforce</goal>
-					</goals>
-					<configuration>
-						<rules>
-							<requireReleaseDeps>
-								<message>No Snapshots Allowed!</message>
-								<excludes>
-									<exclude>org.onap.aaf.authz:aaf-cadi-client</exclude>
-									<exclude>org.onap.aaf.authz:aaf-misc-env</exclude>
-									<exclude>org.onap.aaf.authz:aaf-cadi-aaf</exclude>
-									<exclude>org.onap.aaf.authz:aaf-auth-client</exclude>
-									<exclude>org.onap.aaf.authz:aaf-cadi-core</exclude>
-									<exclude>org.onap.aaf.authz:aaf-misc-rosetta</exclude>
-								</excludes>
-							</requireReleaseDeps>
-						</rules>
-						<fail>true</fail>
-					</configuration>
-				</execution>
-			</executions>
-		</plugin>
-
-		 <plugin>
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>prepare-agent</id>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>report</id>
-                            <goals>
-                                <goal>report</goal>
-                            </goals>
-                            <configuration>
-                                <dataFile>${project.build.directory}/code-coverage/jacoco.exec</dataFile>
-                                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.12.4</version>
-				<configuration>
-					<excludes>
-						<!-- exclude until junits updated <exclude>**/DME2*.java</exclude> -->
-					</excludes>
-					<!-- <skipTests>true</skipTests> -->
-				</configuration>
-			</plugin> 
-
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.apache.maven.plugins</groupId>
-										<artifactId>maven-dependency-plugin</artifactId>
-										<versionRange>[2.10,)</versionRange>
-										<goals>
-											<goal>copy-dependencies</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore/>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.glassfish.jersey</groupId>
-				<artifactId>jersey-bom</artifactId>
-				<version>${jersey.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-	<dependencies>
+    <dependencies>
         <dependency>
-			<groupId>org.onap.aaf.authz</groupId>
-			<artifactId>aaf-cadi-aaf</artifactId>
-			<version>2.1.7</version>
+            <groupId>org.onap.aaf.authz</groupId>
+            <artifactId>aaf-cadi-aaf</artifactId>
+            <version>2.1.7</version>
             <classifier>full</classifier>
         </dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-annotations</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-yaml</artifactId>
-			<version>${jackson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-core</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-<!-- DMAAP-656:
-   - override this dependency because it utilized a third party
-   - lib called com.google.guava:20.0 which had severe security threat identified.
- -->
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>24.1.1-jre</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-core</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-jersey2-jaxrs</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>${swagger.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet-core</artifactId>
-			<!-- use the following artifactId if you don't need servlet 2.x compatibility -->
-			<!-- artifactId>jersey-container-servlet</artifactId -->
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-moxy</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>${jettyVersion}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>${jettyVersion}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlets</artifactId>
-			<version>${jettyVersion}</version>
-			<scope>compile</scope>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.11</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.2.5</version>
-		</dependency>
-		<dependency>
-			<groupId>com.att.eelf</groupId>
-			<artifactId>eelf-core</artifactId>
-			<version>${eelf.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.22</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
-			<!-- use this if compatibility issues with jetty artifactId:
-			<artifactId>jersey-test-framework-provider-jetty</artifactId>
-        	<version>${jersey.version}</version>
-			-->
-			<artifactId>jersey-test-framework-provider-jdk-http</artifactId>
-        	<version>2.29.1</version>
-		</dependency>
-		<dependency>
-    		<groupId>org.glassfish.jersey.inject</groupId>
-    		<artifactId>jersey-hk2</artifactId>
-			<version>2.29.1</version>
-		</dependency>
-		<dependency>
-				<!-- use 2.3.1 to avoid this issue: https://github.com/eclipse-ee4j/jaxb-ri/issues/1222 -->
-  				<groupId>javax.xml.bind</groupId>
-  				<artifactId>jaxb-api</artifactId>
-  				<version>2.3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>javax.activation-api</artifactId>
-			<version>1.2.0</version>
-		</dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-core</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+        <!-- DMAAP-656:
+           - override this dependency because it utilized a third party
+           - lib called com.google.guava:20.0 which had severe security threat identified.
+         -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>24.1.1-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>${swagger.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet-core</artifactId>
+            <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
+            <!-- artifactId>jersey-container-servlet</artifactId -->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jettyVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlet</artifactId>
+            <version>${jettyVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-servlets</artifactId>
+            <version>${jettyVersion}</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.14</version>
+        </dependency>
+        <dependency>
+            <groupId>com.att.eelf</groupId>
+            <artifactId>eelf-core</artifactId>
+            <version>${eelf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+            <!-- use this if compatibility issues with jetty artifactId:
+            <artifactId>jersey-test-framework-provider-jetty</artifactId>
+                <version>${jersey.version}</version>
+            -->
+            <artifactId>jersey-test-framework-provider-jdk-http</artifactId>
+            <version>2.29.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>2.29.1</version>
+        </dependency>
+        <dependency>
+            <!-- use 2.3.1 to avoid this issue: https://github.com/eclipse-ee4j/jaxb-ri/issues/1222 -->
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>javax.activation-api</artifactId>
+            <version>1.2.0</version>
+        </dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-    <dependency>
-      <groupId>pl.pragmatists</groupId>
-      <artifactId>JUnitParams</artifactId>
-      <version>1.1.0</version>
-      <scope>test</scope>
-    </dependency>
-<dependency>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.0.0-M3</version>
-</dependency>
-  </dependencies>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
-				<configuration>
-					<failOnError>false</failOnError>
-					<doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
-					<docletArtifact>
-						<groupId>org.umlgraph</groupId>
-						<artifactId>umlgraph</artifactId>
-						<version>5.6</version>
-					</docletArtifact>
-					<additionalparam>-views</additionalparam>
-					<useStandardDocletOptions>true</useStandardDocletOptions>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
-	<distributionManagement>
-		<site>
-			<id>ecomp-site</id>
-			<url>dav:${nexusproxy}${sitePath}</url>
-		</site>
-	</distributionManagement>
-	<properties>
-		<swagger.version>1.5.19</swagger.version>
-	    <jackson.version>2.9.5</jackson.version>
-		<jersey.version>2.29</jersey.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jettyVersion>9.4.24.v20191120</jettyVersion>
-		<eelf.version>1.0.0</eelf.version>
-		<artifact.version>2.0.3-SNAPSHOT</artifact.version>
-		<junit.version>4.12</junit.version>
-		<!-- SONAR -->
-		<sonar.language>java</sonar.language>
-  		<sonar.skip>false</sonar.skip>
-  		<sonar.surefire.reportsPath>${project.build.directory}/surefire-reports</sonar.surefire.reportsPath>
-  		<sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco-ut/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-  		<sonar.projectVersion>${project.version}</sonar.projectVersion>
-		<sonar.exclusions>**/gen/**,**/generated-sources/**,**/yang-gen**,**/pax/**</sonar.exclusions>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>pl.pragmatists</groupId>
+            <artifactId>JUnitParams</artifactId>
+            <version>1.1.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <version>3.0.0-M3</version>
+        </dependency>
+    </dependencies>
 
-		<!-- for Distribution Management -->
-		<sitePath>/content/sites/site/org/onap/dmaap/dbcapi/${artifact.version}/${project.version}</sitePath>
-		<nexusproxy>https://nexus.onap.org</nexusproxy>
-	</properties>
-	<description>Data Movement as a Platform (DMaaP) Bus Controller provides a REST API for other DCAE infrastructure components to provision DMaaP resources.  A DMaaP resource is a Data Router Feed or a Message Router Topic, and their associated publishers and subscribers.</description>
+    <build>
+        <finalName>dbcapi</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/java/org/onap/dmaap/dbcapi/logging</directory>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <!-- reference: https://tech.homeaway.com/development/2016/06/02/generating-swagger-spec.html -->
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>3.1.5</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>false</springmvc>
+                            <locations>
+                                <location>org.onap.dmaap.dbcapi.resources</location>
+                            </locations>
+                            <schemes>
+                                <scheme>http</scheme>
+                                <scheme>https</scheme>
+                            </schemes>
+                            <host>www.[host]:[port]</host>
+                            <basePath>/webapi</basePath>
+                            <info>
+                                <title>DMaaP Bus Controller REST API</title>
+                                <version>1.1.0</version>
+                                <description>
+                                    provides an API for OpenDCAE components which need to provision
+                                    underlying DMaaP technologies (Data Router and Message Router).
+                                    Primary clients for this API are anticipated to be the OpenDCAE
+                                    Controller, OpenDCAE Orchestrator, OpenDCAE Inventory and the
+                                    ECOMP Portal.
+
+                                    Objects managed by DMaaP are deployed in a dcaeLocation which is
+                                    a unique identifier for an OpenStack tenant for a dcaeLayer,
+                                    opendcae-central (aka ecomp) or opendcae-local-ntc (aka edge).
+
+                                    A dcaeEnvironment (e.g. FTL or prod) has a single DMaaP. A
+                                    DMaaP is managed by a one or more stateless DMaaP Bus
+                                    Controller(s), though Bus Controller relies on PGaaS for
+                                    persistence. Each DMaaP has a single instance of Data Router,
+                                    which has 1 or more DR_Nodes deployed at each dcaeLocation. DR
+                                    Clients of type DR_Pub generally publish to a DR_Node that is
+                                    local to its dcaeLocation. Routing for a Feed is determined by
+                                    the dcaelocation of its DR_Sub clients.
+
+                                    A DMaaP may have many Message Router instances. Each instance is
+                                    deployed as an MR_Cluster. One MR_Cluster is deployed at each
+                                    dcaeLocation. MR_Clients generally communicate to the
+                                    MR_Cluster at the same dcaeLocation. Replication of messages
+                                    between MR_Clusters is accomplished by MR Bridge, which is
+                                    provioned by DMaaP Bus Controller based on Topic attributes.
+
+                                    Therefore, the role of DMaaP Bus Controller is to support other
+                                    DCAE infrastructure components to dynamically provision DMaaP
+                                    services on behalf of DMaaP clients, and to assist in any
+                                    management or discovery activity of its clients.
+
+                                    A convention of this API is to return JSON responses per
+                                    OpenStack style.
+                                </description>
+                                <termsOfService>
+                                    http://www.apache.org/licenses/LICENSE-2.0
+                                </termsOfService>
+                                <contact>
+                                    <url>http://www.onap.org</url>
+                                </contact>
+                                <license>
+                                    <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+                                    <name>Licensed under the Apache License, Version 2.0</name>
+                                </license>
+                            </info>
+                            <swaggerDirectory>target/generated-sources/</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- for Staging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>onap-java-style</id>
+                        <configuration>
+                            <consoleOutput>false</consoleOutput>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- for Distribution Managment -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.6</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.wagon</groupId>
+                        <artifactId>wagon-webdav-jackrabbit</artifactId>
+                        <version>2.10</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <!-- prevent SNAPSHOT dependencies -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-no-snapshots</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireReleaseDeps>
+                                    <message>No Snapshots Allowed!</message>
+                                    <excludes>
+                                        <exclude>org.onap.aaf.authz:aaf-cadi-client</exclude>
+                                        <exclude>org.onap.aaf.authz:aaf-misc-env</exclude>
+                                        <exclude>org.onap.aaf.authz:aaf-cadi-aaf</exclude>
+                                        <exclude>org.onap.aaf.authz:aaf-auth-client</exclude>
+                                        <exclude>org.onap.aaf.authz:aaf-cadi-core</exclude>
+                                        <exclude>org.onap.aaf.authz:aaf-misc-rosetta</exclude>
+                                    </excludes>
+                                </requireReleaseDeps>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/code-coverage/jacoco.exec
+                            </dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut
+                            </outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.4</version>
+                <configuration>
+                    <excludes>
+                        <!-- exclude until junits updated <exclude>**/DME2*.java</exclude> -->
+                    </excludes>
+                    <!-- <skipTests>true</skipTests> -->
+                </configuration>
+            </plugin>
+        </plugins>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings
+                  only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-dependency-plugin</artifactId>
+                                        <versionRange>[2.10,)</versionRange>
+                                        <goals>
+                                            <goal>copy-dependencies</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
+                    <docletArtifact>
+                        <groupId>org.umlgraph</groupId>
+                        <artifactId>umlgraph</artifactId>
+                        <version>5.6</version>
+                    </docletArtifact>
+                    <additionalparam>-views</additionalparam>
+                    <useStandardDocletOptions>true</useStandardDocletOptions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

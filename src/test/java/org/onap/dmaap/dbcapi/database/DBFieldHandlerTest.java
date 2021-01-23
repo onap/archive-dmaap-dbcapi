@@ -27,8 +27,8 @@ import static org.junit.Assert.assertNull;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 import org.onap.dmaap.dbcapi.authentication.AafLurAndFish;
 import org.onap.dmaap.dbcapi.model.ReplicationType;
@@ -36,7 +36,7 @@ import org.onap.dmaap.dbcapi.testframework.ReflectionHarness;
 
 public class DBFieldHandlerTest {
 
-    private static final Logger logger = Logger.getLogger(AafLurAndFish.class);
+    private static final Logger logger = LogManager.getLogger(AafLurAndFish.class);
 
     private static final String fmt = "%24s: %s%n";
 
