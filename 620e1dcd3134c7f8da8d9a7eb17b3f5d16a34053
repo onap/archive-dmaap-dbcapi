@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "fe0d1545_ea37f404",
+        "filename": "pom.xml",
+        "patchSetId": 1
+      },
+      "lineNbr": 337,
+      "author": {
+        "id": 4405
+      },
+      "writtenOn": "2021-01-27T12:41:05Z",
+      "side": 1,
+      "message": "Be nice to format this file also so it\u0027s a bit more legible.\nIn intellij - Ctrl+Alt+Shift+L",
+      "range": {
+        "startLine": 331,
+        "startChar": 3,
+        "endLine": 337,
+        "endChar": 32
+      },
+      "revId": "620e1dcd3134c7f8da8d9a7eb17b3f5d16a34053",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
         "uuid": "f18dd148_c1f3a6e8",
         "filename": "pom.xml",
         "patchSetId": 1
