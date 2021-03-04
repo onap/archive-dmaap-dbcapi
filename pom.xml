@@ -49,7 +49,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jettyVersion>9.4.36.v20210114</jettyVersion>
         <eelf.version>1.0.0</eelf.version>
-        <artifact.version>2.0.3-SNAPSHOT</artifact.version>
+        <artifact.version>2.0.3</artifact.version>
         <junit.version>4.12</junit.version>
         <!-- SONAR -->
         <sonar.language>java</sonar.language>
