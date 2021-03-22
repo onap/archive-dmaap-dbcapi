@@ -42,6 +42,7 @@
     </description>
 
     <properties>
+        <artifact.version>2.0.4-SNAPSHOT</artifact.version>
         <swagger.version>1.5.19</swagger.version>
         <log4j.version>2.13.3</log4j.version>
         <jackson.version>2.9.5</jackson.version>
@@ -49,7 +50,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jettyVersion>9.4.36.v20210114</jettyVersion>
         <eelf.version>1.0.0</eelf.version>
-        <artifact.version>2.0.3-SNAPSHOT</artifact.version>
         <junit.version>4.12</junit.version>
         <!-- SONAR -->
         <sonar.language>java</sonar.language>
