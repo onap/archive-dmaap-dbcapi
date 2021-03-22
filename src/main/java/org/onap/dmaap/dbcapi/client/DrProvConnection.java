@@ -22,6 +22,17 @@
 
 package org.onap.dmaap.dbcapi.client;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.ConnectException;
+import java.net.ProtocolException;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.Arrays;
+import javax.net.ssl.HttpsURLConnection;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
 import org.onap.dmaap.dbcapi.logging.DmaapbcLogMessageEnum;
 import org.onap.dmaap.dbcapi.model.ApiError;
@@ -29,14 +40,6 @@ import org.onap.dmaap.dbcapi.model.DR_Sub;
 import org.onap.dmaap.dbcapi.model.Feed;
 import org.onap.dmaap.dbcapi.service.DmaapService;
 import org.onap.dmaap.dbcapi.util.DmaapConfig;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
-import java.net.ConnectException;
-import java.net.ProtocolException;
-import java.net.SocketException;
-import java.net.URL;
-import java.util.Arrays;
 
 
 
@@ -127,12 +130,12 @@ public class DrProvConnection extends BaseLoggingClass {
 			uc = (HttpsURLConnection) u.openConnection();
 			uc.setInstanceFollowRedirects(false);
 			logger.info( "successful connect to " + pURL );
+			uc.setSSLSocketFactory(DmaapConfig.getSSLSocketFactory());
 			return(true);
 		} catch (Exception e) {
 			errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_ERROR,  pURL, e.getMessage() );
             return(false);
         }
-
 	}
 	
 	public String bodyToString( InputStream is ) {
@@ -158,6 +161,7 @@ public class DrProvConnection extends BaseLoggingClass {
 		logger.info( "post fields=" + Arrays.toString(postData) );
 		String responsemessage = null;
 		String responseBody = null;
+		int rc = -1;
 
 		try {
 			logger.info( "uc=" + uc );
@@ -169,8 +173,7 @@ public class DrProvConnection extends BaseLoggingClass {
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
-			int rc = -1;
-			
+
 			try {
                  uc.connect();
                  os = uc.getOutputStream();
@@ -184,13 +187,14 @@ public class DrProvConnection extends BaseLoggingClass {
                      uc.setDoOutput(false);
                  } catch (Exception e) {
                  }
-            }
+            } catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
-            responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
-
-
+			responsemessage = uc.getResponseMessage();
+			logger.info( "responsemessage=" + responsemessage );
             if (responsemessage == null) {
                  // work around for glitch in Java 1.7.0.21 and likely others
                  // When Expect: 100 is set and a non-100 response is received, the response message is not set but the response code is
@@ -272,7 +276,10 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                  	logger.error(e.getMessage(), e);
                  }
-            }
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
@@ -340,7 +347,10 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                 	 logger.error(e.getMessage(), e);
                  }
-            }
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
@@ -421,7 +431,10 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                 	 logger.error(e.getMessage(), e);
                  }
-            }
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
@@ -530,7 +543,10 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                 	 logger.error(e.getMessage(), e);
                  }
-            }
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
@@ -608,14 +624,15 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                 	 logger.error(e.getMessage(), e);
                  }
-            } 
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 	
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
             logger.info( "responsemessage=" + responsemessage );
-	
-
 
             if (responsemessage == null) {
 
@@ -669,29 +686,16 @@ public class DrProvConnection extends BaseLoggingClass {
 	}
 	public String doPutNodes( ApiError err ) {
 		logger.info( "entry: doPutNodes() "  );
-		//byte[] postData = nodeList.getBytes();
-		//logger.info( "get fields=" + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
-	
 			uc.setRequestMethod("PUT");
-		
-			//uc.setRequestProperty("Content-Type", subContentType );
-			//uc.setRequestProperty( "charset", "utf-8");
-			//uc.setRequestProperty( behalfHeader, "DGL" );
-			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
-			//uc.setDoOutput(true);
-			OutputStream os = null;
 			int rc = -1;
 			
 			try {
                  uc.connect();
-                 //os = uc.getOutputStream();
-                 //os.write( postData );
-
             } catch (ProtocolException pe) {
                  // Rcvd error instead of 100-Continue
                  try {
@@ -700,7 +704,10 @@ public class DrProvConnection extends BaseLoggingClass {
                      uc.setDoOutput(false);
                  } catch (Exception e) {
                  }
-            }
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
@@ -747,8 +754,6 @@ public class DrProvConnection extends BaseLoggingClass {
 	}
 	
 	public String doDeleteFeed(Feed putFeed, ApiError err) {
-		//byte[] postData = putFeed.getBytes();
-		//logger.info( "post fields=" + postData.toString() );
 		String responsemessage = null;
 		String responseBody = null;
 
@@ -758,7 +763,6 @@ public class DrProvConnection extends BaseLoggingClass {
 			uc.setRequestProperty("Content-Type", feedContentType );
 			uc.setRequestProperty( "charset", "utf-8");
 			uc.setRequestProperty( behalfHeader, putFeed.getOwner() );
-			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -778,7 +782,10 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                 	 logger.error(e.getMessage(), e);
                  }
-            }
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
@@ -855,7 +862,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	public String doDeleteDr_Sub(DR_Sub delSub, ApiError err) {
 		logger.info( "entry: doDeleteDr_Sub() "  );
 		byte[] postData = delSub.getBytes(provApi);
-		logger.info( "post fields=" + postData );
+		logger.info( "post fields=" + Arrays.toString(postData));
 		String responsemessage = null;
 		String responseBody = null;
 
@@ -866,7 +873,6 @@ public class DrProvConnection extends BaseLoggingClass {
 			uc.setRequestProperty("Content-Type", subContentType);
 			uc.setRequestProperty( "charset", "utf-8");
 			uc.setRequestProperty( behalfHeader, "DGL" );
-			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -886,7 +892,10 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                 	 logger.error(e.getMessage(), e);
                  }
-            }
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
             responsemessage = uc.getResponseMessage();
@@ -1022,7 +1031,10 @@ public class DrProvConnection extends BaseLoggingClass {
                  } catch (Exception e) {
                 	 logger.error(e.getMessage(), e);
                  }
-            } 
+			} catch (Exception e) {
+				logger.info( "Exception: " + e.getMessage() );
+				e.printStackTrace();
+			}
 	
 			rc = uc.getResponseCode();
 			logger.info( "http response code:" + rc );
