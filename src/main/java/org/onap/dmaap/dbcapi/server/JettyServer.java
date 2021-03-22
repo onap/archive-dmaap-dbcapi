@@ -23,17 +23,21 @@
 package org.onap.dmaap.dbcapi.server;
 
 import com.google.common.collect.Sets;
+import java.util.Properties;
 import javax.servlet.DispatcherType;
-
 import org.eclipse.jetty.http.HttpVersion;
-import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.onap.dmaap.dbcapi.logging.BaseLoggingClass;
-
-import java.util.Properties;
+import org.onap.dmaap.dbcapi.util.DmaapConfig;
 
 /**
  * A  Jetty server which supports:
@@ -43,51 +47,55 @@ import java.util.Properties;
  */
 public class JettyServer extends BaseLoggingClass {
 
-    private Server server;
+    private static final CertificateManager certificateManager =
+        new CertficateManagerFactory(DmaapConfig.getConfig()).initCertificateManager();
+    private final Server server;
 
 
     public Server getServer() {
         return server;
     }
 
-    public JettyServer(Properties params) throws Exception {
+    public static CertificateManager getCertificateManager() {
+        return certificateManager;
+    }
+
+    public JettyServer(Properties params) {
 
         server = new Server();
-        int httpPort = Integer.valueOf(params.getProperty("IntHttpPort", "80"));
-        int sslPort = Integer.valueOf(params.getProperty("IntHttpsPort", "443"));
-        boolean allowHttp = Boolean.valueOf(params.getProperty("HttpAllowed", "false"));
+        int httpPort = Integer.parseInt(params.getProperty("IntHttpPort", "80"));
+        int sslPort = Integer.parseInt(params.getProperty("IntHttpsPort", "443"));
+        boolean allowHttp = Boolean.parseBoolean(params.getProperty("HttpAllowed", "false"));
         serverLogger.info("port params: http=" + httpPort + " https=" + sslPort);
         serverLogger.info("allowHttp=" + allowHttp);
 
         // HTTP Server
-        HttpConfiguration http_config = new HttpConfiguration();
-        http_config.setSecureScheme("https");
-        http_config.setSecurePort(sslPort);
-        http_config.setOutputBufferSize(32768);
+        HttpConfiguration httpConfig = new HttpConfiguration();
+        httpConfig.setSecureScheme("https");
+        httpConfig.setSecurePort(sslPort);
+        httpConfig.setOutputBufferSize(32768);
 
-        try (ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(http_config))) {
+        try (ServerConnector httpConnector = new ServerConnector(server, new HttpConnectionFactory(httpConfig))) {
             httpConnector.setPort(httpPort);
             httpConnector.setIdleTimeout(30000);
 
             // HTTPS Server
-
-            HttpConfiguration https_config = new HttpConfiguration(http_config);
-            https_config.addCustomizer(new SecureRequestCustomizer());
+            HttpConfiguration httpsConfig = new HttpConfiguration(httpConfig);
+            httpsConfig.addCustomizer(new SecureRequestCustomizer());
             SslContextFactory sslContextFactory = new SslContextFactory.Server();
             sslContextFactory.setWantClientAuth(true);
 
-            CertificateManager certificateManager = new CertficateManagerFactory(params).initCertificateManager();
             if ( ! certificateManager.isReady()) {
             	serverLogger.error("CertificateManager is not ready.  NOT starting https!");
             } else {
-            	setUpKeystore(certificateManager, sslContextFactory);
-            	setUpTrustStore(certificateManager, sslContextFactory);
+            	setUpKeystore(sslContextFactory);
+            	setUpTrustStore(sslContextFactory);
           
 
 	            if (sslPort != 0) {
 	                try (ServerConnector sslConnector = new ServerConnector(server,
 	                    new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
-	                    new HttpConnectionFactory(https_config))) {
+	                    new HttpConnectionFactory(httpsConfig))) {
 	                    sslConnector.setPort(sslPort);
 	                    server.addConnector(sslConnector);
 	                    serverLogger.info("Starting sslConnector on port " + sslPort + " for https");
@@ -125,9 +133,9 @@ public class JettyServer extends BaseLoggingClass {
         try {
 
             serverLogger.info("Starting jetty server");
-            String unit_test = params.getProperty("UnitTest", "No");
-            serverLogger.info("UnitTest=" + unit_test);
-            if (unit_test.equals("No")) {
+            String unitTest = params.getProperty("UnitTest", "No");
+            serverLogger.info("UnitTest=" + unitTest);
+            if (unitTest.equals("No")) {
                 server.start();
                 server.dumpStdErr();
                 server.join();
@@ -147,20 +155,20 @@ public class JettyServer extends BaseLoggingClass {
             Sets.newEnumSet(Sets.newHashSet(DispatcherType.FORWARD, DispatcherType.REQUEST), DispatcherType.class));
     }
 
-    private void setUpKeystore(CertificateManager certificateManager, SslContextFactory sslContextFactory) {
-        String keystore = certificateManager.getKeyStoreFile();
+    private void setUpKeystore(SslContextFactory sslContextFactory) {
+        String keystore = JettyServer.certificateManager.getKeyStoreFile();
         logger.info("https Server using keystore at " + keystore);
         sslContextFactory.setKeyStorePath(keystore);
-        sslContextFactory.setKeyStoreType(certificateManager.getKeyStoreType());
-        sslContextFactory.setKeyStorePassword(certificateManager.getKeyStorePassword());
-        sslContextFactory.setKeyManagerPassword(certificateManager.getKeyStorePassword());
+        sslContextFactory.setKeyStoreType(JettyServer.certificateManager.getKeyStoreType());
+        sslContextFactory.setKeyStorePassword(JettyServer.certificateManager.getKeyStorePassword());
+        sslContextFactory.setKeyManagerPassword(JettyServer.certificateManager.getKeyStorePassword());
     }
 
-    private void setUpTrustStore(CertificateManager certificateManager, SslContextFactory sslContextFactory) {
-        String truststore = certificateManager.getTrustStoreFile();
+    private void setUpTrustStore(SslContextFactory sslContextFactory) {
+        String truststore = JettyServer.certificateManager.getTrustStoreFile();
         logger.info("https Server using truststore at " + truststore);
         sslContextFactory.setTrustStorePath(truststore);
-        sslContextFactory.setTrustStoreType(certificateManager.getTrustStoreType());
-        sslContextFactory.setTrustStorePassword(certificateManager.getTrustStorePassword());
+        sslContextFactory.setTrustStoreType(JettyServer.certificateManager.getTrustStoreType());
+        sslContextFactory.setTrustStorePassword(JettyServer.certificateManager.getTrustStorePassword());
     }
 }
