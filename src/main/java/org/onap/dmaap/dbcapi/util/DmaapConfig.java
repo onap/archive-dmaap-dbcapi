@@ -20,30 +20,59 @@
 
 package org.onap.dmaap.dbcapi.util;
 
+import com.att.eelf.configuration.EELFLogger;
+import com.att.eelf.configuration.EELFManager;
 import java.io.*;
+import java.security.KeyStore;
 import java.util.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import org.onap.dmaap.dbcapi.server.CertificateManager;
+import org.onap.dmaap.dbcapi.server.JettyServer;
 
 public class DmaapConfig extends Properties	{
-	/**
-	 * 
-	 */
+
+	private static final EELFLogger logger = EELFManager.getInstance().getLogger(DmaapConfig.class);
 	private static final long serialVersionUID = 1L;
-	private static String configfname = System.getProperty("ConfigFile", "etc/dmaapbc.properties");
-	private static Properties config = new DmaapConfig();
+	private static final String CONFIG_FILE_NAME = System.getProperty("ConfigFile", "etc/dmaapbc.properties");
+	private static final Properties config = new DmaapConfig();
+
 	public static Properties getConfig() {
 		return(config);
 	}
 	public static String getConfigFileName() {
-		return(configfname);
+		return(CONFIG_FILE_NAME);
 	}
 	private DmaapConfig() {
-		try (InputStream is = new FileInputStream(configfname)){
+		try (InputStream is = new FileInputStream(CONFIG_FILE_NAME)){
 			load(is);
 		} catch (Exception e) {
-			System.err.println("Unable to load configuration file " + configfname);
-			org.apache.log4j.Logger.getLogger(getClass()).fatal("Unable to load configuration file " + configfname, e);
+			logger.error("Unable to load configuration file " + CONFIG_FILE_NAME);
 			System.exit(1);
 		}
+	}
+
+	public static SSLSocketFactory getSSLSocketFactory() {
+		SSLSocketFactory factory = null;
+		try {
+			CertificateManager cm = JettyServer.getCertificateManager();
+			String truststore = cm.getTrustStoreFile();
+			KeyStore ts = KeyStore.getInstance(cm.getTrustStoreType());
+			try (InputStream in = new FileInputStream(truststore)) {
+				ts.load(in, cm.getTrustStorePassword().toCharArray());
+			}
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init(ts);
+			TrustManager[] tm = tmf.getTrustManagers();
+			SSLContext sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(null, tm, null);
+			factory = sslContext.getSocketFactory();
+		} catch (Exception e) {
+			logger.error("Exception thrown trying to get SSLSocketFactory: ", e);
+		}
+		return factory;
 	}
 	
 }
