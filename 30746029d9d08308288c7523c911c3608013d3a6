@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "6499e63b_04cf7ea9",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/client/DrProvConnection.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 4745
+      },
+      "writtenOn": "2021-03-24T13:37:28Z",
+      "side": 1,
+      "message": "this pattern seems to be repeated a lot, make own function?",
+      "range": {
+        "startLine": 177,
+        "startChar": 3,
+        "endLine": 197,
+        "endChar": 55
+      },
+      "revId": "30746029d9d08308288c7523c911c3608013d3a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "9f0c1955_8c44debd",
+        "filename": "src/main/java/org/onap/dmaap/dbcapi/util/DmaapConfig.java",
+        "patchSetId": 4
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 4745
+      },
+      "writtenOn": "2021-03-24T13:37:28Z",
+      "side": 1,
+      "message": "should exception be caught here? \"unable to load truststore\"",
+      "revId": "30746029d9d08308288c7523c911c3608013d3a6",
+      "serverId": "14b4e41f-c4e3-4fb9-9955-6a9b5656895a",
+      "unresolved": true
+    }
+  ]
+}
