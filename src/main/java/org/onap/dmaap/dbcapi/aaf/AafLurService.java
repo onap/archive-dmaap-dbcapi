@@ -47,7 +47,6 @@ public class AafLurService extends BaseLoggingClass {
 	static Logger log = Logger.getLogger(AafLurService.class.getName());
 
 
-	private static AAFConHttp aafcon;
 	private static AAFLurPerm aafLur;
 	private static AAFAuthn<?> aafAuthn;
 
@@ -61,6 +60,7 @@ public class AafLurService extends BaseLoggingClass {
 
 
 	private static void init( Access myAccess ) throws APIException, CadiException, LocatorException {
+		AAFConHttp aafcon;
 		appLogger.info( "myAccess=" + myAccess );
 		try {
 			aafcon = new AAFConHttp( myAccess );

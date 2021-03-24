@@ -197,12 +197,12 @@ public class DBFieldHandler	{
 		if (s == null) {
 			return(s);
 		}
-		return(s.replaceAll("@", "@a").replaceAll(";", "@s").replaceAll(",", "@c"));
+		return(s.replace("@", "@a").replace(";", "@s").replace(",", "@c"));
 	}
 	public static String funesc(String s) {
 		if (s == null) {
 			return(s);
 		}
-		return(s.replaceAll("@c", ",").replaceAll("@s", ";").replaceAll("@a", "@"));
+		return(s.replace("@c", ",").replace("@s", ";").replace("@a", "@"));
 	}
 }

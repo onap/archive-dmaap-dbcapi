@@ -41,7 +41,17 @@ import java.util.Arrays;
 
 
 public class DrProvConnection extends BaseLoggingClass {
-	   
+
+	static String contentType = "Content-Type";
+	static String postFields = "post fields=";
+	static String charset = "charset";
+	static String utf8 = "utf-8";
+	static String contentLength = "Content-Length";
+	static String httpResponseCode = "http response code:";
+	static String responseMessage = "responsemessage=";
+	static String responsebody = "responseBody=";
+	static String backendConnectionRefused = "Backend connection refused";
+
    
 	private String provURL;
 	private	String provApi;
@@ -114,7 +124,7 @@ public class DrProvConnection extends BaseLoggingClass {
 		if ( val == null ) {
 			return false;
 		} 
-		String cv = val.replaceAll("\\|", "%7C");
+		String cv = val.replace("\\|", "%7C");
 		String uri = String.format( "/internal/api/%s?val=%s", varName, cv );
 
 		return makeConnection( provURL + uri );
@@ -155,17 +165,17 @@ public class DrProvConnection extends BaseLoggingClass {
 	public  String doPostFeed( Feed postFeed, ApiError err ) {
 
 		byte[] postData = postFeed.getBytes();
-		logger.info( "post fields=" + Arrays.toString(postData) );
+		logger.info( postFields + Arrays.toString(postData) );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
 			logger.info( "uc=" + uc );
 			uc.setRequestMethod("POST");
-			uc.setRequestProperty("Content-Type", feedContentType);
-			uc.setRequestProperty( "charset", "utf-8");
+			uc.setRequestProperty(contentType, feedContentType);
+			uc.setRequestProperty( charset, utf8);
 			uc.setRequestProperty( behalfHeader, postFeed.getOwner() );
-			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			uc.setRequestProperty( contentLength, Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -186,9 +196,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
             if (responsemessage == null) {
@@ -205,7 +215,7 @@ public class DrProvConnection extends BaseLoggingClass {
             }
             if (rc == 201 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
 
             } else {
             	err.setCode( rc );
@@ -215,7 +225,7 @@ public class DrProvConnection extends BaseLoggingClass {
 		} catch (ConnectException ce) {
 			errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
             err.setCode( 500 );
-        	err.setMessage("Backend connection refused");
+        	err.setMessage(backendConnectionRefused);
 		} catch (SocketException se) {
 			errorLogger.error( DmaapbcLogMessageEnum.SOCKET_EXCEPTION, se.getMessage(), "response from prov server" );
 			err.setCode( 500 );
@@ -274,9 +284,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
 
@@ -309,7 +319,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	public String doPostDr_Sub( DR_Sub postSub, ApiError err ) {
 		logger.info( "entry: doPostDr_Sub() "  );
 		byte[] postData = postSub.getBytes(provApi );
-		logger.info( "post fields=" + postData );
+		logger.info( postFields + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
@@ -317,10 +327,10 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("POST");
 		
-			uc.setRequestProperty("Content-Type", subContentType );
-			uc.setRequestProperty( "charset", "utf-8");
+			uc.setRequestProperty(contentType, subContentType );
+			uc.setRequestProperty( charset, utf8);
 			uc.setRequestProperty( behalfHeader, "DGL" );
-			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			uc.setRequestProperty( contentLength, Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -342,9 +352,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
             if (responsemessage == null) {
@@ -361,7 +371,7 @@ public class DrProvConnection extends BaseLoggingClass {
             }
             if (rc == 201 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
 
             } else {
             	err.setCode(rc);
@@ -391,17 +401,17 @@ public class DrProvConnection extends BaseLoggingClass {
 
 	public String doPutFeed(Feed putFeed, ApiError err) {
 		byte[] postData = putFeed.getBytes();
-		logger.info( "post fields=" + Arrays.toString(postData) );
+		logger.info( postFields + Arrays.toString(postData) );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
 			logger.info( "uc=" + uc );
 			uc.setRequestMethod("PUT");
-			uc.setRequestProperty("Content-Type", feedContentType );
-			uc.setRequestProperty( "charset", "utf-8");
+			uc.setRequestProperty(contentType, feedContentType );
+			uc.setRequestProperty( charset, utf8);
 			uc.setRequestProperty( behalfHeader, putFeed.getOwner() );
-			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			uc.setRequestProperty( contentLength, Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -423,9 +433,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
             if (responsemessage == null) {
@@ -442,7 +452,7 @@ public class DrProvConnection extends BaseLoggingClass {
             }
             if (rc >= 200 && rc < 300 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
     			err.setCode( rc );
             } else if ( rc == 404 ) {
             	err.setCode( rc );
@@ -464,7 +474,7 @@ public class DrProvConnection extends BaseLoggingClass {
 			} else {
 				errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage());
 				err.setCode(500);
-				err.setMessage("Backend connection refused");
+				err.setMessage(backendConnectionRefused);
 			}
 		} catch (SocketException se) {
 			errorLogger.error( DmaapbcLogMessageEnum.SOCKET_EXCEPTION, se.getMessage(), "response from Prov server" );
@@ -499,7 +509,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	public String doPutDr_Sub(DR_Sub postSub, ApiError err) {
 		logger.info( "entry: doPutDr_Sub() "  );
 		byte[] postData = postSub.getBytes(provApi);
-		logger.info( "post fields=" + postData );
+		logger.info( postFields + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
@@ -507,10 +517,10 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("PUT");
 		
-			uc.setRequestProperty("Content-Type", subContentType );
-			uc.setRequestProperty( "charset", "utf-8");
+			uc.setRequestProperty(contentType, subContentType );
+			uc.setRequestProperty( charset, utf8);
 			uc.setRequestProperty( behalfHeader, "DGL" );
-			uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			uc.setRequestProperty( contentLength, Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -532,9 +542,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
             if (responsemessage == null) {
@@ -551,7 +561,7 @@ public class DrProvConnection extends BaseLoggingClass {
             }
             if (rc == 200 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
 
             } else {
             	err.setCode(rc);
@@ -561,7 +571,7 @@ public class DrProvConnection extends BaseLoggingClass {
 		} catch (ConnectException ce) {
             errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
             err.setCode( 500 );
-        	err.setMessage("Backend connection refused");
+        	err.setMessage(backendConnectionRefused);
         	logger.error(ce.getMessage(), ce);
 		} catch (Exception e) {
           	if ( unit_test.equals( "Yes" ) ) {
@@ -611,9 +621,9 @@ public class DrProvConnection extends BaseLoggingClass {
             } 
 	
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 	
 
 
@@ -634,7 +644,7 @@ public class DrProvConnection extends BaseLoggingClass {
         	err.setCode(rc);  // may not really be an error, but we save rc
             if (rc == 200 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
             } else {
             	err.setMessage(responsemessage);
             }
@@ -648,7 +658,7 @@ public class DrProvConnection extends BaseLoggingClass {
 			} else {
 				errorLogger.error(DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage());
 				err.setCode(500);
-				err.setMessage("Backend connection refused");
+				err.setMessage(backendConnectionRefused);
 				logger.error(ce.getMessage(), ce);
 			}
 		} catch (Exception e) {
@@ -678,10 +688,10 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("PUT");
 		
-			//uc.setRequestProperty("Content-Type", subContentType );
-			//uc.setRequestProperty( "charset", "utf-8");
+			//uc.setRequestProperty(contentType, subContentType );
+			//uc.setRequestProperty( charset, utf8);
 			//uc.setRequestProperty( behalfHeader, "DGL" );
-			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			//uc.setRequestProperty( contentLength, Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			//uc.setDoOutput(true);
 			OutputStream os = null;
@@ -702,9 +712,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
             if (responsemessage == null) {
@@ -722,7 +732,7 @@ public class DrProvConnection extends BaseLoggingClass {
           	err.setCode(rc);
             if (rc == 200 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
 
             } else {
   
@@ -748,17 +758,17 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 	public String doDeleteFeed(Feed putFeed, ApiError err) {
 		//byte[] postData = putFeed.getBytes();
-		//logger.info( "post fields=" + postData.toString() );
+		//logger.info( postFields + postData.toString() );
 		String responsemessage = null;
 		String responseBody = null;
 
 		try {
 			logger.info( "uc=" + uc );
 			uc.setRequestMethod("DELETE");
-			uc.setRequestProperty("Content-Type", feedContentType );
-			uc.setRequestProperty( "charset", "utf-8");
+			uc.setRequestProperty(contentType, feedContentType );
+			uc.setRequestProperty( charset, utf8);
 			uc.setRequestProperty( behalfHeader, putFeed.getOwner() );
-			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			//uc.setRequestProperty( contentLength, Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -780,9 +790,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
             if (responsemessage == null) {
@@ -799,7 +809,7 @@ public class DrProvConnection extends BaseLoggingClass {
             }
             if (rc >= 200 && rc < 300 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
 
             } else if ( rc == 404 ) {
             	err.setCode( rc );
@@ -816,7 +826,7 @@ public class DrProvConnection extends BaseLoggingClass {
 		} catch (ConnectException ce) {
 			errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
             err.setCode( 500 );
-        	err.setMessage("Backend connection refused");
+        	err.setMessage(backendConnectionRefused);
         	logger.error(ce.getMessage(), ce);
 		} catch (SocketException se) {
 			errorLogger.error( DmaapbcLogMessageEnum.SOCKET_EXCEPTION, se.getMessage(), "response from Prov server" );
@@ -855,7 +865,7 @@ public class DrProvConnection extends BaseLoggingClass {
 	public String doDeleteDr_Sub(DR_Sub delSub, ApiError err) {
 		logger.info( "entry: doDeleteDr_Sub() "  );
 		byte[] postData = delSub.getBytes(provApi);
-		logger.info( "post fields=" + postData );
+		logger.info( postFields + postData );
 		String responsemessage = null;
 		String responseBody = null;
 
@@ -863,10 +873,10 @@ public class DrProvConnection extends BaseLoggingClass {
 	
 			uc.setRequestMethod("DELETE");
 		
-			uc.setRequestProperty("Content-Type", subContentType);
-			uc.setRequestProperty( "charset", "utf-8");
+			uc.setRequestProperty(contentType, subContentType);
+			uc.setRequestProperty( charset, utf8);
 			uc.setRequestProperty( behalfHeader, "DGL" );
-			//uc.setRequestProperty( "Content-Length", Integer.toString( postData.length ));
+			//uc.setRequestProperty( contentLength, Integer.toString( postData.length ));
 			uc.setUseCaches(false);
 			uc.setDoOutput(true);
 			OutputStream os = null;
@@ -888,9 +898,9 @@ public class DrProvConnection extends BaseLoggingClass {
                  }
             }
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 
 
             if (responsemessage == null) {
@@ -908,7 +918,7 @@ public class DrProvConnection extends BaseLoggingClass {
         	err.setCode(rc);
             if (rc == 204 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
             } else {
             	err.setMessage(responsemessage);
             }
@@ -921,7 +931,7 @@ public class DrProvConnection extends BaseLoggingClass {
            	} else {
 	            errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
 	            err.setCode( 500 );
-	        	err.setMessage("Backend connection refused");
+	        	err.setMessage(backendConnectionRefused);
            	}
 		} catch (Exception e) {
          	if ( unit_test.equals( "Yes" ) ) {
@@ -1025,9 +1035,9 @@ public class DrProvConnection extends BaseLoggingClass {
             } 
 	
 			rc = uc.getResponseCode();
-			logger.info( "http response code:" + rc );
+			logger.info( httpResponseCode + rc );
             responsemessage = uc.getResponseMessage();
-            logger.info( "responsemessage=" + responsemessage );
+            logger.info( responseMessage + responsemessage );
 	
 
 
@@ -1048,7 +1058,7 @@ public class DrProvConnection extends BaseLoggingClass {
         	err.setCode(rc);  // may not really be an error, but we save rc
             if (rc == 200 ) {
      			responseBody = bodyToString( uc.getInputStream() );
-    			logger.info( "responseBody=" + responseBody );
+    			logger.info( responsebody + responseBody );
             } else {
             	err.setMessage(responsemessage);
             }
@@ -1064,7 +1074,7 @@ public class DrProvConnection extends BaseLoggingClass {
            	} else {
 	            errorLogger.error( DmaapbcLogMessageEnum.HTTP_CONNECTION_EXCEPTION, provURL, ce.getMessage() );
 	            err.setCode( 500 );
-	        	err.setMessage("Backend connection refused");
+	        	err.setMessage(backendConnectionRefused);
 	        	logger.error(ce.getMessage(), ce);
            	}
 		} catch (Exception e) {

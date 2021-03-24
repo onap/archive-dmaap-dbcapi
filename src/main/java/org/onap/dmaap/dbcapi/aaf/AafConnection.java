@@ -53,7 +53,6 @@ public class AafConnection extends BaseLoggingClass {
 
 
 
-
 	private String aafCred;
 	private String unit_test;
 
@@ -123,9 +122,7 @@ public class AafConnection extends BaseLoggingClass {
 		String responseBody = null;
 
 		try {
-			if (auth != null) {
-				uc.setRequestProperty("Authorization", auth);
-	        }
+			uc.setRequestProperty("Authorization", auth);
 			uc.setRequestMethod("POST");
 			uc.setRequestProperty("Content-Type", "application/json");
 			uc.setRequestProperty( "charset", "utf-8");
@@ -235,9 +232,7 @@ public class AafConnection extends BaseLoggingClass {
 		String responseBody = null;
 
 		try {
-			if (auth != null) {
-				uc.setRequestProperty("Authorization", auth);
-	        }
+			uc.setRequestProperty("Authorization", auth);
 			uc.setRequestMethod("DELETE");
 			uc.setRequestProperty("Content-Type", "application/json");
 			uc.setRequestProperty( "charset", "utf-8");

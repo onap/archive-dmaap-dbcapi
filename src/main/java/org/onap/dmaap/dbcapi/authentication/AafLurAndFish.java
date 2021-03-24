@@ -51,13 +51,8 @@ public class AafLurAndFish implements ApiAuthorizationCheckInterface {
 		String cadiprop = p.getProperty( "cadi.properties", "/opt/app/osaaf/local/org.onap.dmaap-bc.props");
 		logger.info( "cadiprops in " + cadiprop );
 		Properties props = new Properties();
-		try {
-			FileInputStream fis = new FileInputStream( cadiprop );
-			try {
-				props.load( fis );
-			} finally {
-				fis.close();
-			}
+		try (FileInputStream fis = new FileInputStream( cadiprop )){
+			props.load( fis );
 		} catch ( IOException e ) {
 			logger.error( "Unable to load " + cadiprop );
 			logger.error(ERROR, e);

@@ -75,15 +75,15 @@ public class AafNamespace extends AafObject  {
 	//       output  "a", "b", "c"
 	private String separatedList( ArrayList<String> list, String sep ) {
 		if (list.isEmpty()) return null;
-		String aList = "";
+		StringBuilder aList = new StringBuilder();
 		String delim = "";
 		for( String item: list) {
 			if( ! item.isEmpty()) {
-				aList += String.format( "%s\"%s\"", delim, item );
+				aList.append(String.format( "%s\"%s\"", delim, item ));
 				delim = sep;
 			}
 		}
-		return aList;
+		return aList.toString();
 	}
 
 	public String toJSON() {
