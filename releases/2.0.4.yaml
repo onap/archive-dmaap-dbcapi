@@ -1,0 +1,4 @@
+distribution_type: 'maven'
+version: '2.0.4'
+project: 'dmaap-dbcapi'
+log_dir: 'dmaap-dbcapi-maven-stage-master/644/'
